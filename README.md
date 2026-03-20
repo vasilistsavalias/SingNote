@@ -53,3 +53,9 @@ Key pages:
 The active UI uses native Streamlit controls. Older custom long-press component
 files still exist in the repository, but they are not part of the active app
 path.
+
+## License
+
+This repository is licensed under `AGPL-3.0-only`. If someone modifies the
+code and runs it as a networked app, they must keep that derivative open under
+the same license.
