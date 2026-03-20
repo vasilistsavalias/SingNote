@@ -904,8 +904,6 @@ def _self_scroll_component_html(
     scope_key: str,
 ) -> str:
     """Return the full HTML for the self-contained scroll reader."""
-    scroll_interval_ms = 16
-    px_per_tick = (pixels_per_second * scroll_interval_ms) / 1000.0
     active_flag = "true" if is_playing else "false"
     return f"""
     <!DOCTYPE html>
@@ -1064,30 +1062,60 @@ def _self_scroll_component_html(
       (function() {{
         const container = document.getElementById("scroll-container");
         const IS_PLAYING = {active_flag};
-        const PX_PER_TICK = {px_per_tick:.4f};
-        const INTERVAL_MS = {scroll_interval_ms};
-        let timer = null;
+        const PIXELS_PER_SECOND = {pixels_per_second:.4f};
+        let animationFrameId = null;
+        let lastTimestamp = null;
+        let virtualScrollTop = 0;
 
-        function startScroll() {{
-          if (timer !== null) {{
+        function syncVirtualScrollTop() {{
+          virtualScrollTop = container.scrollTop;
+        }}
+
+        function tick(timestamp) {{
+          if (lastTimestamp === null) {{
+            lastTimestamp = timestamp;
+          }}
+          const elapsedSeconds = (timestamp - lastTimestamp) / 1000;
+          lastTimestamp = timestamp;
+          const maxScroll = container.scrollHeight - container.clientHeight;
+          virtualScrollTop = Math.min(
+            maxScroll,
+            virtualScrollTop + (elapsedSeconds * PIXELS_PER_SECOND)
+          );
+          container.scrollTop = virtualScrollTop;
+          if (virtualScrollTop >= maxScroll) {{
+            stopScroll();
             return;
           }}
-          timer = setInterval(function() {{
-            const maxScroll = container.scrollHeight - container.clientHeight;
-            if (container.scrollTop >= maxScroll) {{
-              stopScroll();
-              return;
-            }}
-            container.scrollTop += PX_PER_TICK;
-          }}, INTERVAL_MS);
+          animationFrameId = window.requestAnimationFrame(tick);
+        }}
+
+        function startScroll() {{
+          if (animationFrameId !== null) {{
+            return;
+          }}
+          syncVirtualScrollTop();
+          lastTimestamp = null;
+          animationFrameId = window.requestAnimationFrame(tick);
         }}
 
         function stopScroll() {{
-          if (timer !== null) {{
-            clearInterval(timer);
-            timer = null;
+          if (animationFrameId !== null) {{
+            window.cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
           }}
+          lastTimestamp = null;
         }}
+
+        container.addEventListener(
+          "scroll",
+          function() {{
+            if (animationFrameId === null) {{
+              syncVirtualScrollTop();
+            }}
+          }},
+          {{ passive: true }}
+        );
 
         if (IS_PLAYING) {{
           setTimeout(startScroll, 120);

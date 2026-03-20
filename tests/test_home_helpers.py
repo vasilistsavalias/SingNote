@@ -274,7 +274,8 @@ def test_self_scroll_component_html_is_self_contained() -> None:
 
     assert 'id="scroll-container"' in html
     assert "window.parent" not in html
-    assert "setInterval" in html
+    assert "requestAnimationFrame" in html
+    assert "PIXELS_PER_SECOND = 30.0000" in html
     assert "Reader body" in html
     assert 'data-scope="chords-song-1"' in html
 
