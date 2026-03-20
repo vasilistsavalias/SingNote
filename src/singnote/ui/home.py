@@ -7,6 +7,7 @@ from html import escape
 from typing import TypeVar
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from singnote.auth import resolve_app_access, validate_shared_login
 from singnote.bootstrap import Application
@@ -136,7 +137,7 @@ def _render_sidebar_settings(app: Application, songs: list[Song]) -> None:
             key="sidebar-seed-song",
         )
         st.caption(
-            "Reset replaces the current database version with the JSON seed."
+            "Reset replaces the current database version with the YAML seed."
         )
         confirm_reset = st.checkbox(
             "I understand this will discard in-app edits for this song.",
@@ -151,7 +152,7 @@ def _render_sidebar_settings(app: Application, songs: list[Song]) -> None:
             app.repository.reset_song_to_seed(app.seed_songs[reset_song_id])
             st.session_state["selected_song_id"] = reset_song_id
             st.success(
-                f"Reset {song_lookup[reset_song_id].title} from seed JSON."
+                f"Reset {song_lookup[reset_song_id].title} from seed YAML."
             )
             st.rerun()
 
@@ -349,14 +350,23 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
 
 def _render_lyrics_tab(song: Song) -> None:
     """Render the lyrics tab as a continuous chord chart."""
+    _render_auto_scroll_controls("lyrics")
     st.markdown(_lyrics_sheet_markup(song), unsafe_allow_html=True)
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
     """Render melody dictation as package-based grouped line cards."""
+    _render_auto_scroll_controls("melody")
     for section in song.lyric_sections:
+        section_segments = [
+            segment
+            for segment in section.segments
+            if _should_render_melody_segment(segment)
+        ]
+        if not section_segments:
+            continue
         st.markdown(f"### {section.title or section.id}")
-        for segment in section.segments:
+        for segment in section_segments:
             _render_melody_segment_card(
                 app,
                 song,
@@ -418,22 +428,6 @@ def _render_melody_segment_card(
             segment.melody_packages,
             key=lambda package: package.order,
         )
-        if not packages:
-            st.info("No melody packages yet.")
-            if st.button(
-                "Add first package",
-                key=f"melody-add-first-{song.id}-{segment.id}",
-                use_container_width=True,
-            ):
-                _insert_melody_package(
-                    song,
-                    segment_id=segment.id,
-                    anchor_package_id=None,
-                    position="after",
-                )
-                app.repository.upsert_song(song)
-                st.rerun()
-            return
 
         for package_chunk in _chunked(packages, 4):
             columns = st.columns(len(package_chunk))
@@ -589,12 +583,19 @@ def _lyrics_sheet_markup(song: Song) -> str:
     chord_map = _chords_by_segment(song.chord_events)
     sections_markup: list[str] = []
     for section in song.lyric_sections:
+        visible_segments = [
+            segment
+            for segment in section.segments
+            if not _is_instrumental_segment(segment)
+        ]
+        if not visible_segments:
+            continue
         section_lines = [
             _lyrics_sheet_line_markup(
                 segment.text,
                 chord_map.get(segment.id, []),
             )
-            for segment in section.segments
+            for segment in visible_segments
         ]
         sections_markup.append(
             "".join(
@@ -714,6 +715,82 @@ def _format_package_note_sequence(package: MelodyPackage) -> str:
     return " ".join(note.display_label for note in package.notes)
 
 
+def _render_auto_scroll_controls(scope_key: str) -> None:
+    """Render a lightweight page autoscroll control with speed presets."""
+    enable_key = f"{scope_key}-autoscroll-enabled"
+    speed_key = f"{scope_key}-autoscroll-speed"
+    left, right = st.columns([1.4, 1])
+    with left:
+        enabled = st.toggle(
+            "Auto-scroll",
+            key=enable_key,
+            help="Automatically move the page downward while you read.",
+        )
+    with right:
+        speed_label = st.select_slider(
+            "Speed",
+            options=["0.5x", "1x", "1.5x", "2x", "2.5x", "3x"],
+            value=st.session_state.get(speed_key, "1x"),
+            key=speed_key,
+        )
+    st.caption(
+        "Use auto-scroll while singing or reading through the chart. "
+        "You can stop it any time."
+    )
+    _render_autoscroll_script(
+        scope_key=scope_key,
+        enabled=enabled,
+        pixels_per_tick=_speed_to_pixels_per_tick(speed_label),
+    )
+
+
+def _render_autoscroll_script(
+    *, scope_key: str, enabled: bool, pixels_per_tick: int
+) -> None:
+    """Inject an iframe script that scrolls the parent page."""
+    active_flag = "true" if enabled else "false"
+    components.html(
+        f"""
+        <script>
+        const intervalKey = "snAutoscrollInterval_{scope_key}";
+        const activeFlag = {active_flag};
+        const step = {pixels_per_tick};
+        const targetWindow = window.parent;
+        if (targetWindow[intervalKey]) {{
+          targetWindow.clearInterval(targetWindow[intervalKey]);
+          targetWindow[intervalKey] = null;
+        }}
+        if (activeFlag) {{
+          targetWindow[intervalKey] = targetWindow.setInterval(() => {{
+            const doc = targetWindow.document.documentElement;
+            const maxScroll = doc.scrollHeight - targetWindow.innerHeight;
+            if (targetWindow.scrollY >= maxScroll) {{
+              targetWindow.clearInterval(targetWindow[intervalKey]);
+              targetWindow[intervalKey] = null;
+              return;
+            }}
+            targetWindow.scrollBy({{ top: step, left: 0, behavior: "auto" }});
+          }}, 80);
+        }}
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
+def _speed_to_pixels_per_tick(speed_label: str) -> int:
+    """Map the visible speed choice to a scroll step size."""
+    return {
+        "0.5x": 1,
+        "1x": 2,
+        "1.5x": 3,
+        "2x": 4,
+        "2.5x": 5,
+        "3x": 6,
+    }[speed_label]
+
+
 def _parse_note_sequence(notes_text: str) -> list[str]:
     """Split a note string into note tokens."""
     tokens = [
@@ -724,6 +801,18 @@ def _parse_note_sequence(notes_text: str) -> list[str]:
     if not tokens:
         raise ValueError("Enter at least one note.")
     return tokens
+
+
+def _is_instrumental_segment(segment: LyricSegment) -> bool:
+    """Return whether a lyric segment is only an instrumental placeholder."""
+    return segment.text.strip().lower() == "(instrumental)"
+
+
+def _should_render_melody_segment(segment: LyricSegment) -> bool:
+    """Skip instrumental and empty melody rows in the melody tab."""
+    return bool(segment.melody_packages) and not _is_instrumental_segment(
+        segment
+    )
 
 
 def _update_melody_package(

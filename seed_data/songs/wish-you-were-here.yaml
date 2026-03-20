@@ -301,23 +301,6 @@ sections:
         rhythm:
           pattern: cadential build
           emphasis: grow into the final question
-  - id: instrumental-1
-    title: Instrumental
-    lines:
-      - id: instrumental-1-1
-        lyrics: (instrumental)
-        chords: [Em7, G, Em7, G]
-        roman_numerals: [vi7, I, vi7, I]
-        rhythm:
-          pattern: steady 8ths
-          emphasis: let open strings ring
-      - id: instrumental-1-2
-        lyrics: (instrumental)
-        chords: [Em7, A7sus4, Em7, A7sus4, G]
-        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I]
-        rhythm:
-          pattern: steady 8ths
-          emphasis: lean into the sus push before G
   - id: verse-3
     title: Verse 3
     lines:
@@ -476,29 +459,6 @@ sections:
         rhythm:
           pattern: final tag
           emphasis: soft landing on the last line
-  - id: instrumental-2
-    title: Instrumental Outro
-    lines:
-      - id: instrumental-2-1
-        lyrics: (instrumental)
-        chords: [Em7, G, Em7, G]
-        roman_numerals: [vi7, I, vi7, I]
-        rhythm: steady 8ths
-      - id: instrumental-2-2
-        lyrics: (instrumental)
-        chords: [Em7, A7sus4, Em7, A7sus4, G, G]
-        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I, I]
-        rhythm: fade out
-      - id: instrumental-2-3
-        lyrics: (instrumental)
-        chords: [Em7, G, Em7, G]
-        roman_numerals: [vi7, I, vi7, I]
-        rhythm: steady 8ths
-      - id: instrumental-2-4
-        lyrics: (instrumental)
-        chords: [Em7, A7sus4, Em7, A7sus4, G, G]
-        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I, I]
-        rhythm: fade out
 annotations:
   - target_type: song
     target_id: wish-you-were-here

@@ -8,9 +8,12 @@ from singnote.ui.home import (
     _delete_melody_package,
     _format_package_note_sequence,
     _insert_melody_package,
+    _is_instrumental_segment,
     _lyrics_sheet_markup,
     _parse_note_sequence,
     _parse_note_token,
+    _should_render_melody_segment,
+    _speed_to_pixels_per_tick,
     _update_melody_package,
 )
 from tests.support import build_sample_song
@@ -127,3 +130,33 @@ def test_lyrics_sheet_markup_reads_like_one_chart() -> None:
     assert 'class="sn-sheet-section-title"' in markup
     assert 'class="sn-sheet-chords"' in markup
     assert 'class="sn-sheet-lyric"' in markup
+
+
+def test_lyrics_sheet_markup_skips_instrumental_placeholders() -> None:
+    """Instrumental placeholder lines should not appear in the lyrics chart."""
+    song = build_sample_song()
+    song.lyric_sections[0].segments[0].text = "(instrumental)"
+
+    markup = _lyrics_sheet_markup(song)
+
+    assert "(instrumental)" not in markup
+
+
+def test_should_render_melody_segment_skips_empty_instrumentals() -> None:
+    """Melody tab should skip placeholder rows without melody packages."""
+    segment = build_sample_song().lyric_sections[0].segments[0]
+    segment.text = "(instrumental)"
+    segment.melody_packages = []
+
+    assert _is_instrumental_segment(segment) is True
+    assert _should_render_melody_segment(segment) is False
+
+
+def test_speed_to_pixels_per_tick_covers_visible_presets() -> None:
+    """Auto-scroll speeds should map to stable scroll steps."""
+    assert _speed_to_pixels_per_tick("0.5x") == 1
+    assert _speed_to_pixels_per_tick("1x") == 2
+    assert _speed_to_pixels_per_tick("1.5x") == 3
+    assert _speed_to_pixels_per_tick("2x") == 4
+    assert _speed_to_pixels_per_tick("2.5x") == 5
+    assert _speed_to_pixels_per_tick("3x") == 6
