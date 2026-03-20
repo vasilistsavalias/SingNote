@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from html import escape
 from typing import Any
 
 import streamlit as st
@@ -258,19 +259,7 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
 
 def _render_lyrics_tab(song: Song) -> None:
     """Render lyric phrases with their chord guidance."""
-    chord_map = _chords_by_segment(song.chord_events)
-    for section in song.lyric_sections:
-        st.markdown(f"### {section.title or section.id}")
-        for segment in section.segments:
-            with st.container(border=True):
-                chords = chord_map.get(segment.id, [])
-                if chords:
-                    st.caption(
-                        "  |  ".join(
-                            _format_chord(event) for event in chords
-                        )
-                    )
-                st.write(segment.text)
+    st.markdown(_lyrics_sheet_markup(song), unsafe_allow_html=True)
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
@@ -352,7 +341,71 @@ def _song_summary(song: Song) -> str:
         parts.append(song.time_signature)
     if song.tempo_bpm:
         parts.append(f"{song.tempo_bpm} BPM")
-    return " · ".join(parts)
+    return " | ".join(parts)
+
+
+def _lyrics_sheet_markup(song: Song) -> str:
+    """Render the lyrics tab as one continuous chart sheet."""
+    chord_map = _chords_by_segment(song.chord_events)
+    sections_markup: list[str] = []
+    for section in song.lyric_sections:
+        section_lines = [
+            _lyrics_sheet_line_markup(
+                segment.text,
+                chord_map.get(segment.id, []),
+            )
+            for segment in section.segments
+        ]
+        sections_markup.append(
+            "".join(
+                [
+                    '<section class="sn-sheet-section">',
+                    (
+                        f'<div class="sn-sheet-section-title">'
+                        f"{escape(section.title or section.id)}"
+                        "</div>"
+                    ),
+                    "".join(section_lines),
+                    "</section>",
+                ]
+            )
+        )
+
+    return "".join(
+        [
+            '<div class="sn-song-sheet">',
+            "".join(sections_markup),
+            "</div>",
+        ]
+    )
+
+
+def _lyrics_sheet_line_markup(
+    lyric: str,
+    chords: list[ChordEvent],
+) -> str:
+    """Render one chart line with chords above the lyric text."""
+    chord_line = ""
+    if chords:
+        chord_line = "".join(
+            [
+                '<div class="sn-sheet-chords">',
+                "".join(
+                    f'<span class="sn-sheet-chord">'
+                    f"{escape(_format_chord(chord))}</span>"
+                    for chord in chords
+                ),
+                "</div>",
+            ]
+        )
+    return "".join(
+        [
+            '<div class="sn-sheet-line">',
+            chord_line,
+            f'<div class="sn-sheet-lyric">{escape(lyric)}</div>',
+            "</div>",
+        ]
+    )
 
 
 def _format_chord(event: ChordEvent) -> str:

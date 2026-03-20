@@ -187,11 +187,78 @@ def inject_global_styles() -> None:
           font-weight: 600;
         }
 
+        .sn-song-sheet {
+          border: 1px solid var(--sn-line);
+          border-radius: 28px;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(255, 251, 245, 0.98),
+              rgba(249, 241, 229, 0.94)
+            );
+          box-shadow: var(--sn-shadow);
+          padding: 1.25rem 1rem 1.35rem;
+        }
+
+        .sn-sheet-section + .sn-sheet-section {
+          margin-top: 1.4rem;
+          padding-top: 1.25rem;
+          border-top: 1px dashed rgba(46, 58, 78, 0.12);
+        }
+
+        .sn-sheet-section-title {
+          display: inline-block;
+          margin-bottom: 0.85rem;
+          padding: 0.25rem 0.55rem;
+          border-radius: 999px;
+          background: rgba(182, 100, 44, 0.12);
+          color: var(--sn-forest);
+          font-size: 0.73rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .sn-sheet-line + .sn-sheet-line {
+          margin-top: 0.95rem;
+        }
+
+        .sn-sheet-chords {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.45rem;
+          margin-bottom: 0.22rem;
+          color: var(--sn-accent);
+          font-family: "IBM Plex Sans", sans-serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          line-height: 1.35;
+        }
+
+        .sn-sheet-chord {
+          white-space: nowrap;
+        }
+
+        .sn-sheet-lyric {
+          color: var(--sn-ink);
+          font-family: "Fraunces", serif;
+          font-size: clamp(1.05rem, 2vw, 1.3rem);
+          line-height: 1.4;
+        }
+
         @media (max-width: 720px) {
           .block-container {
             padding-top: 1rem;
             padding-left: 0.8rem;
             padding-right: 0.8rem;
+          }
+
+          .sn-song-sheet {
+            padding: 1rem 0.85rem 1.1rem;
+          }
+
+          .sn-sheet-lyric {
+            font-size: 1.02rem;
           }
         }
         </style>

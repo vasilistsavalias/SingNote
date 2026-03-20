@@ -6,6 +6,7 @@ import pytest
 
 from singnote.ui.home import (
     _apply_melody_update,
+    _lyrics_sheet_markup,
     _melody_note_payload,
     _parse_note_token,
 )
@@ -73,3 +74,13 @@ def test_apply_melody_update_rejects_unknown_segment_ids() -> None:
                 "duration_beats": 1.0,
             },
         )
+
+
+def test_lyrics_sheet_markup_reads_like_one_chart() -> None:
+    """Lyrics tab markup should render as one coherent song sheet."""
+    markup = _lyrics_sheet_markup(build_sample_song())
+
+    assert 'class="sn-song-sheet"' in markup
+    assert 'class="sn-sheet-section-title"' in markup
+    assert 'class="sn-sheet-chords"' in markup
+    assert 'class="sn-sheet-lyric"' in markup
