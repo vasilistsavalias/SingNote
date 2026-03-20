@@ -5,9 +5,10 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
-    _apply_melody_update,
+    _apply_melody_line_update,
+    _format_melody_note_sequence,
     _lyrics_sheet_markup,
-    _melody_note_payload,
+    _parse_note_sequence,
     _parse_note_token,
 )
 from tests.support import build_sample_song
@@ -29,50 +30,53 @@ def test_parse_note_token_rejects_invalid_tokens() -> None:
         _parse_note_token("seg-1", "middle-c", 1.0)
 
 
-def test_melody_note_payload_includes_lyric_context() -> None:
-    """The long-press component should receive note labels and lyric text."""
-    payload = _melody_note_payload(build_sample_song())
+def test_format_melody_note_sequence_is_readable() -> None:
+    """Melody lines should render as one readable note string."""
+    melody_notes = build_sample_song().melody_notes
 
-    assert payload[0]["segment_id"] == "seg-1"
-    assert payload[0]["note_label"] == "E4"
-    assert payload[0]["lyric"] == "So"
+    assert _format_melody_note_sequence(melody_notes) == "E4 G4"
 
 
-def test_apply_melody_update_replaces_the_target_note() -> None:
-    """A long-press note edit should update the matching melody note."""
+def test_parse_note_sequence_accepts_commas_and_spaces() -> None:
+    """Line editing should accept either comma- or space-separated notes."""
+    notes = _parse_note_sequence("C, B G, A")
+
+    assert notes == ["C", "B", "G", "A"]
+
+
+def test_apply_melody_line_update_replaces_lyric_and_notes() -> None:
+    """A line edit should update both lyric text and melody notes."""
     song = build_sample_song()
 
-    _apply_melody_update(
+    _apply_melody_line_update(
         song,
-        {
-            "segment_id": "seg-2",
-            "order": 0,
-            "note_label": "A4",
-            "duration_beats": 1.5,
-        },
+        segment_id="seg-2",
+        lyric_text="youuu",
+        notes_text="A4 C5",
     )
 
-    updated_note = next(
+    updated_notes = [
         note for note in song.melody_notes if note.segment_id == "seg-2"
-    )
-    assert updated_note.note == "A"
-    assert updated_note.octave == 4
-    assert updated_note.duration_beats == 1.5
+    ]
+    assert len(updated_notes) == 2
+    assert updated_notes[0].note == "A"
+    assert updated_notes[0].octave == 4
+    assert updated_notes[0].duration_beats == 1.0
+    assert updated_notes[1].note == "C"
+    assert updated_notes[1].octave == 5
+    assert song.lyric_sections[0].segments[1].text == "youuu"
 
 
-def test_apply_melody_update_rejects_unknown_segment_ids() -> None:
-    """Inline note updates should fail for missing segment ids."""
+def test_apply_melody_line_update_rejects_unknown_segment_ids() -> None:
+    """Line updates should fail for missing segment ids."""
     song = build_sample_song()
 
     with pytest.raises(ValueError):
-        _apply_melody_update(
+        _apply_melody_line_update(
             song,
-            {
-                "segment_id": "missing",
-                "order": 0,
-                "note_label": "A4",
-                "duration_beats": 1.0,
-            },
+            segment_id="missing",
+            lyric_text="missing",
+            notes_text="A4",
         )
 
 

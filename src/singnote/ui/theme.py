@@ -246,6 +246,28 @@ def inject_global_styles() -> None:
           line-height: 1.4;
         }
 
+        .sn-melody-line {
+          padding: 0.35rem 0 0.2rem;
+        }
+
+        .sn-melody-notes {
+          color: #7b8494;
+          font-family: "IBM Plex Sans", sans-serif;
+          font-size: 0.95rem;
+          letter-spacing: 0.28em;
+          line-height: 1.9;
+          margin-bottom: 0.95rem;
+          text-transform: uppercase;
+        }
+
+        .sn-melody-lyric {
+          color: var(--sn-ink);
+          font-family: "Fraunces", serif;
+          font-size: clamp(1.25rem, 2.3vw, 1.7rem);
+          line-height: 1.6;
+          padding-bottom: 0.35rem;
+        }
+
         @media (max-width: 720px) {
           .block-container {
             padding-top: 1rem;
@@ -259,6 +281,16 @@ def inject_global_styles() -> None:
 
           .sn-sheet-lyric {
             font-size: 1.02rem;
+          }
+
+          .sn-melody-notes {
+            font-size: 0.84rem;
+            letter-spacing: 0.18em;
+            margin-bottom: 0.7rem;
+          }
+
+          .sn-melody-lyric {
+            font-size: 1.12rem;
           }
         }
         </style>
@@ -281,7 +313,7 @@ def render_hero(song_count: int) -> None:
           </p>
           <div class="sn-badge-row">
             <span class="sn-badge">{song_count} song card(s)</span>
-            <span class="sn-badge">Tap-to-edit melody notes</span>
+            <span class="sn-badge">Inline melody line editing</span>
             <span class="sn-badge">SQLite-backed local persistence</span>
           </div>
         </section>

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import re
 from html import escape
-from typing import Any
 
 import streamlit as st
 
@@ -13,6 +12,7 @@ from singnote.bootstrap import Application
 from singnote.domain.models import (
     ChordEvent,
     LyricSection,
+    LyricSegment,
     MelodyNote,
     RhythmCue,
     Song,
@@ -107,7 +107,11 @@ def _render_sidebar_settings(app: Application, songs: list[Song]) -> None:
     if selected_song_id not in song_lookup and songs:
         selected_song_id = songs[0].id
 
-    with st.sidebar.popover("⚙ Settings", use_container_width=True):
+    with st.sidebar.popover(
+        "Settings",
+        icon=":material/settings:",
+        use_container_width=True,
+    ):
         st.caption("Song tools")
         if not seed_song_ids:
             st.write("No resettable seed songs are available.")
@@ -223,8 +227,8 @@ def _render_authoring_panel(app: Application, songs: list[Song]) -> None:
                     height=120,
                     disabled=editor_target != "__new__",
                     help=(
-                        "For existing songs, edit melody notes below by long "
-                        "pressing the note chip."
+                        "For existing songs, edit melody lines below with the "
+                        "line edit control."
                     ),
                 ),
                 rhythm_text=st.text_area(
@@ -312,20 +316,18 @@ def _render_lyrics_tab(song: Song) -> None:
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
-    """Render melody dictation and native note editing."""
+    """Render melody dictation as spacious editable line cards."""
     melody_map = _melody_by_segment(song.melody_notes)
     for section in song.lyric_sections:
         st.markdown(f"### {section.title or section.id}")
         for segment in section.segments:
-            with st.container(border=True):
-                notes = melody_map.get(segment.id, [])
-                if notes:
-                    st.caption("  ".join(note.display_label for note in notes))
-                else:
-                    st.caption("No melody notes entered yet.")
-                st.write(segment.text)
-
-        _render_native_melody_editor(app, song, section)
+            _render_melody_line_card(
+                app,
+                song,
+                section,
+                segment,
+                melody_map.get(segment.id, []),
+            )
 
 
 def _render_rhythm_tab(song: Song) -> None:
@@ -368,94 +370,64 @@ def _render_rhythm_tab(song: Song) -> None:
             st.write(f"- {note.text}")
 
 
-def _render_native_melody_editor(
+def _render_melody_line_card(
     app: Application,
     song: Song,
     section: LyricSection,
+    segment: LyricSegment,
+    notes: list[MelodyNote],
 ) -> None:
-    """Render a Cloud-safe native editor for melody notes."""
-    notes = _melody_note_payload(song, section.id)
-    if not notes:
-        return
-
-    selected_note_key = f"melody-selected-{song.id}-{section.id}"
-    note_lookup = {
-        _note_ref(note["segment_id"], note["order"]): note for note in notes
-    }
-
-    st.caption("Tap a note to edit it.")
-    columns = st.columns(2)
-    for index, note in enumerate(notes):
-        label = f'{note["note_label"]} | {note["lyric"]}'
-        with columns[index % 2]:
-            if st.button(
-                label,
-                key=(
-                    f'melody-select-{song.id}-{section.id}-'
-                    f'{note["segment_id"]}-{note["order"]}'
+    """Render one melody line with inline edit controls."""
+    with st.container(border=True):
+        content_col, action_col = st.columns([12, 1])
+        with content_col:
+            st.markdown(
+                _melody_line_markup(
+                    segment.text,
+                    _format_melody_note_sequence(notes) or "No notes yet",
                 ),
+                unsafe_allow_html=True,
+            )
+        with action_col, st.popover(
+            "Edit",
+            icon=":material/edit:",
+            use_container_width=True,
+        ):
+            st.caption(section.title or section.id)
+            lyric_value = st.text_area(
+                "Lyrics",
+                value=segment.text,
+                height=100,
+                key=f"melody-lyrics-{song.id}-{segment.id}",
+            )
+            notes_value = st.text_area(
+                "Notes",
+                value=_format_melody_note_sequence(notes),
+                height=120,
+                help=(
+                    "Use notes like C, Bb, or F#4 separated by commas "
+                    "or spaces."
+                ),
+                key=f"melody-notes-{song.id}-{segment.id}",
+            )
+            if st.button(
+                "Save line",
+                key=f"melody-save-{song.id}-{segment.id}",
                 use_container_width=True,
             ):
-                st.session_state[selected_note_key] = _note_ref(
-                    note["segment_id"],
-                    note["order"],
-                )
-                st.rerun()
-
-    selected_note_ref = st.session_state.get(selected_note_key)
-    if selected_note_ref not in note_lookup:
-        return
-
-    selected_note = note_lookup[selected_note_ref]
-    with st.form(f"melody-edit-form-{song.id}-{section.id}"):
-        st.markdown(
-            f'**Editing:** {selected_note["lyric"]} '
-            f'({selected_note["note_label"]})'
-        )
-        note_label = st.text_input(
-            "Note",
-            value=str(selected_note["note_label"]),
-        )
-        duration_beats = st.number_input(
-            "Duration (beats)",
-            min_value=0.25,
-            step=0.25,
-            value=float(str(selected_note["duration_beats"])),
-        )
-        save_col, cancel_col = st.columns(2)
-        save_clicked = save_col.form_submit_button(
-            "Save note",
-            use_container_width=True,
-        )
-        cancel_clicked = cancel_col.form_submit_button(
-            "Cancel",
-            use_container_width=True,
-        )
-
-    if cancel_clicked:
-        st.session_state.pop(selected_note_key, None)
-        st.rerun()
-    if not save_clicked:
-        return
-
-    try:
-        _apply_melody_update(
-            song,
-            {
-                "segment_id": selected_note["segment_id"],
-                "order": selected_note["order"],
-                "note_label": note_label,
-                "duration_beats": duration_beats,
-            },
-        )
-        app.repository.upsert_song(song)
-    except ValueError as error:
-        st.error(str(error))
-        return
-
-    st.session_state.pop(selected_note_key, None)
-    st.success("Updated melody note.")
-    st.rerun()
+                try:
+                    _apply_melody_line_update(
+                        song,
+                        segment_id=segment.id,
+                        lyric_text=lyric_value,
+                        notes_text=notes_value,
+                    )
+                    app.repository.upsert_song(song)
+                except ValueError as error:
+                    st.error(str(error))
+                else:
+                    st.success("Updated melody line.")
+                    st.rerun()
 
 
 def _song_summary(song: Song) -> str:
@@ -534,11 +506,6 @@ def _lyrics_sheet_line_markup(
     )
 
 
-def _note_ref(segment_id: object, order: object) -> str:
-    """Return a stable session key for one melody note."""
-    return f"{segment_id}:{order}"
-
-
 def _format_chord(event: ChordEvent) -> str:
     """Format a chord label with optional roman numeral guidance."""
     return (
@@ -582,63 +549,99 @@ def _rhythm_by_segment(
     return grouped
 
 
-def _melody_note_payload(
-    song: Song,
-    section_id: str | None = None,
-) -> list[dict[str, object]]:
-    """Serialize melody notes into component-friendly payloads."""
-    lyric_lookup = {}
-    segment_to_section = {}
-    for section in song.lyric_sections:
-        for segment in section.segments:
-            lyric_lookup[segment.id] = segment.text
-            segment_to_section[segment.id] = section.id
-
-    payload = []
-    for note in song.melody_notes:
-        if section_id and segment_to_section.get(note.segment_id) != section_id:
-            continue
-        payload.append(
-            {
-                "segment_id": note.segment_id,
-                "order": note.order,
-                "note_label": note.display_label,
-                "duration_beats": note.duration_beats,
-                "lyric": lyric_lookup.get(note.segment_id, note.segment_id),
-            }
-        )
-    return payload
-
-
-def _apply_melody_update(song: Song, update: dict[str, Any]) -> None:
-    """Apply a component note update to a song and validate it."""
-    segment_id = str(update["segment_id"])
-    note_order = int(update["order"])
-    note_token = str(update["note_label"]).strip()
-    duration_beats = float(update["duration_beats"])
-    replacement = _parse_note_token(
-        segment_id,
-        note_token,
-        duration_beats,
-        note_order,
+def _melody_line_markup(lyric: str, notes_text: str) -> str:
+    """Render one melody line with generous spacing and hierarchy."""
+    return "".join(
+        [
+            '<div class="sn-melody-line">',
+            f'<div class="sn-melody-notes">{escape(notes_text)}</div>',
+            f'<div class="sn-melody-lyric">{escape(lyric)}</div>',
+            "</div>",
+        ]
     )
 
-    new_notes = []
-    replaced = False
-    for note in song.melody_notes:
-        if note.segment_id == segment_id and note.order == note_order:
-            new_notes.append(replacement)
-            replaced = True
-        else:
-            new_notes.append(note)
 
-    if not replaced:
+def _format_melody_note_sequence(notes: list[MelodyNote]) -> str:
+    """Render melody notes as a readable space-separated string."""
+    return " ".join(note.display_label for note in notes)
+
+
+def _parse_note_sequence(notes_text: str) -> list[str]:
+    """Split a note string into note tokens."""
+    tokens = [
+        token.strip()
+        for token in re.split(r"[\s,]+", notes_text)
+        if token.strip()
+    ]
+    if not tokens:
+        raise ValueError("Enter at least one note.")
+    return tokens
+
+
+def _apply_melody_line_update(
+    song: Song,
+    *,
+    segment_id: str,
+    lyric_text: str,
+    notes_text: str,
+) -> None:
+    """Update one lyric line and its melody note sequence."""
+    lyric_value = lyric_text.strip()
+    if not lyric_value:
+        raise ValueError("Lyrics cannot be empty.")
+
+    replacement_tokens = _parse_note_sequence(notes_text)
+    existing_notes = sorted(
+        [note for note in song.melody_notes if note.segment_id == segment_id],
+        key=lambda note: note.order,
+    )
+    if not existing_notes:
+        existing_notes = [
+            MelodyNote(
+                segment_id=segment_id,
+                note="C",
+                octave=None,
+                duration_beats=1.0,
+                order=0,
+            )
+        ]
+
+    replaced_segment = False
+    for section in song.lyric_sections:
+        for segment in section.segments:
+            if segment.id == segment_id:
+                segment.text = lyric_value
+                replaced_segment = True
+                break
+        if replaced_segment:
+            break
+
+    if not replaced_segment:
         raise ValueError(
-            "Selected note could not be matched to a song segment."
+            "Selected melody line could not be matched to a lyric segment."
         )
 
-    song.melody_notes = new_notes
+    duration_template = [note.duration_beats for note in existing_notes]
+    new_segment_notes = [
+        _parse_note_token(
+            segment_id,
+            token,
+            _duration_for_index(duration_template, index),
+            index,
+        )
+        for index, token in enumerate(replacement_tokens)
+    ]
+    song.melody_notes = [
+        note for note in song.melody_notes if note.segment_id != segment_id
+    ] + new_segment_notes
     Song.model_validate(song.model_dump())
+
+
+def _duration_for_index(duration_template: list[float], index: int) -> float:
+    """Preserve existing durations when possible, else default to one beat."""
+    if index < len(duration_template):
+        return duration_template[index]
+    return 1.0
 
 
 def _parse_note_token(
