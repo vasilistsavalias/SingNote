@@ -221,8 +221,10 @@ def test_should_render_melody_segment_skips_empty_instrumentals() -> None:
 
 def test_speed_to_pixels_per_second_covers_visible_presets() -> None:
     """Reader speeds should map to stable pixels-per-second values."""
+    assert _speed_to_pixels_per_second("0.1x") == 3
     assert _speed_to_pixels_per_second("0.5x") == 15
     assert _speed_to_pixels_per_second("1x") == 30
+    assert _speed_to_pixels_per_second("1.1x") == 33
     assert _speed_to_pixels_per_second("1.5x") == 45
     assert _speed_to_pixels_per_second("2x") == 60
     assert _speed_to_pixels_per_second("2.5x") == 75

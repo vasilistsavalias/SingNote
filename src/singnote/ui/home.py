@@ -35,12 +35,8 @@ T = TypeVar("T")
 STATIC_DIR = Path(__file__).resolve().parents[3] / "static"
 PAGE_ICON = STATIC_DIR / "favicon-32x32.png"
 SPEED_PPS = {
-    "0.5x": 15,
-    "1x": 30,
-    "1.5x": 45,
-    "2x": 60,
-    "2.5x": 75,
-    "3x": 90,
+    f"{step / 10:g}x": step * 3
+    for step in range(1, 31)
 }
 
 
@@ -807,7 +803,7 @@ def _render_auto_scroll_controls(
     with right:
         speed_label = st.select_slider(
             "Speed",
-            options=["0.5x", "1x", "1.5x", "2x", "2.5x", "3x"],
+            options=list(SPEED_PPS.keys()),
             value=st.session_state.get(speed_key, "1x"),
             key=speed_key,
         )
