@@ -118,6 +118,52 @@ def inject_global_styles() -> None:
           background: rgba(255, 251, 245, 0.92);
         }
 
+        .stTextInput > div[data-baseweb="input"] {
+          border: 1px solid rgba(46, 58, 78, 0.10);
+          border-radius: 18px;
+          background: rgba(255, 251, 245, 0.96);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+          overflow: hidden;
+        }
+
+        .stTextInput > div[data-baseweb="input"]:focus-within {
+          border-color: rgba(182, 100, 44, 0.45);
+          box-shadow:
+            0 0 0 3px rgba(182, 100, 44, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .stTextInput > div[data-baseweb="input"] input {
+          background: transparent;
+          box-shadow: none;
+        }
+
+        .stTextInput > div[data-baseweb="input"] button {
+          min-height: 2.3rem;
+          min-width: 2.3rem;
+          margin-right: 0.35rem;
+          border: 0;
+          border-radius: 999px;
+          background: rgba(31, 41, 55, 0.10);
+          color: var(--sn-ink);
+          box-shadow: none;
+          transition:
+            background-color 120ms ease,
+            color 120ms ease,
+            transform 120ms ease;
+        }
+
+        .stTextInput > div[data-baseweb="input"] button:hover {
+          background: rgba(31, 41, 55, 0.16);
+          color: var(--sn-ink);
+          transform: scale(1.02);
+        }
+
+        .stTextInput > div[data-baseweb="input"] button:focus-visible {
+          outline: 2px solid rgba(182, 100, 44, 0.45);
+          outline-offset: 2px;
+        }
+
         .stTabs [data-baseweb="tab-list"] {
           gap: 0.35rem;
           padding: 0.35rem;
