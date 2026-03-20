@@ -38,9 +38,8 @@ def render_home_page(app: Application) -> None:
     if not _render_access_gate(app):
         return
 
-    _render_sidebar_status()
-
     songs = app.repository.list_songs()
+    _render_sidebar_status(app, songs)
     render_hero(len(songs))
     _render_authoring_panel(app, songs)
 
@@ -88,13 +87,63 @@ def _render_access_gate(app: Application) -> bool:
     return False
 
 
-def _render_sidebar_status() -> None:
+def _render_sidebar_status(app: Application, songs: list[Song]) -> None:
     """Render shared-session status in the sidebar."""
     st.sidebar.header("Session")
     if st.sidebar.button("Log out"):
         st.session_state["app_authenticated"] = False
         st.rerun()
     st.sidebar.success("Logged in with the shared teaching account.")
+    _render_sidebar_settings(app, songs)
+
+
+def _render_sidebar_settings(app: Application, songs: list[Song]) -> None:
+    """Render song-level tools under a compact sidebar settings control."""
+    song_lookup = {song.id: song for song in songs}
+    seed_song_ids = [
+        song_id for song_id in song_lookup if song_id in app.seed_songs
+    ]
+    selected_song_id = st.session_state.get("selected_song_id")
+    if selected_song_id not in song_lookup and songs:
+        selected_song_id = songs[0].id
+
+    with st.sidebar.popover("⚙ Settings", use_container_width=True):
+        st.caption("Song tools")
+        if not seed_song_ids:
+            st.write("No resettable seed songs are available.")
+            return
+
+        default_index = (
+            seed_song_ids.index(selected_song_id)
+            if selected_song_id in seed_song_ids
+            else 0
+        )
+        reset_song_id = st.selectbox(
+            "Seed song",
+            options=seed_song_ids,
+            index=default_index,
+            format_func=lambda value: song_lookup[value].title,
+            key="sidebar-seed-song",
+        )
+        st.caption(
+            "Reset replaces the current database version with the JSON seed."
+        )
+        confirm_reset = st.checkbox(
+            "I understand this will discard in-app edits for this song.",
+            key="sidebar-reset-confirm",
+        )
+        if st.button(
+            "Reset from seed",
+            key="sidebar-reset-seed",
+            use_container_width=True,
+            disabled=not confirm_reset,
+        ):
+            app.repository.reset_song_to_seed(app.seed_songs[reset_song_id])
+            st.session_state["selected_song_id"] = reset_song_id
+            st.success(
+                f"Reset {song_lookup[reset_song_id].title} from seed JSON."
+            )
+            st.rerun()
 
 
 def _render_authoring_panel(app: Application, songs: list[Song]) -> None:

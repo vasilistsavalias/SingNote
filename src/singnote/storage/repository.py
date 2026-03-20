@@ -87,6 +87,26 @@ class SQLiteSongRepository:
             session.commit()
         return inserted
 
+    def reset_song_to_seed(self, song: Song) -> Song:
+        """Replace any existing row with the current seed-managed payload."""
+        record = self._to_record(
+            song,
+            is_seed_managed=True,
+            seed_signature=_song_signature(song),
+        )
+        with Session(self._engine) as session:
+            existing = session.get(SongRecord, song.id)
+            if existing is None:
+                record.created_at = _utc_now()
+            else:
+                record.created_at = existing.created_at
+                session.delete(existing)
+                session.flush()
+            record.updated_at = _utc_now()
+            session.add(record)
+            session.commit()
+        return song
+
     @staticmethod
     def _to_record(
         song: Song,

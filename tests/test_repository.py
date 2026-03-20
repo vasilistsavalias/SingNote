@@ -100,3 +100,28 @@ def test_repository_does_not_overwrite_manual_song_edits(
     assert inserted == 0
     assert loaded_song is not None
     assert loaded_song.title == "Teacher Version"
+
+
+def test_repository_can_reset_manual_song_back_to_seed(
+    tmp_path: Path,
+) -> None:
+    """Explicit reset should restore the latest seed-managed payload."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(engine)
+
+    original_seed = build_sample_song()
+    repository.seed_songs([original_seed])
+
+    manual_edit = build_sample_song()
+    manual_edit.title = "Teacher Version"
+    repository.upsert_song(manual_edit)
+
+    refreshed_seed = build_sample_song()
+    refreshed_seed.description = "Reset from JSON seed."
+    repository.reset_song_to_seed(refreshed_seed)
+    loaded_song = repository.get_song(refreshed_seed.id)
+
+    assert loaded_song is not None
+    assert loaded_song.title == "Wish You Were Here"
+    assert loaded_song.description == "Reset from JSON seed."

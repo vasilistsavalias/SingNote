@@ -55,6 +55,8 @@ python -m streamlit run streamlit_app.py
   row automatically
 - if you manually edit a seeded song inside the app, that row becomes
   user-managed and will not be overwritten by later seed refreshes
+- use the sidebar `⚙ Settings` control to explicitly reset a song from its
+  seed JSON if you want to discard in-app edits and resync it
 
 ## Streamlit Community Cloud
 
