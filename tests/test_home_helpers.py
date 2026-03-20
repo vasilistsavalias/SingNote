@@ -7,6 +7,7 @@ import pytest
 from singnote.ui.home import (
     _autoscroll_script,
     _delete_melody_package,
+    _favicon_head_script,
     _format_package_note_sequence,
     _insert_melody_package,
     _is_instrumental_segment,
@@ -186,3 +187,13 @@ def test_autoscroll_script_respects_disabled_state() -> None:
 
     assert "if (!activeFlag)" in script
     assert "cancelLoop();" in script
+
+
+def test_favicon_head_script_points_to_static_assets() -> None:
+    """Favicon head injection should reference the static favicon pack."""
+    script = _favicon_head_script()
+
+    assert "/app/static/apple-touch-icon.png" in script
+    assert "/app/static/favicon-32x32.png" in script
+    assert "/app/static/favicon-16x16.png" in script
+    assert "/app/static/site.webmanifest" in script

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from html import escape
+from pathlib import Path
 from typing import TypeVar
 
 import streamlit as st
@@ -31,17 +32,20 @@ from singnote.ui.authoring import (
 from singnote.ui.theme import inject_global_styles
 
 T = TypeVar("T")
+STATIC_DIR = Path(__file__).resolve().parents[3] / "static"
+PAGE_ICON = STATIC_DIR / "favicon-32x32.png"
 
 
 def render_home_page(app: Application) -> None:
     """Render the initial landing page for the application."""
     st.set_page_config(
         page_title=app.settings.app_name,
-        page_icon=":musical_note:",
+        page_icon=str(PAGE_ICON) if PAGE_ICON.exists() else ":musical_note:",
         layout="wide",
         initial_sidebar_state="collapsed",
     )
     inject_global_styles()
+    _inject_favicon_head_links()
     if not _render_access_gate(app):
         return
 
@@ -739,6 +743,15 @@ def _render_auto_scroll_controls(scope_key: str) -> None:
     )
 
 
+def _inject_favicon_head_links() -> None:
+    """Attach favicon and manifest links to the parent document head."""
+    components.html(
+        _favicon_head_script(),
+        height=0,
+        width=0,
+    )
+
+
 def _render_autoscroll_script(
     *, scope_key: str, enabled: bool, pixels_per_tick: int
 ) -> None:
@@ -826,6 +839,62 @@ def _autoscroll_script(
 
     targetWindow[stateKey] = {{ frameId: null }};
     targetWindow[stateKey].frameId = targetWindow.requestAnimationFrame(tick);
+    </script>
+    """
+
+
+def _favicon_head_script() -> str:
+    """Return the head-link injection script for favicon assets."""
+    return """
+    <script>
+    const targetWindow = window.parent;
+    const doc = targetWindow.document;
+    const head = doc.head;
+    if (!head) {
+      return;
+    }
+
+    const links = [
+      {
+        rel: "apple-touch-icon",
+        href: "/app/static/apple-touch-icon.png",
+        sizes: "180x180"
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        href: "/app/static/favicon-32x32.png",
+        sizes: "32x32"
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        href: "/app/static/favicon-16x16.png",
+        sizes: "16x16"
+      },
+      {
+        rel: "manifest",
+        href: "/app/static/site.webmanifest"
+      }
+    ];
+
+    for (const spec of links) {
+      const marker = `sn-${spec.rel}-${spec.href}`;
+      let link = head.querySelector(`link[data-singnote="${marker}"]`);
+      if (!link) {
+        link = doc.createElement("link");
+        link.setAttribute("data-singnote", marker);
+        head.appendChild(link);
+      }
+      link.rel = spec.rel;
+      link.href = spec.href;
+      if (spec.type) {
+        link.type = spec.type;
+      }
+      if (spec.sizes) {
+        link.sizes = spec.sizes;
+      }
+    }
     </script>
     """
 
