@@ -18,7 +18,6 @@ from singnote.domain.models import (
     LyricSegment,
     MelodyNote,
     MelodyPackage,
-    RhythmCue,
     Song,
 )
 from singnote.ui.authoring import (
@@ -286,16 +285,16 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
     if song.key_signature or song.time_signature or song.tempo_bpm:
         st.caption(_song_summary(song))
 
-    chords_tab, melody_tab, rhythm_tab = st.tabs(
-        ["Chords", "Melody", "Rhythm"]
+    chords_tab, melody_tab, general_tab = st.tabs(
+        ["Chords", "Melody", "General"]
     )
 
     with chords_tab:
         _render_chords_tab(song)
     with melody_tab:
         _render_melody_tab(app, song)
-    with rhythm_tab:
-        _render_rhythm_tab(song)
+    with general_tab:
+        _render_general_tab(song)
 
 
 def _render_chords_tab(song: Song) -> None:
@@ -351,8 +350,8 @@ def _render_melody_tab(app: Application, song: Song) -> None:
             )
 
 
-def _render_rhythm_tab(song: Song) -> None:
-    """Render rhythm and theory guidance for the song."""
+def _render_general_tab(song: Song) -> None:
+    """Render compact song theory and groove guidance."""
     stat_columns = st.columns(3)
     with stat_columns[0]:
         st.metric("Key", song.key_signature or "Unknown")
@@ -362,33 +361,24 @@ def _render_rhythm_tab(song: Song) -> None:
         tempo_label = f"{song.tempo_bpm} BPM" if song.tempo_bpm else "Unknown"
         st.metric("Tempo", tempo_label)
 
-    if song.strumming_pattern:
+    left, right = st.columns(2)
+    with left, st.container(border=True):
+        st.markdown("### Chord Quality")
+        st.caption(_chord_quality_caption(song.key_signature))
+        chord_quality_rows = _diatonic_chord_quality_rows(song.key_signature)
+        if chord_quality_rows:
+            for row in chord_quality_rows:
+                st.write(row)
+        else:
+            st.write("No chord-quality guide is available for this key yet.")
+    with right, st.container(border=True):
         st.markdown("### Strumming Pattern")
-        st.code(song.strumming_pattern)
-    if song.tempo_notes:
-        st.info(song.tempo_notes)
-
-    st.markdown("### Rhythm Cues")
-    rhythm_map = _rhythm_by_segment(song.rhythm_cues)
-    for section in song.lyric_sections:
-        st.markdown(f"#### {section.title or section.id}")
-        for segment in section.segments:
-            cues = rhythm_map.get(segment.id, [])
-            if not cues:
-                continue
-            for cue in cues:
-                emphasis = f" ({cue.emphasis})" if cue.emphasis else ""
-                st.write(f"{segment.text}: {cue.pattern}{emphasis}")
-
-    song_notes = [
-        annotation
-        for annotation in song.teacher_annotations
-        if annotation.target_type == "song"
-    ]
-    if song_notes:
-        st.markdown("### Guidance Notes")
-        for note in song_notes:
-            st.write(f"- {note.text}")
+        if song.strumming_pattern:
+            st.code(song.strumming_pattern)
+        else:
+            st.write("No strumming pattern saved yet.")
+        if song.tempo_notes:
+            st.caption(song.tempo_notes)
 
 
 def _render_melody_segment_row(
@@ -652,12 +642,8 @@ def _lyrics_sheet_line_markup(
 
 
 def _format_chord(event: ChordEvent) -> str:
-    """Format a chord label with optional roman numeral guidance."""
-    return (
-        f"{event.chord} [{event.roman_numeral}]"
-        if event.roman_numeral
-        else event.chord
-    )
+    """Format a clean chord label for the visible chart."""
+    return event.chord
 
 
 def _chords_by_segment(
@@ -684,14 +670,73 @@ def _melody_by_segment(
     return grouped
 
 
-def _rhythm_by_segment(
-    rhythm_cues: list[RhythmCue],
-) -> dict[str, list[RhythmCue]]:
-    """Group rhythm cues by lyric segment."""
-    grouped: dict[str, list[RhythmCue]] = {}
-    for cue in rhythm_cues:
-        grouped.setdefault(cue.segment_id, []).append(cue)
-    return grouped
+def _chord_quality_caption(key_signature: str | None) -> str:
+    """Describe the theory panel for the current key."""
+    if not key_signature:
+        return "Diatonic harmony guide"
+    return f"Diatonic harmony for {key_signature}"
+
+
+def _diatonic_chord_quality_rows(key_signature: str | None) -> list[str]:
+    """Return readable major-key chord quality rows for the general panel."""
+    tonic = _parse_major_key_tonic(key_signature)
+    if tonic is None:
+        return []
+    scale = _major_scale_for_tonic(tonic)
+    if not scale:
+        return []
+    qualities = [
+        ("I", "major"),
+        ("ii", "minor"),
+        ("iii", "minor"),
+        ("IV", "major"),
+        ("V", "major"),
+        ("vi", "minor"),
+        ("vii°", "diminished"),
+    ]
+    return [
+        f"{degree}  {note} {quality}"
+        for (degree, quality), note in zip(qualities, scale, strict=True)
+    ]
+
+
+def _parse_major_key_tonic(key_signature: str | None) -> str | None:
+    """Extract the tonic from a simple major key signature string."""
+    if not key_signature:
+        return None
+    match = re.match(r"^\s*([A-Ga-g])([#b]?)(?:\s+major)?\s*$", key_signature)
+    if not match:
+        return None
+    tonic = f"{match.group(1).upper()}{match.group(2)}"
+    return tonic
+
+
+def _major_scale_for_tonic(tonic: str) -> list[str]:
+    """Build a major scale using sharp or flat spellings based on the tonic."""
+    sharp_scale_map = {
+        "C": ["C", "D", "E", "F", "G", "A", "B"],
+        "G": ["G", "A", "B", "C", "D", "E", "F#"],
+        "D": ["D", "E", "F#", "G", "A", "B", "C#"],
+        "A": ["A", "B", "C#", "D", "E", "F#", "G#"],
+        "E": ["E", "F#", "G#", "A", "B", "C#", "D#"],
+        "B": ["B", "C#", "D#", "E", "F#", "G#", "A#"],
+        "F#": ["F#", "G#", "A#", "B", "C#", "D#", "E#"],
+        "C#": ["C#", "D#", "E#", "F#", "G#", "A#", "B#"],
+    }
+    flat_scale_map = {
+        "F": ["F", "G", "A", "Bb", "C", "D", "E"],
+        "Bb": ["Bb", "C", "D", "Eb", "F", "G", "A"],
+        "Eb": ["Eb", "F", "G", "Ab", "Bb", "C", "D"],
+        "Ab": ["Ab", "Bb", "C", "Db", "Eb", "F", "G"],
+        "Db": ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"],
+        "Gb": ["Gb", "Ab", "Bb", "Cb", "Db", "Eb", "F"],
+        "Cb": ["Cb", "Db", "Eb", "Fb", "Gb", "Ab", "Bb"],
+    }
+    if tonic in sharp_scale_map:
+        return sharp_scale_map[tonic]
+    if tonic in flat_scale_map:
+        return flat_scale_map[tonic]
+    return []
 
 
 def _melody_package_markup(package: MelodyPackage) -> str:

@@ -5,8 +5,11 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
+    _chord_quality_caption,
     _delete_melody_package,
+    _diatonic_chord_quality_rows,
     _favicon_head_script,
+    _format_chord,
     _format_package_note_sequence,
     _format_segment_melody_text,
     _insert_melody_package,
@@ -176,6 +179,34 @@ def test_lyrics_sheet_markup_keeps_lyric_text_visible() -> None:
 
     assert "So you think" in markup
     assert 'class="sn-sheet-lyric"' in markup
+
+
+def test_format_chord_ignores_roman_numerals_in_visible_chart() -> None:
+    """Chord labels should stay clean even if theory metadata exists."""
+    event = build_sample_song().chord_events[0]
+    event.roman_numeral = "IV"
+
+    assert _format_chord(event) == "C"
+
+
+def test_diatonic_chord_quality_rows_expand_major_key_cleanly() -> None:
+    """General tab should show readable diatonic chord qualities."""
+    rows = _diatonic_chord_quality_rows("G major")
+
+    assert rows == [
+        "I  G major",
+        "ii  A minor",
+        "iii  B minor",
+        "IV  C major",
+        "V  D major",
+        "vi  E minor",
+        "vii°  F# diminished",
+    ]
+
+
+def test_chord_quality_caption_mentions_song_key() -> None:
+    """General tab should label the theory box with the actual key."""
+    assert _chord_quality_caption("G major") == "Diatonic harmony for G major"
 
 
 def test_melody_sheet_line_markup_renders_inline_packages() -> None:
