@@ -6,6 +6,9 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
+TEST_USERNAME = "shared-teacher"
+TEST_PASSWORD = "change-me-before-deploy"
+
 
 def test_app_login_and_seeded_song_workspace(
     monkeypatch,
@@ -14,10 +17,10 @@ def test_app_login_and_seeded_song_workspace(
     """The shared login should unlock the seeded song workspace."""
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("SINGNOTE_DATA_DIR", str(tmp_path / "runtime"))
-    monkeypatch.setenv("SINGNOTE_SHARED_USERNAME", "shared-teacher")
+    monkeypatch.setenv("SINGNOTE_SHARED_USERNAME", TEST_USERNAME)
     monkeypatch.setenv(
         "SINGNOTE_SHARED_PASSWORD",
-        "change-me-before-deploy",
+        TEST_PASSWORD,
     )
 
     app_path = Path(__file__).resolve().parents[1] / "streamlit_app.py"
@@ -30,8 +33,8 @@ def test_app_login_and_seeded_song_workspace(
         "Password",
     ]
 
-    app.text_input[0].input("shared-teacher")
-    app.text_input[1].input("change-me-before-deploy")
+    app.text_input[0].input(TEST_USERNAME)
+    app.text_input[1].input(TEST_PASSWORD)
     app.button[0].click()
     app.run()
 
