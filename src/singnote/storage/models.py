@@ -48,5 +48,7 @@ class SongRecord(SQLModel, table=True):
         default_factory=list,
         sa_column=Column(JSON, nullable=False),
     )
+    is_seed_managed: bool = Field(default=False, nullable=False)
+    seed_signature: str | None = None
     created_at: datetime = Field(default_factory=utc_now, nullable=False)
     updated_at: datetime = Field(default_factory=utc_now, nullable=False)

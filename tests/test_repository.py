@@ -48,7 +48,7 @@ def test_repository_can_update_existing_song(tmp_path: Path) -> None:
 
 
 def test_repository_seeds_only_missing_songs(tmp_path: Path) -> None:
-    """Seed behavior should be idempotent for existing song ids."""
+    """Seeding the same managed payload twice should be idempotent."""
     database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
     engine = create_engine_and_init(database_url)
     repository = SQLiteSongRepository(engine)
@@ -59,3 +59,44 @@ def test_repository_seeds_only_missing_songs(tmp_path: Path) -> None:
     assert inserted_first == 1
     assert inserted_second == 0
     assert len(repository.list_songs()) == 1
+
+
+def test_repository_refreshes_changed_seed_song(tmp_path: Path) -> None:
+    """Managed seed rows should refresh when the JSON payload changes."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(engine)
+
+    repository.seed_songs([build_sample_song()])
+    updated_seed = build_sample_song()
+    updated_seed.description = "Refreshed from seed json."
+
+    inserted = repository.seed_songs([updated_seed])
+    loaded_song = repository.get_song(updated_seed.id)
+
+    assert inserted == 1
+    assert loaded_song is not None
+    assert loaded_song.description == "Refreshed from seed json."
+
+
+def test_repository_does_not_overwrite_manual_song_edits(
+    tmp_path: Path,
+) -> None:
+    """Manual edits should opt a song out of automatic seed refreshes."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(engine)
+
+    repository.seed_songs([build_sample_song()])
+    manual_edit = build_sample_song()
+    manual_edit.title = "Teacher Version"
+    repository.upsert_song(manual_edit)
+
+    refreshed_seed = build_sample_song()
+    refreshed_seed.description = "Seed changed on disk."
+    inserted = repository.seed_songs([refreshed_seed])
+    loaded_song = repository.get_song(refreshed_seed.id)
+
+    assert inserted == 0
+    assert loaded_song is not None
+    assert loaded_song.title == "Teacher Version"

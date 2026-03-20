@@ -1,1508 +1,274 @@
 {
-  "id": "wish-you-were-here",
-  "title": "Wish You Were Here",
-  "artist": "Pink Floyd",
-  "description": "Sourced harmony and rhythm guide in G major with manual melody dictation for lesson use.",
-  "key_signature": "G major",
-  "time_signature": "4/4",
-  "tempo_bpm": 61,
-  "tempo_notes": "Many practice references feel the song around 61 BPM, while some tempo analyzers list it near 122 BPM in double-time.",
-  "strumming_pattern": "Feel the song in even 8ths. Common lesson pattern per bar pair: D D U | D D U U, with the intro kept lighter and more ringing.",
-  "lyric_sections": [
-    {
-      "id": "intro",
-      "title": "Intro",
-      "order": 0,
-      "segments": [
-        {
-          "id": "intro-1",
-          "text": "Instrumental intro figure 1",
-          "order": 0
-        },
-        {
-          "id": "intro-2",
-          "text": "Instrumental intro figure 2",
-          "order": 1
-        }
-      ]
-    },
+  "schema_version": 1,
+  "song": {
+    "id": "wish-you-were-here",
+    "title": "Wish You Were Here",
+    "artist": "Pink Floyd",
+    "description": "Sourced harmony and rhythm guide in G major with manual melody dictation for lesson use.",
+    "key_signature": "G major",
+    "time_signature": "4/4",
+    "tempo_bpm": 61,
+    "tempo_notes": "Many practice references feel the song around 61 BPM, while some tempo analyzers list it near 122 BPM in double-time.",
+    "strumming_pattern": "Feel the song in even 8ths. Common lesson pattern per bar pair: D D U | D D U U, with the intro kept lighter and more ringing."
+  },
+  "sections": [
     {
       "id": "verse-1",
       "title": "Verse 1",
-      "order": 1,
-      "segments": [
+      "lines": [
         {
-          "id": "verse-1-1",
-          "text": "So so you think",
-          "order": 0
+          "lyrics": "So, so you think you can tell,",
+          "chords": ["C", "D/F#"],
+          "roman_numerals": ["IV", "V/3"],
+          "melody": ["C", "B", "G", "C", "B", "C", "B", "G", "A"],
+          "rhythm": {
+            "pattern": "2-bar pickup",
+            "emphasis": "change chord mid-line"
+          }
         },
         {
-          "id": "verse-1-2",
-          "text": "Heaven from hell",
-          "order": 1
+          "lyrics": "Heaven from Hell, blue skies from pain.",
+          "chords": ["Am/E", "G"],
+          "roman_numerals": ["ii/5", "I"],
+          "melody": ["D", "B", "D", "E", "E", "E", "C", "D"],
+          "rhythm": {
+            "pattern": "held line ending",
+            "emphasis": "do not rush beat 4"
+          }
         },
         {
-          "id": "verse-1-3",
-          "text": "Blue skies from pain",
-          "order": 2
+          "lyrics": "Can you tell a green field from a cold steel rail, a smile from a veil,",
+          "chords": ["D/F#", "C", "Am"],
+          "roman_numerals": ["V/3", "IV", "ii"],
+          "melody": [
+            "C",
+            "B",
+            "C",
+            "B",
+            "G",
+            "A",
+            "D",
+            "D",
+            "D",
+            "C",
+            "B",
+            "C",
+            "B",
+            "A",
+            "C",
+            "D",
+            "C",
+            "B",
+            "C"
+          ],
+          "rhythm": {
+            "pattern": "even 8ths",
+            "emphasis": "keep the phrases connected"
+          }
         },
         {
-          "id": "verse-1-4",
-          "text": "Can you tell",
-          "order": 3
-        },
-        {
-          "id": "verse-1-5",
-          "text": "Cold steel rail",
-          "order": 4
-        },
-        {
-          "id": "verse-1-6",
-          "text": "Smile from a veil",
-          "order": 5
-        },
-        {
-          "id": "verse-1-7",
-          "text": "Do you think",
-          "order": 6
+          "lyrics": "Do you think you can tell?",
+          "chords": ["G"],
+          "roman_numerals": ["I"],
+          "melody": ["C", "B", "C", "B", "G", "A"],
+          "rhythm": "question tag"
         }
       ]
     },
     {
       "id": "verse-2",
       "title": "Verse 2",
-      "order": 2,
-      "segments": [
+      "lines": [
         {
-          "id": "verse-2-1",
-          "text": "Did they get you",
-          "order": 0
+          "lyrics": "Did they get you to trade your heroes for ghosts,",
+          "chords": ["C", "D/F#"],
+          "roman_numerals": ["IV", "V/3"],
+          "melody": ["D", "D", "D", "C", "D", "E", "E", "E", "D", "C", "D"],
+          "rhythm": {
+            "pattern": "even 8ths",
+            "emphasis": "hold the line ending"
+          }
         },
         {
-          "id": "verse-2-2",
-          "text": "Heroes from ghosts",
-          "order": 1
+          "lyrics": "Hot ashes for trees, hot air for a cool breeze, cold comfort for change,",
+          "chords": ["Am/E", "G", "D/F#"],
+          "roman_numerals": ["ii/5", "I", "V/3"],
+          "melody": [
+            "D",
+            "D",
+            "D",
+            "C",
+            "D",
+            "E",
+            "E",
+            "E",
+            "D",
+            "C",
+            "D",
+            "D",
+            "D",
+            "C",
+            "B",
+            "G",
+            "A"
+          ],
+          "rhythm": {
+            "pattern": "even 8ths",
+            "emphasis": "stay relaxed through the long sentence"
+          }
         },
         {
-          "id": "verse-2-3",
-          "text": "Hot ashes for trees",
-          "order": 2
-        },
-        {
-          "id": "verse-2-4",
-          "text": "Cool breeze",
-          "order": 3
-        },
-        {
-          "id": "verse-2-5",
-          "text": "Cold comfort",
-          "order": 4
-        },
-        {
-          "id": "verse-2-6",
-          "text": "Did you exchange",
-          "order": 5
-        },
-        {
-          "id": "verse-2-7",
-          "text": "Walk on part",
-          "order": 6
-        },
-        {
-          "id": "verse-2-8",
-          "text": "Lead role in a cage",
-          "order": 7
+          "lyrics": "And did you exchange a walk on part in the war for a lead role in a cage?",
+          "chords": ["C", "Am", "G"],
+          "roman_numerals": ["IV", "ii", "I"],
+          "melody": [
+            "D",
+            "D",
+            "C",
+            "B",
+            "C",
+            "B",
+            "A",
+            "B",
+            "C",
+            "B",
+            "C",
+            "B",
+            "G",
+            "A",
+            "B",
+            "B",
+            "C",
+            "B",
+            "A",
+            "G",
+            "A"
+          ],
+          "rhythm": {
+            "pattern": "cadential build",
+            "emphasis": "grow into the final question"
+          }
         }
       ]
     },
     {
-      "id": "chorus",
-      "title": "Chorus",
-      "order": 3,
-      "segments": [
+      "id": "instrumental-1",
+      "title": "Instrumental",
+      "lines": [
         {
-          "id": "chorus-1",
-          "text": "How I wish",
-          "order": 0
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "G", "Em7", "G"],
+          "roman_numerals": ["vi7", "I", "vi7", "I"],
+          "rhythm": {
+            "pattern": "steady 8ths",
+            "emphasis": "let open strings ring"
+          }
         },
         {
-          "id": "chorus-2",
-          "text": "Two souls swimming",
-          "order": 1
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "A7sus4", "Em7", "A7sus4", "G"],
+          "roman_numerals": ["vi7", "II7sus4", "vi7", "II7sus4", "I"],
+          "rhythm": {
+            "pattern": "steady 8ths",
+            "emphasis": "lean into the sus push before G"
+          }
+        }
+      ]
+    },
+    {
+      "id": "verse-3",
+      "title": "Verse 3",
+      "lines": [
+        {
+          "lyrics": "How I wish, how I wish you were here.",
+          "chords": ["C", "D/F#"],
+          "roman_numerals": ["IV", "V/3"],
+          "melody": ["B", "C", "B", "B", "C", "B", "G", "G", "A"],
+          "rhythm": {
+            "pattern": "open the sound",
+            "emphasis": "let the phrase breathe"
+          }
         },
         {
-          "id": "chorus-3",
-          "text": "Year after year",
-          "order": 2
+          "lyrics": "We're just two lost souls swimming in a fish bowl, year after year,",
+          "chords": ["Am/E", "G", "D/F#"],
+          "roman_numerals": ["ii/5", "I", "V/3"],
+          "melody": [
+            "B",
+            "D",
+            "E",
+            "E",
+            "E",
+            "E",
+            "D",
+            "E",
+            "D",
+            "E",
+            "E",
+            "D",
+            "D",
+            "B",
+            "D"
+          ],
+          "rhythm": {
+            "pattern": "floating pulse",
+            "emphasis": "keep the line legato"
+          }
         },
         {
-          "id": "chorus-4",
-          "text": "Same old ground",
-          "order": 3
+          "lyrics": "Running over the same old ground. What have we found?",
+          "chords": ["C"],
+          "roman_numerals": ["IV"],
+          "melody": ["D", "D", "D", "B", "D", "B", "C", "D", "C", "D", "C", "B", "G"],
+          "rhythm": {
+            "pattern": "steady forward motion",
+            "emphasis": "slight lift at the question"
+          }
         },
         {
-          "id": "chorus-5",
-          "text": "What have we found",
-          "order": 4
+          "lyrics": "The same old fears. Wish you were here!",
+          "chords": ["Am", "G"],
+          "roman_numerals": ["ii", "I"],
+          "melody": ["D", "C", "B", "C", "B", "G", "C", "C", "G", "C", "B", "G"],
+          "rhythm": {
+            "pattern": "final tag",
+            "emphasis": "soft landing on the last line"
+          }
+        }
+      ]
+    },
+    {
+      "id": "instrumental-2",
+      "title": "Instrumental Outro",
+      "lines": [
+        {
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "G", "Em7", "G"],
+          "roman_numerals": ["vi7", "I", "vi7", "I"],
+          "rhythm": "steady 8ths"
         },
         {
-          "id": "chorus-6",
-          "text": "Same old fears",
-          "order": 5
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "A7sus4", "Em7", "A7sus4", "G", "G"],
+          "roman_numerals": ["vi7", "II7sus4", "vi7", "II7sus4", "I", "I"],
+          "rhythm": "fade out"
         },
         {
-          "id": "chorus-7",
-          "text": "Wish you were here",
-          "order": 6
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "G", "Em7", "G"],
+          "roman_numerals": ["vi7", "I", "vi7", "I"],
+          "rhythm": "steady 8ths"
+        },
+        {
+          "lyrics": "(instrumental)",
+          "chords": ["Em7", "A7sus4", "Em7", "A7sus4", "G", "G"],
+          "roman_numerals": ["vi7", "II7sus4", "vi7", "II7sus4", "I", "I"],
+          "rhythm": "fade out"
         }
       ]
     }
   ],
-  "chord_events": [
-    {
-      "segment_id": "intro-1",
-      "chord": "Em7",
-      "roman_numeral": "vi7",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-1",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 1,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-1",
-      "chord": "Em7",
-      "roman_numeral": "vi7",
-      "order": 2,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-1",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 3,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-2",
-      "chord": "Em7",
-      "roman_numeral": "vi7",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-2",
-      "chord": "A7sus4",
-      "roman_numeral": "II7sus4",
-      "order": 1,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-2",
-      "chord": "Em7",
-      "roman_numeral": "vi7",
-      "order": 2,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-2",
-      "chord": "A7sus4",
-      "roman_numeral": "II7sus4",
-      "order": 3,
-      "position": "before"
-    },
-    {
-      "segment_id": "intro-2",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 4,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-1",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-1",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 1,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-2",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-3",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-4",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-5",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-6",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-1-7",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-1",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-2",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-3",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-4",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-5",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-6",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-7",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "verse-2-8",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-1",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-1",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 1,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-2",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-2",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 1,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-3",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-4",
-      "chord": "D/F#",
-      "roman_numeral": "V/3",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-5",
-      "chord": "C",
-      "roman_numeral": "IV",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-6",
-      "chord": "Am",
-      "roman_numeral": "ii",
-      "order": 0,
-      "position": "before"
-    },
-    {
-      "segment_id": "chorus-7",
-      "chord": "G",
-      "roman_numeral": "I",
-      "order": 0,
-      "position": "before"
-    }
-  ],
-  "melody_notes": [
-    {
-      "segment_id": "verse-1-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 7
-    },
-    {
-      "segment_id": "verse-1-1",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 8
-    },
-    {
-      "segment_id": "verse-1-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-2",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-3",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-3",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-3",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-1-4",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "verse-1-5",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 7
-    },
-    {
-      "segment_id": "verse-1-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-6",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-6",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-1-7",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-1",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-2",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-3",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-5",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-5",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-5",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-6",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-7",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "verse-2-8",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 7
-    },
-    {
-      "segment_id": "chorus-1",
-      "note": "A",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 8
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 7
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 8
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 9
-    },
-    {
-      "segment_id": "chorus-2",
-      "note": "E",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 10
-    },
-    {
-      "segment_id": "chorus-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-3",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-3",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-4",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "chorus-5",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 6
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "D",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-6",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 0
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 1
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 2
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "C",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 3
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "B",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 4
-    },
-    {
-      "segment_id": "chorus-7",
-      "note": "G",
-      "octave": null,
-      "duration_beats": 1.0,
-      "order": 5
-    }
-  ],
-  "rhythm_cues": [
-    {
-      "segment_id": "intro-1",
-      "pattern": "steady 8ths",
-      "emphasis": "let open strings ring"
-    },
-    {
-      "segment_id": "intro-2",
-      "pattern": "steady 8ths",
-      "emphasis": "lean into the sus push before G"
-    },
-    {
-      "segment_id": "verse-1-1",
-      "pattern": "2-bar pickup",
-      "emphasis": "change chord mid-line"
-    },
-    {
-      "segment_id": "verse-1-2",
-      "pattern": "held line ending",
-      "emphasis": "do not rush beat 4"
-    },
-    {
-      "segment_id": "verse-1-3",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-1-4",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-1-5",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-1-6",
-      "pattern": "held cadence",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-1-7",
-      "pattern": "question tag",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-1",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-2",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-3",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-4",
-      "pattern": "even 8ths",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-5",
-      "pattern": "slightly lighter",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-6",
-      "pattern": "cadential pickup",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-7",
-      "pattern": "build into chorus",
-      "emphasis": null
-    },
-    {
-      "segment_id": "verse-2-8",
-      "pattern": "land the final bar",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-1",
-      "pattern": "open the sound",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-2",
-      "pattern": "keep the pulse floating",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-3",
-      "pattern": "short answer line",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-4",
-      "pattern": "steady forward motion",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-5",
-      "pattern": "cadential answer",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-6",
-      "pattern": "soften the landing",
-      "emphasis": null
-    },
-    {
-      "segment_id": "chorus-7",
-      "pattern": "final tag",
-      "emphasis": null
-    }
-  ],
-  "teacher_annotations": [
+  "annotations": [
     {
       "target_type": "song",
       "target_id": "wish-you-were-here",
@@ -1511,7 +277,7 @@
     {
       "target_type": "song",
       "target_id": "wish-you-were-here",
-      "text": "Use the shared authoring panel to replace these short seed your licensed full lyric text when teaching."
+      "text": "This seed is intended as a lesson reference and can be edited in the app for your own class version."
     },
     {
       "target_type": "song",
@@ -1520,8 +286,8 @@
     },
     {
       "target_type": "section",
-      "target_id": "chorus",
-      "text": "Open the tone in the chorus and keep the groove relaxed."
+      "target_id": "verse-3",
+      "text": "Open the tone in the final verse and keep the groove relaxed."
     }
   ]
 }

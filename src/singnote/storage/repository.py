@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import UTC, datetime
 
 from sqlalchemy import inspect, text
@@ -29,7 +31,7 @@ class SQLiteSongRepository:
 
     def upsert_song(self, song: Song) -> Song:
         """Create or replace a song record."""
-        payload = self._to_record(song)
+        payload = self._to_record(song, is_seed_managed=False)
         with Session(self._engine) as session:
             existing = session.get(SongRecord, song.id)
             if existing is None:
@@ -57,16 +59,21 @@ class SQLiteSongRepository:
             return [self._to_domain(record) for record in records]
 
     def seed_songs(self, songs: list[Song]) -> int:
-        """Insert songs that do not already exist."""
+        """Insert new seed songs and refresh unchanged seed-managed records."""
         inserted = 0
         with Session(self._engine) as session:
             for song in songs:
                 existing = session.get(SongRecord, song.id)
+                signature = _song_signature(song)
                 if existing is not None and not _should_refresh_seed(
-                    existing, song
+                    existing, signature
                 ):
                     continue
-                record = self._to_record(song)
+                record = self._to_record(
+                    song,
+                    is_seed_managed=True,
+                    seed_signature=signature,
+                )
                 now = _utc_now()
                 if existing is None:
                     record.created_at = now
@@ -81,7 +88,12 @@ class SQLiteSongRepository:
         return inserted
 
     @staticmethod
-    def _to_record(song: Song) -> SongRecord:
+    def _to_record(
+        song: Song,
+        *,
+        is_seed_managed: bool,
+        seed_signature: str | None = None,
+    ) -> SongRecord:
         """Convert a domain song into a persisted record."""
         return SongRecord(
             id=song.id,
@@ -110,6 +122,8 @@ class SQLiteSongRepository:
                 annotation.model_dump(mode="json")
                 for annotation in song.teacher_annotations
             ],
+            is_seed_managed=is_seed_managed,
+            seed_signature=seed_signature,
         )
 
     @staticmethod
@@ -147,6 +161,8 @@ def _migrate_song_record_schema(engine: Engine) -> None:
         "tempo_bpm": "INTEGER",
         "tempo_notes": "TEXT",
         "strumming_pattern": "TEXT",
+        "is_seed_managed": "BOOLEAN NOT NULL DEFAULT 0",
+        "seed_signature": "TEXT",
     }
     with engine.begin() as connection:
         for column_name, column_type in required_columns.items():
@@ -160,16 +176,24 @@ def _migrate_song_record_schema(engine: Engine) -> None:
             )
 
 
-def _should_refresh_seed(existing: SongRecord, seeded_song: Song) -> bool:
-    """Replace only the original placeholder seed with richer lesson data."""
+def _should_refresh_seed(
+    existing: SongRecord, incoming_signature: str
+) -> bool:
+    """Refresh unchanged seed-managed rows when the seed payload changes."""
     return (
-        existing.id == seeded_song.id
-        and existing.description
-        == (
-            "Sample lesson song with lyrics, chords, melody, and rhythm "
-            "annotations."
-        )
+        existing.is_seed_managed
+        and existing.seed_signature != incoming_signature
     )
+
+
+def _song_signature(song: Song) -> str:
+    """Return a stable signature for a canonical song payload."""
+    canonical_payload = json.dumps(
+        song.model_dump(mode="json"),
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
 
 
 def _utc_now() -> datetime:

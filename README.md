@@ -46,8 +46,15 @@ python -m streamlit run streamlit_app.py
 - existing databases are migrated automatically when new song metadata fields are added
 - seed songs now live as JSON files under `seed_data/songs/`
 - add a new seed song by creating another `*.json` file in that directory
+- the preferred format is a line-based authored JSON schema:
+  `song` metadata, then `sections[].lines[]` with optional `chords`,
+  `roman_numerals`, `melody`, `rhythm`, and `annotations`
 - Python loads and validates those files at startup, so you do not need a new
   Python file per song
+- if a seed-managed song changes on disk, startup reseeding now refreshes that
+  row automatically
+- if you manually edit a seeded song inside the app, that row becomes
+  user-managed and will not be overwritten by later seed refreshes
 
 ## Streamlit Community Cloud
 
