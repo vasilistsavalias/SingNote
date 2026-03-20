@@ -44,8 +44,10 @@ python -m streamlit run streamlit_app.py
 
 - songs are stored in `instance/singnote.db` by default
 - existing databases are migrated automatically when new song metadata fields are added
-- seeded lyric snippets are intentionally short, so teachers can replace them
-  with licensed full lyrics inside the authoring panel
+- seed songs now live as JSON files under `seed_data/songs/`
+- add a new seed song by creating another `*.json` file in that directory
+- Python loads and validates those files at startup, so you do not need a new
+  Python file per song
 
 ## Streamlit Community Cloud
 
