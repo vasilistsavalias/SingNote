@@ -35,6 +35,8 @@ class ChordEvent(BaseModel):
 
     segment_id: str
     chord: str = Field(min_length=1)
+    roman_numeral: str | None = None
+    order: int = Field(default=0, ge=0)
     position: Literal["before", "after", "inline"] = "before"
 
 
@@ -45,8 +47,14 @@ class MelodyNote(BaseModel):
 
     segment_id: str
     note: str = Field(min_length=1)
-    octave: int = Field(ge=0, le=8)
-    duration_beats: float = Field(gt=0)
+    octave: int | None = Field(default=None, ge=0, le=8)
+    duration_beats: float = Field(default=1.0, gt=0)
+    order: int = Field(default=0, ge=0)
+
+    @property
+    def display_label(self) -> str:
+        """Return the note as it should be shown in the UI."""
+        return self.note if self.octave is None else f"{self.note}{self.octave}"
 
 
 class RhythmCue(BaseModel):
@@ -78,6 +86,11 @@ class Song(BaseModel):
     title: str = Field(min_length=1)
     artist: str | None = None
     description: str | None = None
+    key_signature: str | None = None
+    time_signature: str | None = None
+    tempo_bpm: int | None = Field(default=None, ge=1)
+    tempo_notes: str | None = None
+    strumming_pattern: str | None = None
     lyric_sections: list[LyricSection] = Field(default_factory=list)
     chord_events: list[ChordEvent] = Field(default_factory=list)
     melody_notes: list[MelodyNote] = Field(default_factory=list)

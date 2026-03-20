@@ -20,6 +20,11 @@ def build_sample_song(song_id: str = "wish-you-were-here") -> Song:
         title="Wish You Were Here",
         artist="Pink Floyd",
         description="Seed song used for integration tests.",
+        key_signature="G major",
+        time_signature="4/4",
+        tempo_bpm=61,
+        tempo_notes="Relaxed half-time pulse.",
+        strumming_pattern="D D U | D D U U",
         lyric_sections=[
             LyricSection(
                 id="verse-1",

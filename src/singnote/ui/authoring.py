@@ -25,6 +25,11 @@ class SongEditorValues:
     title: str
     artist: str
     description: str
+    key_signature: str
+    time_signature: str
+    tempo_bpm: str
+    tempo_notes: str
+    strumming_pattern: str
     lyrics_text: str
     chords_text: str
     melody_text: str
@@ -40,6 +45,11 @@ def build_song_from_editor_values(values: SongEditorValues) -> Song:
         title=values.title.strip(),
         artist=_optional_text(values.artist),
         description=_optional_text(values.description),
+        key_signature=_optional_text(values.key_signature),
+        time_signature=_optional_text(values.time_signature),
+        tempo_bpm=_optional_int(values.tempo_bpm, "Tempo"),
+        tempo_notes=_optional_text(values.tempo_notes),
+        strumming_pattern=_optional_text(values.strumming_pattern),
         lyric_sections=lyric_sections,
         chord_events=_parse_chords(values.chords_text),
         melody_notes=_parse_melody(values.melody_text),
@@ -64,11 +74,20 @@ def editor_values_from_song(song: Song) -> SongEditorValues:
     lyrics_text = "\n".join(lyric_lines).strip()
 
     chords_text = "\n".join(
-        f"{event.segment_id}|{event.chord}|{event.position}"
+        "|".join(
+            part
+            for part in [
+                event.segment_id,
+                event.chord,
+                event.roman_numeral or "",
+                event.position,
+            ]
+            if part != ""
+        )
         for event in song.chord_events
     )
     melody_text = "\n".join(
-        f"{note.segment_id}|{note.note}{note.octave}|{note.duration_beats:g}"
+        f"{note.segment_id}|{note.display_label}|{note.duration_beats:g}"
         for note in song.melody_notes
     )
     rhythm_text = "\n".join(
@@ -85,6 +104,11 @@ def editor_values_from_song(song: Song) -> SongEditorValues:
         title=song.title,
         artist=song.artist or "",
         description=song.description or "",
+        key_signature=song.key_signature or "",
+        time_signature=song.time_signature or "",
+        tempo_bpm="" if song.tempo_bpm is None else str(song.tempo_bpm),
+        tempo_notes=song.tempo_notes or "",
+        strumming_pattern=song.strumming_pattern or "",
         lyrics_text=lyrics_text,
         chords_text=chords_text,
         melody_text=melody_text,
@@ -100,6 +124,11 @@ def blank_editor_values() -> SongEditorValues:
         title="",
         artist="",
         description="",
+        key_signature="",
+        time_signature="4/4",
+        tempo_bpm="60",
+        tempo_notes="Relaxed half-time feel",
+        strumming_pattern="D D U | D D U U",
         lyrics_text="[Verse 1]\nType lyrics here",
         chords_text="seg-1|C|before",
         melody_text="seg-1|C4|1",
@@ -164,16 +193,24 @@ def _build_section(
 
 def _parse_chords(chords_text: str) -> list[ChordEvent]:
     events: list[ChordEvent] = []
-    for line in _iter_non_empty_lines(chords_text):
+    for index, line in enumerate(_iter_non_empty_lines(chords_text)):
         segment_id, chord, *rest = _split_pipe_line(line, 2)
-        position = cast(
-            Literal["before", "after", "inline"],
-            rest[0] if rest else "before",
-        )
+        roman_numeral: str | None = None
+        position: Literal["before", "after", "inline"] = "before"
+        if len(rest) == 1:
+            if rest[0] in {"before", "after", "inline"}:
+                position = cast(Literal["before", "after", "inline"], rest[0])
+            else:
+                roman_numeral = rest[0]
+        elif len(rest) >= 2:
+            roman_numeral = rest[0] or None
+            position = cast(Literal["before", "after", "inline"], rest[1])
         events.append(
             ChordEvent(
                 segment_id=segment_id,
                 chord=chord,
+                roman_numeral=roman_numeral,
+                order=index,
                 position=position,
             )
         )
@@ -182,19 +219,21 @@ def _parse_chords(chords_text: str) -> list[ChordEvent]:
 
 def _parse_melody(melody_text: str) -> list[MelodyNote]:
     notes: list[MelodyNote] = []
-    for line in _iter_non_empty_lines(melody_text):
+    for index, line in enumerate(_iter_non_empty_lines(melody_text)):
         segment_id, note_token, duration = _split_pipe_line(line, 3)
-        match = re.fullmatch(r"([A-Ga-g][#b]?)(\d)", note_token.strip())
+        match = re.fullmatch(r"([A-Ga-g][#b]?)(\d)?", note_token.strip())
         if match is None:
             raise ValueError(
-                f"Invalid melody note format '{note_token}'. Use forms like C4."
+                "Invalid melody note format "
+                f"'{note_token}'. Use forms like C or C4."
             )
         notes.append(
             MelodyNote(
                 segment_id=segment_id,
                 note=match.group(1).upper(),
-                octave=int(match.group(2)),
+                octave=int(match.group(2)) if match.group(2) else None,
                 duration_beats=float(duration),
+                order=index,
             )
         )
     return notes
@@ -268,6 +307,16 @@ def _normalize_song_id(value: str) -> str:
 def _optional_text(value: str) -> str | None:
     stripped = value.strip()
     return stripped or None
+
+
+def _optional_int(value: str, label: str) -> int | None:
+    stripped = value.strip()
+    if not stripped:
+        return None
+    try:
+        return int(stripped)
+    except ValueError as error:
+        raise ValueError(f"{label} must be a whole number.") from error
 
 
 def _slugify(value: str) -> str:

@@ -20,6 +20,7 @@ def test_repository_can_create_and_load_song(tmp_path: Path) -> None:
 
     assert loaded_song is not None
     assert loaded_song.title == song.title
+    assert loaded_song.key_signature == "G major"
     assert loaded_song.lyric_sections[0].segments[0].text == "So"
     assert loaded_song.melody_notes[0].segment_id == "seg-1"
 

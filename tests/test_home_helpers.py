@@ -45,6 +45,7 @@ def test_apply_melody_update_replaces_the_target_note() -> None:
         song,
         {
             "segment_id": "seg-2",
+            "order": 0,
             "note_label": "A4",
             "duration_beats": 1.5,
         },
@@ -67,6 +68,7 @@ def test_apply_melody_update_rejects_unknown_segment_ids() -> None:
             song,
             {
                 "segment_id": "missing",
+                "order": 0,
                 "note_label": "A4",
                 "duration_beats": 1.0,
             },

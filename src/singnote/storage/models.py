@@ -21,6 +21,11 @@ class SongRecord(SQLModel, table=True):
     title: str
     artist: str | None = None
     description: str | None = None
+    key_signature: str | None = None
+    time_signature: str | None = None
+    tempo_bpm: int | None = None
+    tempo_notes: str | None = None
+    strumming_pattern: str | None = None
     lyric_sections: list[dict[str, Any]] = Field(
         default_factory=list,
         sa_column=Column(JSON, nullable=False),
