@@ -32,7 +32,6 @@ from singnote.ui.theme import inject_global_styles
 
 T = TypeVar("T")
 STATIC_DIR = Path(__file__).resolve().parents[3] / "static"
-PAGE_ICON = STATIC_DIR / "favicon-32x32.png"
 SPEED_PPS = {
     f"{step / 10:g}x": step * 3
     for step in range(1, 31)
@@ -43,7 +42,7 @@ def render_home_page(app: Application) -> None:
     """Render the initial landing page for the application."""
     st.set_page_config(
         page_title=app.settings.app_name,
-        page_icon=str(PAGE_ICON) if PAGE_ICON.exists() else ":musical_note:",
+        page_icon=":musical_note:",
         layout="wide",
         initial_sidebar_state="collapsed",
     )
