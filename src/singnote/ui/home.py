@@ -357,10 +357,10 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
 
 
 def _render_chords_tab(song: Song) -> None:
-    """Render the chords tab as a continuous chord-only chart."""
+    """Render the chords tab as a lyric+chord reader with auto-scroll."""
     is_playing, speed_label = _render_auto_scroll_controls("chords", song.id)
     _render_self_scroll_component(
-        content_html=_chords_sheet_markup(song),
+        content_html=_lyrics_sheet_markup(song),
         is_playing=is_playing,
         pixels_per_second=_speed_to_pixels_per_second(speed_label),
         height=540,
@@ -369,7 +369,28 @@ def _render_chords_tab(song: Song) -> None:
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
-    """Render melody as a sheet-like package line with one editor per row."""
+    """Render melody in either reader or edit mode."""
+    view_mode = st.radio(
+        "Melody view",
+        options=["Reader", "Edit"],
+        horizontal=True,
+        key=f"melody-view-{song.id}",
+        label_visibility="collapsed",
+    )
+    if view_mode == "Reader":
+        is_playing, speed_label = _render_auto_scroll_controls(
+            "melody",
+            song.id,
+        )
+        _render_self_scroll_component(
+            content_html=_melody_reader_markup(song),
+            is_playing=is_playing,
+            pixels_per_second=_speed_to_pixels_per_second(speed_label),
+            height=560,
+            scope_key=f"melody-{song.id}",
+        )
+        return
+
     for section in song.lyric_sections:
         section_segments = [
             segment
@@ -623,21 +644,19 @@ def _lyrics_sheet_markup(song: Song) -> str:
     )
 
 
-def _chords_sheet_markup(song: Song) -> str:
-    """Render the chords tab as sectioned chord lines without lyric text."""
-    chord_map = _chords_by_segment(song.chord_events)
+def _melody_reader_markup(song: Song) -> str:
+    """Render the melody tab as a self-contained reader sheet."""
     sections_markup: list[str] = []
     for section in song.lyric_sections:
         visible_segments = [
             segment
             for segment in section.segments
-            if not _is_instrumental_segment(segment)
+            if _should_render_melody_segment(segment)
         ]
         if not visible_segments:
             continue
         section_lines = [
-            _chords_sheet_line_markup(chord_map.get(segment.id, []))
-            for segment in visible_segments
+            _melody_sheet_line_markup(segment) for segment in visible_segments
         ]
         sections_markup.append(
             "".join(
@@ -655,36 +674,10 @@ def _chords_sheet_markup(song: Song) -> str:
         )
     return "".join(
         [
-            '<div class="sn-song-sheet sn-song-sheet-chords">',
+            '<div class="sn-song-sheet sn-song-sheet-melody-reader">',
             "".join(sections_markup),
             "</div>",
         ]
-    )
-
-
-def _chords_sheet_line_markup(chords: list[ChordEvent]) -> str:
-    """Render one chord-only line in the chord sheet."""
-    chord_line = (
-        "".join(
-            [
-                '<div class="sn-sheet-chords sn-sheet-chords-only">',
-                "".join(
-                    f'<span class="sn-sheet-chord">'
-                    f"{escape(_format_chord(chord))}</span>"
-                    for chord in chords
-                ),
-                "</div>",
-            ]
-        )
-        if chords
-        else '<div class="sn-sheet-chords sn-sheet-chords-only">'
-        '<span class="sn-sheet-chord sn-sheet-chord-empty">-</span>'
-        "</div>"
-    )
-    return (
-        '<div class="sn-sheet-line sn-sheet-line-chords-only">'
-        f"{chord_line}"
-        "</div>"
     )
 
 
@@ -1018,6 +1011,59 @@ def _self_scroll_component_html(
       }}
       .sn-sheet-chord-empty {{
         opacity: 0.35;
+      }}
+      .sn-sheet-lyric {{
+        color: #1f2937;
+        font-family: "Fraunces", serif;
+        font-size: clamp(1.05rem, 2vw, 1.3rem);
+        line-height: 1.4;
+      }}
+      .sn-melody-line-shell {{
+        border: 1px solid rgba(46, 58, 78, 0.10);
+        border-radius: 20px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 251, 245, 0.98),
+            rgba(249, 241, 229, 0.92)
+          );
+        box-shadow: 0 10px 28px rgba(36, 33, 28, 0.08);
+        padding: 0.95rem 1rem 1rem;
+        margin-bottom: 0.75rem;
+      }}
+      .sn-melody-line-caption {{
+        color: #5b6475;
+        font-size: 0.88rem;
+        margin-bottom: 0.7rem;
+      }}
+      .sn-melody-line-row {{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0.9rem 0.75rem;
+      }}
+      .sn-melody-inline-package {{
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: fit-content;
+      }}
+      .sn-melody-inline-notes {{
+        color: #b6642c;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        margin-bottom: 0.22rem;
+        white-space: nowrap;
+      }}
+      .sn-melody-inline-text {{
+        color: #1f2937;
+        font-family: "Fraunces", serif;
+        font-size: clamp(1rem, 1.65vw, 1.26rem);
+        line-height: 1.22;
+        white-space: nowrap;
       }}
     </style>
     </head>

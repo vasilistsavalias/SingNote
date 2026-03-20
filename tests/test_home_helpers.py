@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
-    _chords_sheet_markup,
     _delete_melody_package,
     _favicon_head_script,
     _format_package_note_sequence,
@@ -13,6 +12,7 @@ from singnote.ui.home import (
     _insert_melody_package,
     _is_instrumental_segment,
     _lyrics_sheet_markup,
+    _melody_reader_markup,
     _melody_sheet_line_markup,
     _parse_melody_text_lines,
     _parse_note_sequence,
@@ -170,13 +170,12 @@ def test_lyrics_sheet_markup_reads_like_one_chart() -> None:
     assert 'class="sn-sheet-lyric"' in markup
 
 
-def test_chords_sheet_markup_hides_lyric_text() -> None:
-    """Chord-only tab should not duplicate lyric text."""
-    markup = _chords_sheet_markup(build_sample_song())
+def test_lyrics_sheet_markup_keeps_lyric_text_visible() -> None:
+    """Chords tab should still show the lyric text under the chords."""
+    markup = _lyrics_sheet_markup(build_sample_song())
 
-    assert 'class="sn-song-sheet sn-song-sheet-chords"' in markup
-    assert 'class="sn-sheet-chords sn-sheet-chords-only"' in markup
-    assert "Hello there" not in markup
+    assert "So you think" in markup
+    assert 'class="sn-sheet-lyric"' in markup
 
 
 def test_melody_sheet_line_markup_renders_inline_packages() -> None:
@@ -189,6 +188,15 @@ def test_melody_sheet_line_markup_renders_inline_packages() -> None:
     assert 'class="sn-melody-inline-package"' in markup
     assert 'class="sn-melody-inline-notes"' in markup
     assert 'class="sn-melody-inline-text"' in markup
+
+
+def test_melody_reader_markup_wraps_sections_in_song_sheet() -> None:
+    """Melody reader mode should render a full sheet for iframe playback."""
+    markup = _melody_reader_markup(build_sample_song())
+
+    assert 'class="sn-song-sheet sn-song-sheet-melody-reader"' in markup
+    assert 'class="sn-sheet-section-title"' in markup
+    assert 'class="sn-melody-line-shell"' in markup
 
 
 def test_lyrics_sheet_markup_skips_instrumental_placeholders() -> None:
