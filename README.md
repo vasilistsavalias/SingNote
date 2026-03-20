@@ -50,8 +50,11 @@ python -m streamlit run streamlit_app.py
 - add a new seed song by creating another `*.yaml` file in that directory
 - the preferred schema is:
   `song` metadata, then `sections[].lines[]` with optional `chords`,
-  `roman_numerals`, `melody_packages`, `rhythm`, and `annotations`
-- each `melody_packages[]` item owns one grouped lyric chunk plus its note list
+  `roman_numerals`, `melody_text` or `melody_packages`, `rhythm`, and
+  `annotations`
+- for fast melody authoring, prefer `melody_text: |` with one package per line,
+  for example `So = C,B,G`
+- `melody_packages[]` still works when you want explicit structured control
 - Python loads and validates those files at startup, so you do not need a new
   Python file per song
 - if a seed-managed song changes on disk, startup reseeding now refreshes that

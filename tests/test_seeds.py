@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from singnote.seeds import build_sample_songs
+from singnote.seeds import build_sample_songs, song_from_portable_text
 
 
 def test_sample_seed_song_is_complete_for_all_three_tabs() -> None:
@@ -105,6 +105,52 @@ def test_sample_seed_songs_can_load_legacy_json_melody_shape(
         "Legacy line"
     )
     assert songs[0].melody_notes[1].note == "D"
+
+
+def test_portable_yaml_accepts_melody_text_shorthand() -> None:
+    """Portable YAML should support 'text = notes' melody shorthand."""
+    song = song_from_portable_text(
+        "\n".join(
+            [
+                "song:",
+                "  id: shorthand-song",
+                "  title: Shorthand Song",
+                "sections:",
+                "  - id: verse-1",
+                "    lines:",
+                "      - lyrics: So, so you think you can tell,",
+                "        melody_text: |",
+                "          So = C,B,G",
+                "          So => C",
+                "          you = B",
+            ]
+        )
+    )
+
+    packages = song.lyric_sections[0].segments[0].melody_packages
+    assert [package.text for package in packages] == ["So", "So", "you"]
+    assert [note.note for note in packages[0].notes] == ["C", "B", "G"]
+    assert packages[1].notes[0].note == "C"
+
+
+def test_portable_yaml_rejects_invalid_melody_text_shorthand() -> None:
+    """Shorthand melody lines should fail fast when the separator is missing."""
+    with pytest.raises(ValueError):
+        song_from_portable_text(
+            "\n".join(
+                [
+                    "song:",
+                    "  id: bad-shorthand-song",
+                    "  title: Bad Shorthand Song",
+                    "sections:",
+                    "  - id: verse-1",
+                    "    lines:",
+                    "      - lyrics: Broken",
+                    "        melody_text: |",
+                    "          So C,B,G",
+                ]
+            )
+        )
 
 
 def test_portable_payload_rejects_empty_package_notes(tmp_path: Path) -> None:

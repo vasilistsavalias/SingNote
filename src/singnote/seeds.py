@@ -284,17 +284,24 @@ def _parse_melody_packages(
     lyric_text: str,
 ) -> list[MelodyPackage]:
     raw_packages = line.get("melody_packages")
+    raw_melody_text = line.get("melody_text")
     if raw_packages is None:
-        raw_legacy_melody = line.get("melody")
-        if raw_legacy_melody is None:
-            return []
-        raw_packages = [
-            {
-                "id": f"{segment_id}-pkg-1",
-                "text": lyric_text,
-                "notes": raw_legacy_melody,
-            }
-        ]
+        if raw_melody_text is not None:
+            raw_packages = _parse_melody_text_packages(
+                raw_melody_text,
+                segment_id=segment_id,
+            )
+        else:
+            raw_legacy_melody = line.get("melody")
+            if raw_legacy_melody is None:
+                return []
+            raw_packages = [
+                {
+                    "id": f"{segment_id}-pkg-1",
+                    "text": lyric_text,
+                    "notes": raw_legacy_melody,
+                }
+            ]
 
     packages: list[MelodyPackage] = []
     for package_order, raw_package in enumerate(
@@ -347,6 +354,67 @@ def _parse_package_notes(
     if not notes:
         raise ValueError("Melody packages must contain at least one note.")
     return notes
+
+
+def _parse_melody_text_packages(
+    raw_melody_text: Any,
+    *,
+    segment_id: str,
+) -> list[dict[str, Any]]:
+    """Parse shorthand melody text like 'So = C,B,G' into package payloads."""
+    if isinstance(raw_melody_text, str):
+        melody_lines = [
+            line.strip()
+            for line in raw_melody_text.splitlines()
+            if line.strip()
+        ]
+    else:
+        melody_lines = [
+            _required_str(
+                _as_dict({"line": value}, "melody_text entry"),
+                "line",
+            )
+            for value in _as_list(raw_melody_text, "melody_text")
+        ]
+
+    packages: list[dict[str, Any]] = []
+    for package_order, line in enumerate(melody_lines):
+        text_part, notes_part = _split_melody_text_line(line)
+        note_tokens = _split_melody_text_notes(notes_part)
+        packages.append(
+            {
+                "id": f"{segment_id}-pkg-{package_order + 1}",
+                "text": text_part,
+                "notes": note_tokens,
+            }
+        )
+    return packages
+
+
+def _split_melody_text_line(line: str) -> tuple[str, str]:
+    """Split one shorthand melody line into lyric text and note sequence."""
+    separator_match = re.search(r"\s*(=>|=)\s*", line)
+    if separator_match is None:
+        raise ValueError(
+            "Each melody_text line must use 'text = notes' or "
+            "'text => notes'."
+        )
+    text_part = line[: separator_match.start()].strip()
+    notes_part = line[separator_match.end() :].strip()
+    if not text_part:
+        raise ValueError("Melody text packages need lyric text before '='.")
+    if not notes_part:
+        raise ValueError("Melody text packages need at least one note.")
+    return text_part, notes_part
+
+
+def _split_melody_text_notes(notes_part: str) -> list[str]:
+    """Split shorthand note text into note tokens."""
+    tokens = [token.strip() for token in re.split(r"[\s,]+", notes_part)]
+    filtered_tokens = [token for token in tokens if token]
+    if not filtered_tokens:
+        raise ValueError("Melody text packages need at least one note.")
+    return filtered_tokens
 
 
 def _parse_rhythm(

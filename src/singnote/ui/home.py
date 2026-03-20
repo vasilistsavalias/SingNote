@@ -566,9 +566,8 @@ def _blank_song_yaml_text() -> str:
             "    lines:",
             "      - lyrics: Type the lyric line here",
             "        chords: [C]",
-            "        melody_packages:",
-            "          - text: Type",
-            "            notes: [C]",
+            "        melody_text: |",
+            "          Type = C",
             "annotations: []",
         ]
     )
