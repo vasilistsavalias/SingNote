@@ -7,7 +7,7 @@ name = "singnote"
 version = "0.1.0"
 description = "Mobile-first Streamlit workspace for singing practice and dictation."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 dependencies = [
   "pydantic>=2.11,<3.0",
   "sqlmodel>=0.0.24,<0.0.25",

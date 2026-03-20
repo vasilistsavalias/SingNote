@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from singnote.storage import SQLiteSongRepository, create_engine_and_init
+from singnote.storage.repository import (
+    SQLiteSongRepository,
+    create_engine_and_init,
+)
 from tests.support import build_sample_song
 
 

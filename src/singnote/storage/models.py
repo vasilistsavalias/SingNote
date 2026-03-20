@@ -17,6 +17,8 @@ def utc_now() -> datetime:
 class SongRecord(SQLModel, table=True):
     """Persisted song payload stored in JSON columns for MVP simplicity."""
 
+    __table_args__ = {"extend_existing": True}
+
     id: str = Field(primary_key=True)
     title: str
     artist: str | None = None
