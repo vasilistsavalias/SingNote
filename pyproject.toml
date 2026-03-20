@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "singnote"
+version = "0.1.0"
+description = "Mobile-first Streamlit workspace for singing practice and dictation."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.11,<3.0",
+  "sqlmodel>=0.0.24,<0.0.25",
+  "streamlit>=1.44,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.15,<2.0",
+  "pytest>=8.3,<9.0",
+  "pytest-cov>=6.0,<7.0",
+  "ruff>=0.11,<0.12",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/singnote"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 80
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "C4", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["singnote"]
