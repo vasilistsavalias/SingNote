@@ -16,7 +16,8 @@ class Settings:
     data_dir: Path
     database_path: Path
     database_url: str
-    shared_passcode: str | None
+    shared_username: str | None
+    shared_password: str | None
 
 
 def load_settings() -> Settings:
@@ -29,5 +30,6 @@ def load_settings() -> Settings:
         data_dir=data_dir,
         database_path=database_path,
         database_url=f"sqlite:///{database_path.as_posix()}",
-        shared_passcode=os.getenv("SINGNOTE_SHARED_PASSCODE"),
+        shared_username=os.getenv("SINGNOTE_SHARED_USERNAME"),
+        shared_password=os.getenv("SINGNOTE_SHARED_PASSWORD"),
     )

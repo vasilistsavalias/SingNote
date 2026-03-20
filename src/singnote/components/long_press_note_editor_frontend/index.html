@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <script src="https://unpkg.com/streamlit-component-lib@1.4.0/dist/index.js"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        background: transparent;
+      }
+
+      .hint {
+        margin: 0 0 0.75rem;
+        color: #5c657a;
+        font-size: 0.9rem;
+      }
+
+      .wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .note-chip {
+        border: 1px solid #d7dceb;
+        border-radius: 16px;
+        background: #f6f7fb;
+        color: #1b2333;
+        padding: 0.75rem 0.9rem;
+        min-width: 84px;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .note-chip strong {
+        display: block;
+        font-size: 1rem;
+      }
+
+      .note-chip span {
+        display: block;
+        font-size: 0.8rem;
+        opacity: 0.8;
+      }
+
+      .overlay[hidden] {
+        display: none;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.42);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+
+      .modal {
+        width: min(360px, 100%);
+        background: white;
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+      }
+
+      .modal h3 {
+        margin-top: 0;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        color: #334155;
+      }
+
+      input {
+        width: 100%;
+        margin-top: 0.35rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 0.7rem 0.8rem;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+      }
+
+      button {
+        border: 0;
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+
+      .secondary {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .primary {
+        background: #1d4ed8;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="hint">Long press a melody note to edit it in place.</p>
+    <div id="wrapper" class="wrapper"></div>
+    <div id="overlay" class="overlay" hidden>
+      <div class="modal">
+        <h3>Edit note</h3>
+        <label>
+          Note
+          <input id="note-input" type="text" />
+        </label>
+        <label>
+          Duration (beats)
+          <input id="duration-input" type="number" min="0.25" step="0.25" />
+        </label>
+        <div class="actions">
+          <button id="cancel-button" class="secondary" type="button">
+            Cancel
+          </button>
+          <button id="save-button" class="primary" type="button">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const wrapper = document.getElementById("wrapper");
+      const overlay = document.getElementById("overlay");
+      const noteInput = document.getElementById("note-input");
+      const durationInput = document.getElementById("duration-input");
+      const cancelButton = document.getElementById("cancel-button");
+      const saveButton = document.getElementById("save-button");
+      let currentNote = null;
+
+      function openModal(note) {
+        currentNote = note;
+        noteInput.value = note.note_label;
+        durationInput.value = note.duration_beats;
+        overlay.hidden = false;
+      }
+
+      function closeModal() {
+        overlay.hidden = true;
+        currentNote = null;
+      }
+
+      function render(event) {
+        const notes = event.detail.args.notes || [];
+        wrapper.innerHTML = "";
+        notes.forEach((note) => {
+          const chip = document.createElement("div");
+          chip.className = "note-chip";
+          chip.innerHTML =
+            "<strong>" +
+            note.note_label +
+            "</strong><span>" +
+            note.lyric +
+            "</span>";
+
+          let timerId = null;
+          const startPress = () => {
+            timerId = window.setTimeout(() => openModal(note), 450);
+          };
+          const cancelPress = () => {
+            if (timerId !== null) {
+              window.clearTimeout(timerId);
+              timerId = null;
+            }
+          };
+
+          chip.addEventListener("pointerdown", startPress);
+          chip.addEventListener("pointerup", cancelPress);
+          chip.addEventListener("pointerleave", cancelPress);
+          chip.addEventListener("pointercancel", cancelPress);
+          wrapper.appendChild(chip);
+        });
+        Streamlit.setFrameHeight();
+      }
+
+      cancelButton.addEventListener("click", closeModal);
+      saveButton.addEventListener("click", () => {
+        if (!currentNote) {
+          return;
+        }
+        Streamlit.setComponentValue({
+          segment_id: currentNote.segment_id,
+          note_label: noteInput.value.trim(),
+          duration_beats: Number(durationInput.value),
+        });
+        closeModal();
+      });
+
+      window.addEventListener(Streamlit.RENDER_EVENT, render);
+      Streamlit.setComponentReady();
+      Streamlit.setFrameHeight();
+    </script>
+  </body>
+</html>
