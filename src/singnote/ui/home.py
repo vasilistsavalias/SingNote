@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from html import escape
+from typing import TypeVar
 
 import streamlit as st
 
@@ -14,6 +15,7 @@ from singnote.domain.models import (
     LyricSection,
     LyricSegment,
     MelodyNote,
+    MelodyPackage,
     RhythmCue,
     Song,
 )
@@ -21,9 +23,13 @@ from singnote.ui.authoring import (
     SongEditorValues,
     blank_editor_values,
     build_song_from_editor_values,
+    build_song_from_yaml_text,
     editor_values_from_song,
+    yaml_text_from_song,
 )
 from singnote.ui.theme import inject_global_styles, render_hero
+
+T = TypeVar("T")
 
 
 def render_home_page(app: Application) -> None:
@@ -168,6 +174,11 @@ def _render_authoring_panel(app: Application, songs: list[Song]) -> None:
             if editor_target == "__new__"
             else editor_values_from_song(song_lookup[editor_target])
         )
+        yaml_defaults = (
+            _blank_song_yaml_text()
+            if editor_target == "__new__"
+            else yaml_text_from_song(song_lookup[editor_target])
+        )
         with st.form("song-authoring-form"):
             values = SongEditorValues(
                 song_id=st.text_input(
@@ -209,8 +220,8 @@ def _render_authoring_panel(app: Application, songs: list[Song]) -> None:
                     value=defaults.lyrics_text,
                     height=180,
                     help=(
-                        "Use [Section Name] headers and lyric words below "
-                        "them."
+                        "Use [Section Name] headers and one lyric line per "
+                        "line below them."
                     ),
                 ),
                 chords_text=st.text_area(
@@ -222,13 +233,13 @@ def _render_authoring_panel(app: Application, songs: list[Song]) -> None:
                     ),
                 ),
                 melody_text=st.text_area(
-                    "Melody seed text",
+                    "Legacy melody seed text",
                     value=defaults.melody_text,
                     height=120,
                     disabled=editor_target != "__new__",
                     help=(
-                        "For existing songs, edit melody lines below with the "
-                        "line edit control."
+                        "Use the YAML editor or melody package controls for "
+                        "real melody authoring."
                     ),
                 ),
                 rhythm_text=st.text_area(
@@ -257,6 +268,32 @@ def _render_authoring_panel(app: Application, songs: list[Song]) -> None:
                 st.error(str(error))
             else:
                 st.success(f"Saved {song.title}.")
+                st.rerun()
+
+        st.markdown("#### Portable Song YAML")
+        st.caption(
+            "Edit package-based melody data here for seed files or advanced "
+            "manual authoring."
+        )
+        yaml_text = st.text_area(
+            "Song YAML",
+            value=yaml_defaults,
+            height=340,
+            key=f"song-yaml-{editor_target}",
+        )
+        if st.button(
+            "Save YAML song",
+            key=f"save-yaml-song-{editor_target}",
+            use_container_width=True,
+        ):
+            try:
+                song = build_song_from_yaml_text(yaml_text)
+                app.repository.upsert_song(song)
+            except ValueError as error:
+                st.error(str(error))
+            else:
+                st.success(f"Saved {song.title} from YAML.")
+                st.session_state["selected_song_id"] = song.id
                 st.rerun()
 
 
@@ -316,17 +353,15 @@ def _render_lyrics_tab(song: Song) -> None:
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
-    """Render melody dictation as spacious editable line cards."""
-    melody_map = _melody_by_segment(song.melody_notes)
+    """Render melody dictation as package-based grouped line cards."""
     for section in song.lyric_sections:
         st.markdown(f"### {section.title or section.id}")
         for segment in section.segments:
-            _render_melody_line_card(
+            _render_melody_segment_card(
                 app,
                 song,
                 section,
                 segment,
-                melody_map.get(segment.id, []),
             )
 
 
@@ -370,64 +405,145 @@ def _render_rhythm_tab(song: Song) -> None:
             st.write(f"- {note.text}")
 
 
-def _render_melody_line_card(
+def _render_melody_segment_card(
     app: Application,
     song: Song,
     section: LyricSection,
     segment: LyricSegment,
-    notes: list[MelodyNote],
 ) -> None:
-    """Render one melody line with inline edit controls."""
+    """Render one line of melody packages with per-package editing."""
     with st.container(border=True):
-        content_col, action_col = st.columns([12, 1])
-        with content_col:
-            st.markdown(
-                _melody_line_markup(
-                    segment.text,
-                    _format_melody_note_sequence(notes) or "No notes yet",
-                ),
-                unsafe_allow_html=True,
-            )
-        with action_col, st.popover(
-            "Edit",
-            icon=":material/edit:",
-            use_container_width=True,
-        ):
-            st.caption(section.title or section.id)
-            lyric_value = st.text_area(
-                "Lyrics",
-                value=segment.text,
-                height=100,
-                key=f"melody-lyrics-{song.id}-{segment.id}",
-            )
-            notes_value = st.text_area(
-                "Notes",
-                value=_format_melody_note_sequence(notes),
-                height=120,
-                help=(
-                    "Use notes like C, Bb, or F#4 separated by commas "
-                    "or spaces."
-                ),
-                key=f"melody-notes-{song.id}-{segment.id}",
-            )
+        st.caption(segment.text)
+        packages = sorted(
+            segment.melody_packages,
+            key=lambda package: package.order,
+        )
+        if not packages:
+            st.info("No melody packages yet.")
             if st.button(
-                "Save line",
-                key=f"melody-save-{song.id}-{segment.id}",
+                "Add first package",
+                key=f"melody-add-first-{song.id}-{segment.id}",
                 use_container_width=True,
             ):
-                try:
-                    _apply_melody_line_update(
-                        song,
-                        segment_id=segment.id,
-                        lyric_text=lyric_value,
-                        notes_text=notes_value,
+                _insert_melody_package(
+                    song,
+                    segment_id=segment.id,
+                    anchor_package_id=None,
+                    position="after",
+                )
+                app.repository.upsert_song(song)
+                st.rerun()
+            return
+
+        for package_chunk in _chunked(packages, 4):
+            columns = st.columns(len(package_chunk))
+            for column, package in zip(columns, package_chunk, strict=True):
+                with column:
+                    st.markdown(
+                        _melody_package_markup(package),
+                        unsafe_allow_html=True,
                     )
-                    app.repository.upsert_song(song)
-                except ValueError as error:
-                    st.error(str(error))
-                else:
-                    st.success("Updated melody line.")
-                    st.rerun()
+                    with st.popover(
+                        "Edit",
+                        icon=":material/edit:",
+                        use_container_width=True,
+                    ):
+                        st.caption(section.title or section.id)
+                        package_text = st.text_input(
+                            "Package text",
+                            value=package.text,
+                            key=(
+                                f"package-text-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                        )
+                        notes_value = st.text_area(
+                            "Package notes",
+                            value=_format_package_note_sequence(package),
+                            height=120,
+                            help=(
+                                "Use notes like C, Bb, or F#4 separated by "
+                                "commas or spaces."
+                            ),
+                            key=(
+                                f"package-notes-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                        )
+                        if st.button(
+                            "Save package",
+                            key=(
+                                f"package-save-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                            use_container_width=True,
+                        ):
+                            try:
+                                _update_melody_package(
+                                    song,
+                                    segment_id=segment.id,
+                                    package_id=package.id,
+                                    package_text=package_text,
+                                    notes_text=notes_value,
+                                )
+                                app.repository.upsert_song(song)
+                            except ValueError as error:
+                                st.error(str(error))
+                            else:
+                                st.success("Updated melody package.")
+                                st.rerun()
+
+                        add_before_clicked = st.button(
+                            "Add before",
+                            key=(
+                                f"package-add-before-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                            use_container_width=True,
+                        )
+                        add_after_clicked = st.button(
+                            "Add after",
+                            key=(
+                                f"package-add-after-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                            use_container_width=True,
+                        )
+                        delete_clicked = st.button(
+                            "Delete package",
+                            key=(
+                                f"package-delete-{song.id}-{segment.id}-"
+                                f"{package.id}"
+                            ),
+                            use_container_width=True,
+                        )
+
+                        if add_before_clicked:
+                            _insert_melody_package(
+                                song,
+                                segment_id=segment.id,
+                                anchor_package_id=package.id,
+                                position="before",
+                            )
+                            app.repository.upsert_song(song)
+                            st.rerun()
+                        if add_after_clicked:
+                            _insert_melody_package(
+                                song,
+                                segment_id=segment.id,
+                                anchor_package_id=package.id,
+                                position="after",
+                            )
+                            app.repository.upsert_song(song)
+                            st.rerun()
+                        if delete_clicked:
+                            _delete_melody_package(
+                                song,
+                                segment_id=segment.id,
+                                package_id=package.id,
+                            )
+                            app.repository.upsert_song(song)
+                            st.rerun()
 
 
 def _song_summary(song: Song) -> str:
@@ -440,6 +556,32 @@ def _song_summary(song: Song) -> str:
     if song.tempo_bpm:
         parts.append(f"{song.tempo_bpm} BPM")
     return " | ".join(parts)
+
+
+def _blank_song_yaml_text() -> str:
+    """Return a starter portable YAML scaffold for a new song."""
+    return "\n".join(
+        [
+            "song:",
+            "  id: new-song",
+            "  title: New Song",
+            "  artist: ''",
+            "  description: ''",
+            "  key_signature: C major",
+            "  time_signature: 4/4",
+            "  tempo_bpm: 60",
+            "sections:",
+            "  - id: verse-1",
+            "    title: Verse 1",
+            "    lines:",
+            "      - lyrics: Type the lyric line here",
+            "        chords: [C]",
+            "        melody_packages:",
+            "          - text: Type",
+            "            notes: [C]",
+            "annotations: []",
+        ]
+    )
 
 
 def _lyrics_sheet_markup(song: Song) -> str:
@@ -549,21 +691,27 @@ def _rhythm_by_segment(
     return grouped
 
 
-def _melody_line_markup(lyric: str, notes_text: str) -> str:
-    """Render one melody line with generous spacing and hierarchy."""
+def _melody_package_markup(package: MelodyPackage) -> str:
+    """Render one melody package block with grouped notes and lyric text."""
     return "".join(
         [
-            '<div class="sn-melody-line">',
-            f'<div class="sn-melody-notes">{escape(notes_text)}</div>',
-            f'<div class="sn-melody-lyric">{escape(lyric)}</div>',
+            '<div class="sn-melody-package">',
+            (
+                f'<div class="sn-melody-package-notes">'
+                f"{escape(_format_package_note_sequence(package))}</div>"
+            ),
+            (
+                f'<div class="sn-melody-package-text">'
+                f"{escape(package.text)}</div>"
+            ),
             "</div>",
         ]
     )
 
 
-def _format_melody_note_sequence(notes: list[MelodyNote]) -> str:
-    """Render melody notes as a readable space-separated string."""
-    return " ".join(note.display_label for note in notes)
+def _format_package_note_sequence(package: MelodyPackage) -> str:
+    """Render package notes as a readable grouped string."""
+    return " ".join(note.display_label for note in package.notes)
 
 
 def _parse_note_sequence(notes_text: str) -> list[str]:
@@ -578,51 +726,34 @@ def _parse_note_sequence(notes_text: str) -> list[str]:
     return tokens
 
 
-def _apply_melody_line_update(
+def _update_melody_package(
     song: Song,
     *,
     segment_id: str,
-    lyric_text: str,
+    package_id: str,
+    package_text: str,
     notes_text: str,
 ) -> None:
-    """Update one lyric line and its melody note sequence."""
-    lyric_value = lyric_text.strip()
-    if not lyric_value:
-        raise ValueError("Lyrics cannot be empty.")
-
+    """Update one melody package and validate the song."""
+    text_value = package_text.strip()
+    if not text_value:
+        raise ValueError("Package text cannot be empty.")
     replacement_tokens = _parse_note_sequence(notes_text)
-    existing_notes = sorted(
-        [note for note in song.melody_notes if note.segment_id == segment_id],
-        key=lambda note: note.order,
+    segment = _find_segment(song, segment_id)
+    package = next(
+        (
+            package
+            for package in segment.melody_packages
+            if package.id == package_id
+        ),
+        None,
     )
-    if not existing_notes:
-        existing_notes = [
-            MelodyNote(
-                segment_id=segment_id,
-                note="C",
-                octave=None,
-                duration_beats=1.0,
-                order=0,
-            )
-        ]
+    if package is None:
+        raise ValueError("Selected melody package could not be matched.")
 
-    replaced_segment = False
-    for section in song.lyric_sections:
-        for segment in section.segments:
-            if segment.id == segment_id:
-                segment.text = lyric_value
-                replaced_segment = True
-                break
-        if replaced_segment:
-            break
-
-    if not replaced_segment:
-        raise ValueError(
-            "Selected melody line could not be matched to a lyric segment."
-        )
-
-    duration_template = [note.duration_beats for note in existing_notes]
-    new_segment_notes = [
+    duration_template = [note.duration_beats for note in package.notes]
+    package.text = text_value
+    package.notes = [
         _parse_note_token(
             segment_id,
             token,
@@ -631,10 +762,95 @@ def _apply_melody_line_update(
         )
         for index, token in enumerate(replacement_tokens)
     ]
-    song.melody_notes = [
-        note for note in song.melody_notes if note.segment_id != segment_id
-    ] + new_segment_notes
-    Song.model_validate(song.model_dump())
+    _assign_validated_song(song)
+
+
+def _insert_melody_package(
+    song: Song,
+    *,
+    segment_id: str,
+    anchor_package_id: str | None,
+    position: str,
+) -> None:
+    """Insert a new melody package around an anchor package."""
+    segment = _find_segment(song, segment_id)
+    packages = sorted(
+        segment.melody_packages,
+        key=lambda package: package.order,
+    )
+    insert_at = len(packages)
+    if anchor_package_id is not None:
+        for index, package in enumerate(packages):
+            if package.id == anchor_package_id:
+                insert_at = index if position == "before" else index + 1
+                break
+
+    packages.insert(
+        insert_at,
+        MelodyPackage(
+            id=_next_package_id(segment),
+            text="New syllable",
+            order=insert_at,
+            notes=[
+                MelodyNote(
+                    segment_id=segment.id,
+                    note="C",
+                    octave=None,
+                    duration_beats=1.0,
+                    order=0,
+                )
+            ],
+        ),
+    )
+    for index, package in enumerate(packages):
+        package.order = index
+    segment.melody_packages = packages
+    _assign_validated_song(song)
+
+
+def _delete_melody_package(
+    song: Song,
+    *,
+    segment_id: str,
+    package_id: str,
+) -> None:
+    """Delete one melody package from a lyric line."""
+    segment = _find_segment(song, segment_id)
+    segment.melody_packages = [
+        package
+        for package in segment.melody_packages
+        if package.id != package_id
+    ]
+    for index, package in enumerate(segment.melody_packages):
+        package.order = index
+    _assign_validated_song(song)
+
+
+def _find_segment(song: Song, segment_id: str) -> LyricSegment:
+    """Return one lyric segment by id or raise a useful error."""
+    for section in song.lyric_sections:
+        for segment in section.segments:
+            if segment.id == segment_id:
+                return segment
+    raise ValueError("Selected melody line could not be matched.")
+
+
+def _next_package_id(segment: LyricSegment) -> str:
+    """Return the next unique package id for a lyric segment."""
+    existing_ids = {package.id for package in segment.melody_packages}
+    next_index = 1
+    while True:
+        candidate = f"{segment.id}-pkg-{next_index}"
+        if candidate not in existing_ids:
+            return candidate
+        next_index += 1
+
+
+def _assign_validated_song(song: Song) -> None:
+    """Re-validate and write canonical package-derived data back to the song."""
+    validated = Song.model_validate(song.model_dump())
+    song.lyric_sections = validated.lyric_sections
+    song.melody_notes = validated.melody_notes
 
 
 def _duration_for_index(duration_template: list[float], index: int) -> float:
@@ -642,6 +858,11 @@ def _duration_for_index(duration_template: list[float], index: int) -> float:
     if index < len(duration_template):
         return duration_template[index]
     return 1.0
+
+
+def _chunked(items: list[T], size: int) -> list[list[T]]:
+    """Split a list into fixed-size chunks."""
+    return [items[index : index + size] for index in range(0, len(items), size)]
 
 
 def _parse_note_token(

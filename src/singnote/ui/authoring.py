@@ -15,6 +15,7 @@ from singnote.domain.models import (
     Song,
     TeacherAnnotation,
 )
+from singnote.seeds import song_from_portable_text, song_to_portable_text
 
 
 @dataclass(frozen=True)
@@ -60,6 +61,16 @@ def build_song_from_editor_values(values: SongEditorValues) -> Song:
         ),
     )
     return song
+
+
+def build_song_from_yaml_text(yaml_text: str) -> Song:
+    """Convert portable song YAML text into a validated song model."""
+    return song_from_portable_text(yaml_text)
+
+
+def yaml_text_from_song(song: Song) -> str:
+    """Serialize a song into portable YAML for external editing."""
+    return song_to_portable_text(song)
 
 
 def editor_values_from_song(song: Song) -> SongEditorValues:
@@ -170,18 +181,15 @@ def _build_section(
     section_order: int,
 ) -> LyricSection:
     segments: list[LyricSegment] = []
-    segment_order = 0
     section_slug = _slugify(title)
-    for line in lines:
-        for token in line.split():
-            segments.append(
-                LyricSegment(
-                    id=f"{section_slug}-{segment_order + 1}",
-                    text=token,
-                    order=segment_order,
-                )
+    for segment_order, line in enumerate(lines):
+        segments.append(
+            LyricSegment(
+                id=f"{section_slug}-{segment_order + 1}",
+                text=line,
+                order=segment_order,
             )
-            segment_order += 1
+        )
 
     return LyricSection(
         id=section_slug,

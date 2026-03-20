@@ -1,4 +1,4 @@
-"""JSON-backed seed song loading for SingNote."""
+"""Portable song loading and serialization helpers for SingNote."""
 
 from __future__ import annotations
 
@@ -8,11 +8,14 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, cast
 
+import yaml  # type: ignore[import-untyped]
+
 from singnote.domain.models import (
     ChordEvent,
     LyricSection,
     LyricSegment,
     MelodyNote,
+    MelodyPackage,
     RhythmCue,
     Song,
     TeacherAnnotation,
@@ -22,32 +25,43 @@ SEED_SONGS_DIR = Path(__file__).resolve().parents[2] / "seed_data" / "songs"
 
 
 def build_sample_songs(seed_songs_dir: Path | None = None) -> list[Song]:
-    """Load seed songs from JSON files."""
+    """Load seed songs from YAML or JSON files."""
     songs_dir = seed_songs_dir or SEED_SONGS_DIR
     if not songs_dir.exists():
         return []
 
-    return [_load_song_file(path) for path in sorted(songs_dir.glob("*.json"))]
-
-
-def _load_song_file(path: Path) -> Song:
-    """Load one seed song file into a validated domain model."""
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        raise ValueError(f"Seed file '{path.name}' must contain a JSON object.")
-
-    if "lyric_sections" in payload:
-        return Song.model_validate(payload)
-
-    return _song_from_authored_payload(payload)
-
-
-def _song_from_authored_payload(payload: dict[str, Any]) -> Song:
-    """Build a song from the human-authored line-based seed schema."""
-    raw_song = _as_dict(payload.get("song", payload), "song")
-    section_models, chord_events, melody_notes, rhythm_cues = _parse_sections(
-        payload
+    paths = sorted(
+        [
+            *songs_dir.glob("*.yaml"),
+            *songs_dir.glob("*.yml"),
+            *songs_dir.glob("*.json"),
+        ]
     )
+    return [_load_song_file(path) for path in paths]
+
+
+def song_from_portable_text(payload_text: str) -> Song:
+    """Parse portable YAML or JSON text into a validated song."""
+    payload = yaml.safe_load(payload_text)
+    if not isinstance(payload, dict):
+        raise ValueError("Song text must contain a YAML or JSON object.")
+    return song_from_portable_payload(payload)
+
+
+def song_to_portable_text(song: Song) -> str:
+    """Serialize a song into the YAML-first portable authoring format."""
+    yaml_text = yaml.safe_dump(
+        song_to_portable_payload(song),
+        sort_keys=False,
+        allow_unicode=False,
+    )
+    return cast(str, yaml_text)
+
+
+def song_from_portable_payload(payload: dict[str, Any]) -> Song:
+    """Build a song from the human-authored portable payload schema."""
+    raw_song = _as_dict(payload.get("song", payload), "song")
+    section_models, chord_events, rhythm_cues = _parse_sections(payload)
     annotations = _parse_annotations(payload)
 
     return Song(
@@ -62,20 +76,117 @@ def _song_from_authored_payload(payload: dict[str, Any]) -> Song:
         strumming_pattern=_optional_str(raw_song.get("strumming_pattern")),
         lyric_sections=section_models,
         chord_events=chord_events,
-        melody_notes=melody_notes,
         rhythm_cues=rhythm_cues,
         teacher_annotations=annotations,
     )
 
 
+def song_to_portable_payload(song: Song) -> dict[str, Any]:
+    """Serialize a song to the portable authoring payload."""
+    chord_map = _chords_by_segment(song.chord_events)
+    rhythm_map = _rhythm_by_segment(song.rhythm_cues)
+
+    sections: list[dict[str, Any]] = []
+    for section in song.lyric_sections:
+        lines: list[dict[str, Any]] = []
+        for segment in section.segments:
+            line_payload: dict[str, Any] = {
+                "id": segment.id,
+                "lyrics": segment.text,
+            }
+            chord_events = chord_map.get(segment.id, [])
+            if chord_events:
+                if any(event.position != "before" for event in chord_events):
+                    line_payload["chords"] = [
+                        {
+                            "symbol": event.chord,
+                            "roman_numeral": event.roman_numeral,
+                            "position": event.position,
+                        }
+                        for event in chord_events
+                    ]
+                else:
+                    line_payload["chords"] = [
+                        event.chord for event in chord_events
+                    ]
+                    roman_numerals = [
+                        event.roman_numeral or "" for event in chord_events
+                    ]
+                    if any(roman_numeral for roman_numeral in roman_numerals):
+                        line_payload["roman_numerals"] = roman_numerals
+
+            if segment.melody_packages:
+                line_payload["melody_packages"] = [
+                    _package_to_payload(package)
+                    for package in sorted(
+                        segment.melody_packages,
+                        key=lambda package: package.order,
+                    )
+                ]
+
+            rhythm_cues = rhythm_map.get(segment.id, [])
+            if rhythm_cues:
+                primary_cue = rhythm_cues[0]
+                if primary_cue.emphasis is None:
+                    line_payload["rhythm"] = primary_cue.pattern
+                else:
+                    line_payload["rhythm"] = {
+                        "pattern": primary_cue.pattern,
+                        "emphasis": primary_cue.emphasis,
+                    }
+
+            lines.append(line_payload)
+
+        sections.append(
+            {
+                "id": section.id,
+                "title": section.title,
+                "lines": lines,
+            }
+        )
+
+    return {
+        "schema_version": 2,
+        "song": {
+            "id": song.id,
+            "title": song.title,
+            "artist": song.artist,
+            "description": song.description,
+            "key_signature": song.key_signature,
+            "time_signature": song.time_signature,
+            "tempo_bpm": song.tempo_bpm,
+            "tempo_notes": song.tempo_notes,
+            "strumming_pattern": song.strumming_pattern,
+        },
+        "sections": sections,
+        "annotations": [
+            annotation.model_dump(mode="json")
+            for annotation in song.teacher_annotations
+        ],
+    }
+
+
+def _load_song_file(path: Path) -> Song:
+    """Load one portable song file into a validated domain model."""
+    if path.suffix.lower() == ".json":
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+
+    if not isinstance(payload, dict):
+        raise ValueError(f"Seed file '{path.name}' must contain an object.")
+
+    if "lyric_sections" in payload:
+        return Song.model_validate(payload)
+
+    return song_from_portable_payload(payload)
+
+
 def _parse_sections(
     payload: Mapping[str, Any],
-) -> tuple[
-    list[LyricSection], list[ChordEvent], list[MelodyNote], list[RhythmCue]
-]:
+) -> tuple[list[LyricSection], list[ChordEvent], list[RhythmCue]]:
     section_models: list[LyricSection] = []
     chord_events: list[ChordEvent] = []
-    melody_notes: list[MelodyNote] = []
     rhythm_cues: list[RhythmCue] = []
 
     for section_order, raw_section in enumerate(
@@ -96,15 +207,20 @@ def _parse_sections(
             segment_id = _optional_str(line.get("id")) or (
                 f"{section_id}-{line_order + 1}"
             )
+            lyric_text = _required_str(line, "lyrics")
             segments.append(
                 LyricSegment(
                     id=segment_id,
-                    text=_required_str(line, "lyrics"),
+                    text=lyric_text,
                     order=line_order,
+                    melody_packages=_parse_melody_packages(
+                        line,
+                        segment_id=segment_id,
+                        lyric_text=lyric_text,
+                    ),
                 )
             )
             chord_events.extend(_parse_chords(line, segment_id))
-            melody_notes.extend(_parse_melody(line, segment_id))
             rhythm_cue = _parse_rhythm(line, segment_id)
             if rhythm_cue is not None:
                 rhythm_cues.append(rhythm_cue)
@@ -118,7 +234,7 @@ def _parse_sections(
             )
         )
 
-    return section_models, chord_events, melody_notes, rhythm_cues
+    return section_models, chord_events, rhythm_cues
 
 
 def _parse_chords(
@@ -161,17 +277,60 @@ def _parse_chords(
     return events
 
 
-def _parse_melody(
-    line: Mapping[str, Any], segment_id: str
+def _parse_melody_packages(
+    line: Mapping[str, Any],
+    *,
+    segment_id: str,
+    lyric_text: str,
+) -> list[MelodyPackage]:
+    raw_packages = line.get("melody_packages")
+    if raw_packages is None:
+        raw_legacy_melody = line.get("melody")
+        if raw_legacy_melody is None:
+            return []
+        raw_packages = [
+            {
+                "id": f"{segment_id}-pkg-1",
+                "text": lyric_text,
+                "notes": raw_legacy_melody,
+            }
+        ]
+
+    packages: list[MelodyPackage] = []
+    for package_order, raw_package in enumerate(
+        _as_list(raw_packages, "melody_packages")
+    ):
+        package = _as_dict(raw_package, f"melody_packages[{package_order}]")
+        package_id = _optional_str(package.get("id")) or (
+            f"{segment_id}-pkg-{package_order + 1}"
+        )
+        notes = _parse_package_notes(
+            package.get("notes"),
+            segment_id=segment_id,
+        )
+        packages.append(
+            MelodyPackage(
+                id=package_id,
+                text=_required_str(package, "text"),
+                order=package_order,
+                notes=notes,
+            )
+        )
+    return packages
+
+
+def _parse_package_notes(
+    raw_notes: Any,
+    *,
+    segment_id: str,
 ) -> list[MelodyNote]:
     notes: list[MelodyNote] = []
-    raw_melody = _as_list(line.get("melody", []), "melody")
-    for order, raw_note in enumerate(raw_melody):
+    for note_order, raw_note in enumerate(_as_list(raw_notes, "notes")):
         if isinstance(raw_note, str):
             note, octave = _split_note_token(raw_note)
             duration_beats = 1.0
         else:
-            note_data = _as_dict(raw_note, f"melody[{order}]")
+            note_data = _as_dict(raw_note, f"notes[{note_order}]")
             note, octave = _split_note_token(_required_str(note_data, "note"))
             duration_beats = float(note_data.get("beats", 1.0))
 
@@ -181,10 +340,12 @@ def _parse_melody(
                 note=note,
                 octave=octave,
                 duration_beats=duration_beats,
-                order=order,
+                order=note_order,
             )
         )
 
+    if not notes:
+        raise ValueError("Melody packages must contain at least one note.")
     return notes
 
 
@@ -215,6 +376,47 @@ def _parse_annotations(payload: Mapping[str, Any]) -> list[TeacherAnnotation]:
     ]
 
 
+def _package_to_payload(package: MelodyPackage) -> dict[str, Any]:
+    """Serialize one melody package into the portable payload shape."""
+    return {
+        "id": package.id,
+        "text": package.text,
+        "notes": [_melody_note_to_payload(note) for note in package.notes],
+    }
+
+
+def _melody_note_to_payload(note: MelodyNote) -> str | dict[str, Any]:
+    """Serialize one melody note compactly when possible."""
+    if note.duration_beats == 1.0:
+        return note.display_label
+    return {
+        "note": note.display_label,
+        "beats": note.duration_beats,
+    }
+
+
+def _chords_by_segment(
+    chord_events: list[ChordEvent],
+) -> dict[str, list[ChordEvent]]:
+    """Group chord events by lyric segment."""
+    grouped: dict[str, list[ChordEvent]] = {}
+    for event in chord_events:
+        grouped.setdefault(event.segment_id, []).append(event)
+    for segment_id in grouped:
+        grouped[segment_id].sort(key=lambda event: event.order)
+    return grouped
+
+
+def _rhythm_by_segment(
+    rhythm_cues: list[RhythmCue],
+) -> dict[str, list[RhythmCue]]:
+    """Group rhythm cues by lyric segment."""
+    grouped: dict[str, list[RhythmCue]] = {}
+    for cue in rhythm_cues:
+        grouped.setdefault(cue.segment_id, []).append(cue)
+    return grouped
+
+
 def _split_note_token(token: str) -> tuple[str, int | None]:
     match = re.fullmatch(r"([A-Ga-g][#b]?)(\d)?", token.strip())
     if match is None:
@@ -228,7 +430,7 @@ def _split_note_token(token: str) -> tuple[str, int | None]:
 
 def _as_dict(value: Any, label: str) -> dict[str, Any]:
     if not isinstance(value, dict):
-        raise ValueError(f"{label} must be a JSON object.")
+        raise ValueError(f"{label} must be a mapping object.")
     return value
 
 
@@ -237,7 +439,7 @@ def _as_list(value: Any, label: str) -> list[Any]:
         return []
     if isinstance(value, Sequence) and not isinstance(value, str | bytes):
         return list(value)
-    raise ValueError(f"{label} must be a JSON array.")
+    raise ValueError(f"{label} must be a list.")
 
 
 def _required_str(data: Mapping[str, Any], key: str) -> str:

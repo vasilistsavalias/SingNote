@@ -1,0 +1,229 @@
+schema_version: 2
+song:
+  id: wish-you-were-here
+  title: Wish You Were Here
+  artist: Pink Floyd
+  description: "Sourced harmony and rhythm guide in G major with manual melody dictation for lesson use."
+  key_signature: G major
+  time_signature: 4/4
+  tempo_bpm: 61
+  tempo_notes: "Many practice references feel the song around 61 BPM, while some tempo analyzers list it near 122 BPM in double-time."
+  strumming_pattern: "Feel the song in even 8ths. Common lesson pattern per bar pair: D D U | D D U U, with the intro kept lighter and more ringing."
+sections:
+  - id: verse-1
+    title: Verse 1
+    lines:
+      - id: verse-1-1
+        lyrics: So, so you think you can tell,
+        chords: [C, D/F#]
+        roman_numerals: [IV, V/3]
+        melody_packages:
+          - id: verse-1-1-pkg-1
+            text: So
+            notes: [C, B, G]
+          - id: verse-1-1-pkg-2
+            text: so you think you can tell
+            notes: [C, B, C, B, G, A]
+        rhythm:
+          pattern: 2-bar pickup
+          emphasis: change chord mid-line
+      - id: verse-1-2
+        lyrics: Heaven from Hell, blue skies from pain.
+        chords: [Am/E, G]
+        roman_numerals: [ii/5, I]
+        melody_packages:
+          - id: verse-1-2-pkg-1
+            text: heaven from hell
+            notes: [D, B, D, E]
+          - id: verse-1-2-pkg-2
+            text: blue skies from pain
+            notes: [E, E, C, D]
+        rhythm:
+          pattern: held line ending
+          emphasis: do not rush beat 4
+      - id: verse-1-3
+        lyrics: Can you tell a green field from a cold steel rail, a smile from a veil,
+        chords: [D/F#, C, Am]
+        roman_numerals: [V/3, IV, ii]
+        melody_packages:
+          - id: verse-1-3-pkg-1
+            text: can you tell a green field
+            notes: [C, B, C, B, G, A]
+          - id: verse-1-3-pkg-2
+            text: from a cold steel rail
+            notes: [D, D, D, C, B, C, B, A]
+          - id: verse-1-3-pkg-3
+            text: a smile from a veil
+            notes: [C, D, C, B, C]
+        rhythm:
+          pattern: even 8ths
+          emphasis: keep the phrases connected
+      - id: verse-1-4
+        lyrics: Do you think you can tell?
+        chords: [G]
+        roman_numerals: [I]
+        melody_packages:
+          - id: verse-1-4-pkg-1
+            text: do you think you can tell
+            notes: [C, B, C, B, G, A]
+        rhythm: question tag
+  - id: verse-2
+    title: Verse 2
+    lines:
+      - id: verse-2-1
+        lyrics: Did they get you to trade your heroes for ghosts,
+        chords: [C, D/F#]
+        roman_numerals: [IV, V/3]
+        melody_packages:
+          - id: verse-2-1-pkg-1
+            text: did they get you to trade
+            notes: [D, D, D, C, D, E]
+          - id: verse-2-1-pkg-2
+            text: your heroes for ghosts
+            notes: [E, E, D, C, D]
+        rhythm:
+          pattern: even 8ths
+          emphasis: hold the line ending
+      - id: verse-2-2
+        lyrics: Hot ashes for trees, hot air for a cool breeze, cold comfort for change,
+        chords: [Am/E, G, D/F#]
+        roman_numerals: [ii/5, I, V/3]
+        melody_packages:
+          - id: verse-2-2-pkg-1
+            text: hot ashes for trees
+            notes: [D, D, D, C, D, E]
+          - id: verse-2-2-pkg-2
+            text: hot air for a cool breeze
+            notes: [E, E, D, C, D, D]
+          - id: verse-2-2-pkg-3
+            text: cold comfort for change
+            notes: [D, C, B, G, A]
+        rhythm:
+          pattern: even 8ths
+          emphasis: stay relaxed through the long sentence
+      - id: verse-2-3
+        lyrics: And did you exchange a walk on part in the war for a lead role in a cage?
+        chords: [C, Am, G]
+        roman_numerals: [IV, ii, I]
+        melody_packages:
+          - id: verse-2-3-pkg-1
+            text: did you exchange
+            notes: [D, D, C, B, C, B, A]
+          - id: verse-2-3-pkg-2
+            text: a walk on part in the war
+            notes: [B, C, B, C, B, G, A]
+          - id: verse-2-3-pkg-3
+            text: for a lead role in a cage
+            notes: [B, B, C, B, A, G, A]
+        rhythm:
+          pattern: cadential build
+          emphasis: grow into the final question
+  - id: instrumental-1
+    title: Instrumental
+    lines:
+      - id: instrumental-1-1
+        lyrics: (instrumental)
+        chords: [Em7, G, Em7, G]
+        roman_numerals: [vi7, I, vi7, I]
+        rhythm:
+          pattern: steady 8ths
+          emphasis: let open strings ring
+      - id: instrumental-1-2
+        lyrics: (instrumental)
+        chords: [Em7, A7sus4, Em7, A7sus4, G]
+        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I]
+        rhythm:
+          pattern: steady 8ths
+          emphasis: lean into the sus push before G
+  - id: verse-3
+    title: Verse 3
+    lines:
+      - id: verse-3-1
+        lyrics: How I wish, how I wish you were here.
+        chords: [C, D/F#]
+        roman_numerals: [IV, V/3]
+        melody_packages:
+          - id: verse-3-1-pkg-1
+            text: How I wish, how I wish you were here
+            notes: [B, C, B, B, C, B, G, G, A]
+        rhythm:
+          pattern: open the sound
+          emphasis: let the phrase breathe
+      - id: verse-3-2
+        lyrics: We're just two lost souls swimming in a fish bowl, year after year,
+        chords: [Am/E, G, D/F#]
+        roman_numerals: [ii/5, I, V/3]
+        melody_packages:
+          - id: verse-3-2-pkg-1
+            text: We're just two lost souls swimming in a fish bowl
+            notes: [B, D, E, E, E, E, D, E, D, E, E]
+          - id: verse-3-2-pkg-2
+            text: year after year
+            notes: [D, D, B, D]
+        rhythm:
+          pattern: floating pulse
+          emphasis: keep the line legato
+      - id: verse-3-3
+        lyrics: Running over the same old ground. What have we found?
+        chords: [C]
+        roman_numerals: [IV]
+        melody_packages:
+          - id: verse-3-3-pkg-1
+            text: running over the same old ground
+            notes: [D, D, D, B, D, B]
+          - id: verse-3-3-pkg-2
+            text: what have we found
+            notes: [C, D, C, D, C, B, G]
+        rhythm:
+          pattern: steady forward motion
+          emphasis: slight lift at the question
+      - id: verse-3-4
+        lyrics: The same old fears. Wish you were here!
+        chords: [Am, G]
+        roman_numerals: [ii, I]
+        melody_packages:
+          - id: verse-3-4-pkg-1
+            text: the same old fears
+            notes: [D, C, B, C, B, G]
+          - id: verse-3-4-pkg-2
+            text: wish you were here
+            notes: [C, C, G, C, B, G]
+        rhythm:
+          pattern: final tag
+          emphasis: soft landing on the last line
+  - id: instrumental-2
+    title: Instrumental Outro
+    lines:
+      - id: instrumental-2-1
+        lyrics: (instrumental)
+        chords: [Em7, G, Em7, G]
+        roman_numerals: [vi7, I, vi7, I]
+        rhythm: steady 8ths
+      - id: instrumental-2-2
+        lyrics: (instrumental)
+        chords: [Em7, A7sus4, Em7, A7sus4, G, G]
+        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I, I]
+        rhythm: fade out
+      - id: instrumental-2-3
+        lyrics: (instrumental)
+        chords: [Em7, G, Em7, G]
+        roman_numerals: [vi7, I, vi7, I]
+        rhythm: steady 8ths
+      - id: instrumental-2-4
+        lyrics: (instrumental)
+        chords: [Em7, A7sus4, Em7, A7sus4, G, G]
+        roman_numerals: [vi7, II7sus4, vi7, II7sus4, I, I]
+        rhythm: fade out
+annotations:
+  - target_type: song
+    target_id: wish-you-were-here
+    text: Key center is G major, but the intro opens on Em7 so the relative-minor color should still feel present.
+  - target_type: song
+    target_id: wish-you-were-here
+    text: This seed is intended as a lesson reference and can be edited in the app for your own class version.
+  - target_type: song
+    target_id: wish-you-were-here
+    text: Melody package text and notes can be corrected in place from the melody tab.
+  - target_type: section
+    target_id: verse-3
+    text: Open the tone in the final verse and keep the groove relaxed.

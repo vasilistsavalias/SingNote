@@ -7,6 +7,7 @@ from singnote.domain.models import (
     LyricSection,
     LyricSegment,
     MelodyNote,
+    MelodyPackage,
     RhythmCue,
     Song,
     TeacherAnnotation,
@@ -31,29 +32,68 @@ def build_sample_song(song_id: str = "wish-you-were-here") -> Song:
                 title="Verse 1",
                 order=0,
                 segments=[
-                    LyricSegment(id="seg-1", text="So", order=0),
-                    LyricSegment(id="seg-2", text="you", order=1),
-                    LyricSegment(id="seg-3", text="think", order=2),
+                    LyricSegment(
+                        id="seg-1",
+                        text="So you think",
+                        order=0,
+                        melody_packages=[
+                            MelodyPackage(
+                                id="seg-1-pkg-1",
+                                text="So",
+                                order=0,
+                                notes=[
+                                    MelodyNote(
+                                        segment_id="seg-1",
+                                        note="E",
+                                        octave=4,
+                                        duration_beats=1.0,
+                                        order=0,
+                                    )
+                                ],
+                            ),
+                            MelodyPackage(
+                                id="seg-1-pkg-2",
+                                text="you think",
+                                order=1,
+                                notes=[
+                                    MelodyNote(
+                                        segment_id="seg-1",
+                                        note="G",
+                                        octave=4,
+                                        duration_beats=1.0,
+                                        order=0,
+                                    )
+                                ],
+                            ),
+                        ],
+                    ),
+                    LyricSegment(
+                        id="seg-2",
+                        text="you can tell",
+                        order=1,
+                        melody_packages=[
+                            MelodyPackage(
+                                id="seg-2-pkg-1",
+                                text="you",
+                                order=0,
+                                notes=[
+                                    MelodyNote(
+                                        segment_id="seg-2",
+                                        note="A",
+                                        octave=4,
+                                        duration_beats=1.0,
+                                        order=0,
+                                    )
+                                ],
+                            )
+                        ],
+                    ),
                 ],
             )
         ],
         chord_events=[
             ChordEvent(segment_id="seg-1", chord="C", position="before"),
-            ChordEvent(segment_id="seg-3", chord="G", position="before"),
-        ],
-        melody_notes=[
-            MelodyNote(
-                segment_id="seg-1",
-                note="E",
-                octave=4,
-                duration_beats=1.0,
-            ),
-            MelodyNote(
-                segment_id="seg-2",
-                note="G",
-                octave=4,
-                duration_beats=1.0,
-            ),
+            ChordEvent(segment_id="seg-2", chord="G", position="before"),
         ],
         rhythm_cues=[
             RhythmCue(segment_id="seg-1", pattern="quarter"),

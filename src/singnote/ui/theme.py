@@ -246,26 +246,31 @@ def inject_global_styles() -> None:
           line-height: 1.4;
         }
 
-        .sn-melody-line {
-          padding: 0.35rem 0 0.2rem;
+        .sn-melody-package {
+          min-height: 9rem;
+          margin-bottom: 0.5rem;
+          border: 1px solid var(--sn-line);
+          border-radius: 20px;
+          background: rgba(255, 251, 245, 0.94);
+          padding: 0.95rem 0.95rem 1rem;
         }
 
-        .sn-melody-notes {
+        .sn-melody-package-notes {
           color: #7b8494;
           font-family: "IBM Plex Sans", sans-serif;
-          font-size: 0.95rem;
-          letter-spacing: 0.28em;
-          line-height: 1.9;
-          margin-bottom: 0.95rem;
+          font-size: 0.86rem;
+          letter-spacing: 0.18em;
+          line-height: 1.75;
+          margin-bottom: 1rem;
           text-transform: uppercase;
         }
 
-        .sn-melody-lyric {
+        .sn-melody-package-text {
           color: var(--sn-ink);
           font-family: "Fraunces", serif;
-          font-size: clamp(1.25rem, 2.3vw, 1.7rem);
-          line-height: 1.6;
-          padding-bottom: 0.35rem;
+          font-size: clamp(1.1rem, 2vw, 1.35rem);
+          line-height: 1.45;
+          word-break: break-word;
         }
 
         @media (max-width: 720px) {
@@ -283,13 +288,18 @@ def inject_global_styles() -> None:
             font-size: 1.02rem;
           }
 
-          .sn-melody-notes {
+          .sn-melody-package {
+            min-height: 7.4rem;
+            padding: 0.8rem 0.8rem 0.85rem;
+          }
+
+          .sn-melody-package-notes {
             font-size: 0.84rem;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.12em;
             margin-bottom: 0.7rem;
           }
 
-          .sn-melody-lyric {
+          .sn-melody-package-text {
             font-size: 1.12rem;
           }
         }
@@ -313,7 +323,7 @@ def render_hero(song_count: int) -> None:
           </p>
           <div class="sn-badge-row">
             <span class="sn-badge">{song_count} song card(s)</span>
-            <span class="sn-badge">Inline melody line editing</span>
+            <span class="sn-badge">Package-based melody editing</span>
             <span class="sn-badge">SQLite-backed local persistence</span>
           </div>
         </section>

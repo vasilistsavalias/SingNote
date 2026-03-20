@@ -5,11 +5,13 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
-    _apply_melody_line_update,
-    _format_melody_note_sequence,
+    _delete_melody_package,
+    _format_package_note_sequence,
+    _insert_melody_package,
     _lyrics_sheet_markup,
     _parse_note_sequence,
     _parse_note_token,
+    _update_melody_package,
 )
 from tests.support import build_sample_song
 
@@ -30,11 +32,13 @@ def test_parse_note_token_rejects_invalid_tokens() -> None:
         _parse_note_token("seg-1", "middle-c", 1.0)
 
 
-def test_format_melody_note_sequence_is_readable() -> None:
-    """Melody lines should render as one readable note string."""
-    melody_notes = build_sample_song().melody_notes
+def test_format_package_note_sequence_is_readable() -> None:
+    """Melody packages should render as one readable note string."""
+    package = (
+        build_sample_song().lyric_sections[0].segments[0].melody_packages[0]
+    )
 
-    assert _format_melody_note_sequence(melody_notes) == "E4 G4"
+    assert _format_package_note_sequence(package) == "E4"
 
 
 def test_parse_note_sequence_accepts_commas_and_spaces() -> None:
@@ -44,40 +48,75 @@ def test_parse_note_sequence_accepts_commas_and_spaces() -> None:
     assert notes == ["C", "B", "G", "A"]
 
 
-def test_apply_melody_line_update_replaces_lyric_and_notes() -> None:
-    """A line edit should update both lyric text and melody notes."""
+def test_update_melody_package_replaces_package_text_and_notes() -> None:
+    """A package edit should update the matching melody package."""
     song = build_sample_song()
 
-    _apply_melody_line_update(
+    _update_melody_package(
         song,
         segment_id="seg-2",
-        lyric_text="youuu",
+        package_id="seg-2-pkg-1",
+        package_text="youuu",
         notes_text="A4 C5",
     )
 
+    updated_package = song.lyric_sections[0].segments[1].melody_packages[0]
     updated_notes = [
         note for note in song.melody_notes if note.segment_id == "seg-2"
     ]
+    assert updated_package.text == "youuu"
     assert len(updated_notes) == 2
     assert updated_notes[0].note == "A"
     assert updated_notes[0].octave == 4
     assert updated_notes[0].duration_beats == 1.0
     assert updated_notes[1].note == "C"
     assert updated_notes[1].octave == 5
-    assert song.lyric_sections[0].segments[1].text == "youuu"
 
 
-def test_apply_melody_line_update_rejects_unknown_segment_ids() -> None:
-    """Line updates should fail for missing segment ids."""
+def test_update_melody_package_rejects_unknown_segment_ids() -> None:
+    """Package updates should fail for missing segment ids."""
     song = build_sample_song()
 
     with pytest.raises(ValueError):
-        _apply_melody_line_update(
+        _update_melody_package(
             song,
             segment_id="missing",
-            lyric_text="missing",
+            package_id="seg-2-pkg-1",
+            package_text="missing",
             notes_text="A4",
         )
+
+
+def test_insert_melody_package_adds_new_package_after_anchor() -> None:
+    """Package insertion should preserve package ordering."""
+    song = build_sample_song()
+
+    _insert_melody_package(
+        song,
+        segment_id="seg-1",
+        anchor_package_id="seg-1-pkg-1",
+        position="after",
+    )
+
+    packages = song.lyric_sections[0].segments[0].melody_packages
+    assert len(packages) == 3
+    assert packages[1].id == "seg-1-pkg-3"
+    assert packages[1].text == "New syllable"
+
+
+def test_delete_melody_package_removes_selected_package() -> None:
+    """Package deletion should remove only the selected melody package."""
+    song = build_sample_song()
+
+    _delete_melody_package(
+        song,
+        segment_id="seg-1",
+        package_id="seg-1-pkg-1",
+    )
+
+    packages = song.lyric_sections[0].segments[0].melody_packages
+    assert len(packages) == 1
+    assert packages[0].id == "seg-1-pkg-2"
 
 
 def test_lyrics_sheet_markup_reads_like_one_chart() -> None:
