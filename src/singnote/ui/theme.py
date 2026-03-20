@@ -247,29 +247,29 @@ def inject_global_styles() -> None:
         }
 
         .sn-melody-package {
-          min-height: 9rem;
-          margin-bottom: 0.5rem;
-          border: 1px solid var(--sn-line);
-          border-radius: 20px;
+          min-height: 6.2rem;
+          margin-bottom: 0.35rem;
+          border: 1px solid rgba(46, 58, 78, 0.10);
+          border-radius: 16px;
           background: rgba(255, 251, 245, 0.94);
-          padding: 0.95rem 0.95rem 1rem;
+          padding: 0.7rem 0.75rem 0.8rem;
         }
 
         .sn-melody-package-notes {
           color: #7b8494;
           font-family: "IBM Plex Sans", sans-serif;
-          font-size: 0.86rem;
-          letter-spacing: 0.18em;
-          line-height: 1.75;
-          margin-bottom: 1rem;
+          font-size: 0.74rem;
+          letter-spacing: 0.14em;
+          line-height: 1.35;
+          margin-bottom: 0.55rem;
           text-transform: uppercase;
         }
 
         .sn-melody-package-text {
           color: var(--sn-ink);
           font-family: "Fraunces", serif;
-          font-size: clamp(1.1rem, 2vw, 1.35rem);
-          line-height: 1.45;
+          font-size: clamp(0.95rem, 1.5vw, 1.18rem);
+          line-height: 1.25;
           word-break: break-word;
         }
 
@@ -289,18 +289,18 @@ def inject_global_styles() -> None:
           }
 
           .sn-melody-package {
-            min-height: 7.4rem;
-            padding: 0.8rem 0.8rem 0.85rem;
+            min-height: 5.4rem;
+            padding: 0.62rem 0.68rem 0.72rem;
           }
 
           .sn-melody-package-notes {
-            font-size: 0.84rem;
-            letter-spacing: 0.12em;
-            margin-bottom: 0.7rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.45rem;
           }
 
           .sn-melody-package-text {
-            font-size: 1.12rem;
+            font-size: 0.98rem;
           }
         }
         </style>

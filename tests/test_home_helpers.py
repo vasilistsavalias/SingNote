@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
+    _autoscroll_script,
     _delete_melody_package,
     _format_package_note_sequence,
     _insert_melody_package,
@@ -160,3 +161,28 @@ def test_speed_to_pixels_per_tick_covers_visible_presets() -> None:
     assert _speed_to_pixels_per_tick("2x") == 4
     assert _speed_to_pixels_per_tick("2.5x") == 5
     assert _speed_to_pixels_per_tick("3x") == 6
+
+
+def test_autoscroll_script_targets_streamlit_scroll_container() -> None:
+    """Auto-scroll should search the app container, not only window scroll."""
+    script = _autoscroll_script(
+        scope_key="lyrics",
+        enabled=True,
+        pixels_per_tick=4,
+    )
+
+    assert 'data-testid="stAppViewContainer"' in script
+    assert "scrollTop" in script
+    assert "requestAnimationFrame" in script
+
+
+def test_autoscroll_script_respects_disabled_state() -> None:
+    """Disabled auto-scroll should tear down the loop and stop."""
+    script = _autoscroll_script(
+        scope_key="melody",
+        enabled=False,
+        pixels_per_tick=2,
+    )
+
+    assert "if (!activeFlag)" in script
+    assert "cancelLoop();" in script

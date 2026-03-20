@@ -743,32 +743,12 @@ def _render_autoscroll_script(
     *, scope_key: str, enabled: bool, pixels_per_tick: int
 ) -> None:
     """Inject an iframe script that scrolls the parent page."""
-    active_flag = "true" if enabled else "false"
     components.html(
-        f"""
-        <script>
-        const intervalKey = "snAutoscrollInterval_{scope_key}";
-        const activeFlag = {active_flag};
-        const step = {pixels_per_tick};
-        const targetWindow = window.parent;
-        if (targetWindow[intervalKey]) {{
-          targetWindow.clearInterval(targetWindow[intervalKey]);
-          targetWindow[intervalKey] = null;
-        }}
-        if (activeFlag) {{
-          targetWindow[intervalKey] = targetWindow.setInterval(() => {{
-            const doc = targetWindow.document.documentElement;
-            const maxScroll = doc.scrollHeight - targetWindow.innerHeight;
-            if (targetWindow.scrollY >= maxScroll) {{
-              targetWindow.clearInterval(targetWindow[intervalKey]);
-              targetWindow[intervalKey] = null;
-              return;
-            }}
-            targetWindow.scrollBy({{ top: step, left: 0, behavior: "auto" }});
-          }}, 80);
-        }}
-        </script>
-        """,
+        _autoscroll_script(
+            scope_key=scope_key,
+            enabled=enabled,
+            pixels_per_tick=pixels_per_tick,
+        ),
         height=0,
         width=0,
     )
@@ -784,6 +764,70 @@ def _speed_to_pixels_per_tick(speed_label: str) -> int:
         "2.5x": 5,
         "3x": 6,
     }[speed_label]
+
+
+def _autoscroll_script(
+    *, scope_key: str, enabled: bool, pixels_per_tick: int
+) -> str:
+    """Return the browser script used to auto-scroll the active page."""
+    active_flag = "true" if enabled else "false"
+    return f"""
+    <script>
+    const targetWindow = window.parent;
+    const stateKey = "snAutoscrollState_{scope_key}";
+    const activeFlag = {active_flag};
+    const step = {pixels_per_tick};
+
+    const findScrollContainer = () => {{
+      const doc = targetWindow.document;
+      const candidates = [
+        doc.querySelector('[data-testid="stAppViewContainer"]'),
+        doc.querySelector('section.main'),
+        doc.querySelector('.stApp'),
+        doc.scrollingElement,
+        doc.documentElement,
+        doc.body
+      ].filter(Boolean);
+
+      for (const candidate of candidates) {{
+        if (candidate.scrollHeight > candidate.clientHeight + 8) {{
+          return candidate;
+        }}
+      }}
+      return doc.scrollingElement || doc.documentElement || doc.body;
+    }};
+
+    const cancelLoop = () => {{
+      const existing = targetWindow[stateKey];
+      if (existing && existing.frameId) {{
+        targetWindow.cancelAnimationFrame(existing.frameId);
+      }}
+      targetWindow[stateKey] = null;
+    }};
+
+    cancelLoop();
+    if (!activeFlag) {{
+      return;
+    }}
+
+    const container = findScrollContainer();
+    const tick = () => {{
+      const maxScroll = container.scrollHeight - container.clientHeight;
+      if (container.scrollTop >= maxScroll - 2) {{
+        cancelLoop();
+        return;
+      }}
+      container.scrollTop = Math.min(container.scrollTop + step, maxScroll);
+      const state = targetWindow[stateKey];
+      if (state) {{
+        state.frameId = targetWindow.requestAnimationFrame(tick);
+      }}
+    }};
+
+    targetWindow[stateKey] = {{ frameId: null }};
+    targetWindow[stateKey].frameId = targetWindow.requestAnimationFrame(tick);
+    </script>
+    """
 
 
 def _parse_note_sequence(notes_text: str) -> list[str]:
