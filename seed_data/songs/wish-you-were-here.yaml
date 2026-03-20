@@ -22,8 +22,23 @@ sections:
             text: So
             notes: [C, B, G]
           - id: verse-1-1-pkg-2
-            text: so you think you can tell
-            notes: [C, B, C, B, G, A]
+            text: So
+            notes: [C]
+          - id: verse-1-1-pkg-3
+            text: you
+            notes: [B]
+          - id: verse-1-1-pkg-4
+            text: think
+            notes: [C]
+          - id: verse-1-1-pkg-5
+            text: you
+            notes: [B]
+          - id: verse-1-1-pkg-6
+            text: can
+            notes: [G]
+          - id: verse-1-1-pkg-7
+            text: tell
+            notes: [A, D]
         rhythm:
           pattern: 2-bar pickup
           emphasis: change chord mid-line
@@ -33,11 +48,26 @@ sections:
         roman_numerals: [ii/5, I]
         melody_packages:
           - id: verse-1-2-pkg-1
-            text: heaven from hell
-            notes: [D, B, D, E]
+            text: heaven
+            notes: [D, B]
           - id: verse-1-2-pkg-2
-            text: blue skies from pain
-            notes: [E, E, C, D]
+            text: from
+            notes: [D]
+          - id: verse-1-2-pkg-3
+            text: hell
+            notes: [E, D]
+          - id: verse-1-2-pkg-4
+            text: blue
+            notes: [E]
+          - id: verse-1-2-pkg-5
+            text: skies
+            notes: [E]
+          - id: verse-1-2-pkg-6
+            text: from
+            notes: [B]
+          - id: verse-1-2-pkg-7
+            text: pain
+            notes: [D]
         rhythm:
           pattern: held line ending
           emphasis: do not rush beat 4
@@ -47,14 +77,53 @@ sections:
         roman_numerals: [V/3, IV, ii]
         melody_packages:
           - id: verse-1-3-pkg-1
-            text: can you tell a green field
-            notes: [C, B, C, B, G, A]
+            text: can
+            notes: [C]
           - id: verse-1-3-pkg-2
-            text: from a cold steel rail
-            notes: [D, D, D, C, B, C, B, A]
+            text: you
+            notes: [C]
           - id: verse-1-3-pkg-3
-            text: a smile from a veil
-            notes: [C, D, C, B, C]
+            text: tell
+            notes: [C]
+          - id: verse-1-3-pkg-4
+            text: a
+            notes: [B]
+          - id: verse-1-3-pkg-5
+            text: green
+            notes: [G]
+          - id: verse-1-3-pkg-6
+            text: field
+            notes: [A, D]
+          - id: verse-1-3-pkg-7
+            text: from
+            notes: [D]
+          - id: verse-1-3-pkg-8
+            text: a
+            notes: [D]
+          - id: verse-1-3-pkg-9
+            text: cold
+            notes: [D]
+          - id: verse-1-3-pkg-10
+            text: steel
+            notes: [C, B]
+          - id: verse-1-3-pkg-11
+            text: rail
+            notes: [C, B, G]
+          - id: verse-1-3-pkg-12
+            text: a
+            notes: [C]
+          - id: verse-1-3-pkg-13
+            text: smile
+            notes: [D]
+          - id: verse-1-3-pkg-14
+            text: from
+            notes: [C]
+          - id: verse-1-3-pkg-15
+            text: a
+            notes: [B]
+          - id: verse-1-3-pkg-16
+            text: veil
+            notes: [C]
         rhythm:
           pattern: even 8ths
           emphasis: keep the phrases connected
@@ -64,8 +133,23 @@ sections:
         roman_numerals: [I]
         melody_packages:
           - id: verse-1-4-pkg-1
-            text: do you think you can tell
-            notes: [C, B, C, B, G, A]
+            text: do
+            notes: [C]
+          - id: verse-1-4-pkg-2
+            text: you
+            notes: [B]
+          - id: verse-1-4-pkg-3
+            text: think
+            notes: [C]
+          - id: verse-1-4-pkg-4
+            text: you
+            notes: [C]
+          - id: verse-1-4-pkg-5
+            text: can
+            notes: [G]
+          - id: verse-1-4-pkg-6
+            text: tell
+            notes: [G]
         rhythm: question tag
   - id: verse-2
     title: Verse 2
@@ -76,11 +160,35 @@ sections:
         roman_numerals: [IV, V/3]
         melody_packages:
           - id: verse-2-1-pkg-1
-            text: did they get you to trade
-            notes: [D, D, D, C, D, E]
+            text: did
+            notes: [C]
           - id: verse-2-1-pkg-2
-            text: your heroes for ghosts
-            notes: [E, E, D, C, D]
+            text: they
+            notes: [B]
+          - id: verse-2-1-pkg-3
+            text: get
+            notes: [C]
+          - id: verse-2-1-pkg-4
+            text: you
+            notes: [C]
+          - id: verse-2-1-pkg-5
+            text: to
+            notes: [D]
+          - id: verse-2-1-pkg-6
+            text: trade
+            notes: [E, D, C]
+          - id: verse-2-1-pkg-7
+            text: your
+            notes: [E]
+          - id: verse-2-1-pkg-8
+            text: heroes
+            notes: [E, D]
+          - id: verse-2-1-pkg-9
+            text: for
+            notes: [D, C]
+          - id: verse-2-1-pkg-10
+            text: ghosts
+            notes: [D]
         rhythm:
           pattern: even 8ths
           emphasis: hold the line ending
@@ -90,14 +198,47 @@ sections:
         roman_numerals: [ii/5, I, V/3]
         melody_packages:
           - id: verse-2-2-pkg-1
-            text: hot ashes for trees
-            notes: [D, D, D, C, D, E]
+            text: hot
+            notes: [D]
           - id: verse-2-2-pkg-2
-            text: hot air for a cool breeze
-            notes: [E, E, D, C, D, D]
+            text: ashes
+            notes: [D, C]
           - id: verse-2-2-pkg-3
-            text: cold comfort for change
-            notes: [D, C, B, G, A]
+            text: for
+            notes: [D]
+          - id: verse-2-2-pkg-4
+            text: trees
+            notes: [E, D]
+          - id: verse-2-2-pkg-5
+            text: hot
+            notes: [E]
+          - id: verse-2-2-pkg-6
+            text: air
+            notes: [E]
+          - id: verse-2-2-pkg-7
+            text: for
+            notes: [D]
+          - id: verse-2-2-pkg-8
+            text: a
+            notes: [B]
+          - id: verse-2-2-pkg-9
+            text: cool
+            notes: [D]
+          - id: verse-2-2-pkg-10
+            text: breeze
+            notes: [D]
+          - id: verse-2-2-pkg-11
+            text: cold
+            notes: [D]
+          - id: verse-2-2-pkg-12
+            text: comfort
+            notes: [C]
+          - id: verse-2-2-pkg-13
+            text: for
+            notes: [B]
+          - id: verse-2-2-pkg-14
+            text: change
+            notes: [G, A]
         rhythm:
           pattern: even 8ths
           emphasis: stay relaxed through the long sentence
@@ -107,14 +248,56 @@ sections:
         roman_numerals: [IV, ii, I]
         melody_packages:
           - id: verse-2-3-pkg-1
-            text: did you exchange
-            notes: [D, D, C, B, C, B, A]
+            text: did
+            notes: [D]
           - id: verse-2-3-pkg-2
-            text: a walk on part in the war
-            notes: [B, C, B, C, B, G, A]
+            text: you
+            notes: [C]
           - id: verse-2-3-pkg-3
-            text: for a lead role in a cage
-            notes: [B, B, C, B, A, G, A]
+            text: exchange
+            notes: [B, G]
+          - id: verse-2-3-pkg-4
+            text: a
+            notes: [B]
+          - id: verse-2-3-pkg-5
+            text: walk
+            notes: [C]
+          - id: verse-2-3-pkg-6
+            text: "on"
+            notes: [B]
+          - id: verse-2-3-pkg-7
+            text: part
+            notes: [C]
+          - id: verse-2-3-pkg-8
+            text: in
+            notes: [B]
+          - id: verse-2-3-pkg-9
+            text: the
+            notes: [G]
+          - id: verse-2-3-pkg-10
+            text: war
+            notes: [A]
+          - id: verse-2-3-pkg-11
+            text: for
+            notes: [B]
+          - id: verse-2-3-pkg-12
+            text: a
+            notes: [B]
+          - id: verse-2-3-pkg-13
+            text: lead
+            notes: [C]
+          - id: verse-2-3-pkg-14
+            text: role
+            notes: [B]
+          - id: verse-2-3-pkg-15
+            text: in
+            notes: [A]
+          - id: verse-2-3-pkg-16
+            text: a
+            notes: [G]
+          - id: verse-2-3-pkg-17
+            text: cage
+            notes: [A]
         rhythm:
           pattern: cadential build
           emphasis: grow into the final question
@@ -144,8 +327,32 @@ sections:
         roman_numerals: [IV, V/3]
         melody_packages:
           - id: verse-3-1-pkg-1
-            text: How I wish, how I wish you were here
-            notes: [B, C, B, B, C, B, G, G, A]
+            text: How
+            notes: [B]
+          - id: verse-3-1-pkg-2
+            text: I
+            notes: [C]
+          - id: verse-3-1-pkg-3
+            text: wish
+            notes: [B]
+          - id: verse-3-1-pkg-4
+            text: how
+            notes: [B]
+          - id: verse-3-1-pkg-5
+            text: I
+            notes: [C]
+          - id: verse-3-1-pkg-6
+            text: wish
+            notes: [B]
+          - id: verse-3-1-pkg-7
+            text: you
+            notes: [G]
+          - id: verse-3-1-pkg-8
+            text: were
+            notes: [G]
+          - id: verse-3-1-pkg-9
+            text: here
+            notes: [A]
         rhythm:
           pattern: open the sound
           emphasis: let the phrase breathe
@@ -155,11 +362,47 @@ sections:
         roman_numerals: [ii/5, I, V/3]
         melody_packages:
           - id: verse-3-2-pkg-1
-            text: We're just two lost souls swimming in a fish bowl
-            notes: [B, D, E, E, E, E, D, E, D, E, E]
+            text: We
+            notes: [B]
           - id: verse-3-2-pkg-2
-            text: year after year
-            notes: [D, D, B, D]
+            text: are
+            notes: [D]
+          - id: verse-3-2-pkg-3
+            text: just
+            notes: [E]
+          - id: verse-3-2-pkg-4
+            text: two
+            notes: [E]
+          - id: verse-3-2-pkg-5
+            text: lost
+            notes: [E]
+          - id: verse-3-2-pkg-6
+            text: souls
+            notes: [D, E]
+          - id: verse-3-2-pkg-7
+            text: swimming
+            notes: [E]
+          - id: verse-3-2-pkg-8
+            text: in
+            notes: [E]
+          - id: verse-3-2-pkg-9
+            text: a
+            notes: [E]
+          - id: verse-3-2-pkg-10
+            text: fish
+            notes: [E]
+          - id: verse-3-2-pkg-11
+            text: bowl
+            notes: [E]
+          - id: verse-3-2-pkg-12
+            text: year
+            notes: [D]
+          - id: verse-3-2-pkg-13
+            text: after
+            notes: [D]
+          - id: verse-3-2-pkg-14
+            text: year
+            notes: [B, D]
         rhythm:
           pattern: floating pulse
           emphasis: keep the line legato
@@ -169,11 +412,35 @@ sections:
         roman_numerals: [IV]
         melody_packages:
           - id: verse-3-3-pkg-1
-            text: running over the same old ground
-            notes: [D, D, D, B, D, B]
+            text: running
+            notes: [D]
           - id: verse-3-3-pkg-2
-            text: what have we found
-            notes: [C, D, C, D, C, B, G]
+            text: over
+            notes: [D]
+          - id: verse-3-3-pkg-3
+            text: the
+            notes: [D]
+          - id: verse-3-3-pkg-4
+            text: same
+            notes: [B]
+          - id: verse-3-3-pkg-5
+            text: old
+            notes: [D]
+          - id: verse-3-3-pkg-6
+            text: ground
+            notes: [B, A]
+          - id: verse-3-3-pkg-7
+            text: what
+            notes: [D]
+          - id: verse-3-3-pkg-8
+            text: have
+            notes: [D]
+          - id: verse-3-3-pkg-9
+            text: we
+            notes: [C]
+          - id: verse-3-3-pkg-10
+            text: found
+            notes: [B, C]
         rhythm:
           pattern: steady forward motion
           emphasis: slight lift at the question
@@ -183,11 +450,29 @@ sections:
         roman_numerals: [ii, I]
         melody_packages:
           - id: verse-3-4-pkg-1
-            text: the same old fears
-            notes: [D, C, B, C, B, G]
+            text: The
+            notes: [D]
           - id: verse-3-4-pkg-2
-            text: wish you were here
-            notes: [C, C, G, C, B, G]
+            text: same
+            notes: [C, B]
+          - id: verse-3-4-pkg-3
+            text: old
+            notes: [C]
+          - id: verse-3-4-pkg-4
+            text: fears
+            notes: [B, G]
+          - id: verse-3-4-pkg-5
+            text: wish
+            notes: [C]
+          - id: verse-3-4-pkg-6
+            text: you
+            notes: [C]
+          - id: verse-3-4-pkg-7
+            text: were
+            notes: [G]
+          - id: verse-3-4-pkg-8
+            text: here
+            notes: [C, B, G]
         rhythm:
           pattern: final tag
           emphasis: soft landing on the last line
