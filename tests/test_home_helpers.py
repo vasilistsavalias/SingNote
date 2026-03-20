@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 
 from singnote.ui.home import (
-    _autoscroll_script,
     _chords_sheet_markup,
     _delete_melody_package,
     _favicon_head_script,
@@ -19,8 +18,9 @@ from singnote.ui.home import (
     _parse_note_sequence,
     _parse_note_token,
     _replace_melody_line,
+    _self_scroll_component_html,
     _should_render_melody_segment,
-    _speed_to_pixels_per_tick,
+    _speed_to_pixels_per_second,
     _update_melody_package,
 )
 from tests.support import build_sample_song
@@ -211,39 +211,45 @@ def test_should_render_melody_segment_skips_empty_instrumentals() -> None:
     assert _should_render_melody_segment(segment) is False
 
 
-def test_speed_to_pixels_per_tick_covers_visible_presets() -> None:
-    """Auto-scroll speeds should map to stable scroll steps."""
-    assert _speed_to_pixels_per_tick("0.5x") == 1
-    assert _speed_to_pixels_per_tick("1x") == 2
-    assert _speed_to_pixels_per_tick("1.5x") == 3
-    assert _speed_to_pixels_per_tick("2x") == 4
-    assert _speed_to_pixels_per_tick("2.5x") == 5
-    assert _speed_to_pixels_per_tick("3x") == 6
+def test_speed_to_pixels_per_second_covers_visible_presets() -> None:
+    """Reader speeds should map to stable pixels-per-second values."""
+    assert _speed_to_pixels_per_second("0.5x") == 15
+    assert _speed_to_pixels_per_second("1x") == 30
+    assert _speed_to_pixels_per_second("1.5x") == 45
+    assert _speed_to_pixels_per_second("2x") == 60
+    assert _speed_to_pixels_per_second("2.5x") == 75
+    assert _speed_to_pixels_per_second("3x") == 90
 
 
-def test_autoscroll_script_targets_streamlit_scroll_container() -> None:
-    """Auto-scroll should search the app container, not only window scroll."""
-    script = _autoscroll_script(
-        scope_key="lyrics",
-        enabled=True,
-        pixels_per_tick=4,
+def test_self_scroll_component_html_is_self_contained() -> None:
+    """The robust reader should scroll its own internal container only."""
+    html = _self_scroll_component_html(
+        content_html="<div>Reader body</div>",
+        is_playing=True,
+        pixels_per_second=30,
+        height=520,
+        scope_key="chords-song-1",
     )
 
-    assert 'data-testid="stAppViewContainer"' in script
-    assert "scrollTop" in script
-    assert "requestAnimationFrame" in script
+    assert 'id="scroll-container"' in html
+    assert "window.parent" not in html
+    assert "setInterval" in html
+    assert "Reader body" in html
+    assert 'data-scope="chords-song-1"' in html
 
 
-def test_autoscroll_script_respects_disabled_state() -> None:
-    """Disabled auto-scroll should tear down the loop and stop."""
-    script = _autoscroll_script(
-        scope_key="melody",
-        enabled=False,
-        pixels_per_tick=2,
+def test_self_scroll_component_html_starts_only_when_playing() -> None:
+    """Baked reader state should control whether auto-scroll starts."""
+    html = _self_scroll_component_html(
+        content_html="<div>Reader body</div>",
+        is_playing=False,
+        pixels_per_second=60,
+        height=520,
+        scope_key="chords-song-2",
     )
 
-    assert "if (!activeFlag)" in script
-    assert "cancelLoop();" in script
+    assert "const IS_PLAYING = false;" in html
+    assert "setTimeout(startScroll, 120);" in html
 
 
 def test_favicon_head_script_points_to_static_assets() -> None:

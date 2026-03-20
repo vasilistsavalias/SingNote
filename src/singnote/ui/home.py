@@ -34,6 +34,14 @@ from singnote.ui.theme import inject_global_styles
 T = TypeVar("T")
 STATIC_DIR = Path(__file__).resolve().parents[3] / "static"
 PAGE_ICON = STATIC_DIR / "favicon-32x32.png"
+SPEED_PPS = {
+    "0.5x": 15,
+    "1x": 30,
+    "1.5x": 45,
+    "2x": 60,
+    "2.5x": 75,
+    "3x": 90,
+}
 
 
 def render_home_page(app: Application) -> None:
@@ -350,13 +358,18 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
 
 def _render_chords_tab(song: Song) -> None:
     """Render the chords tab as a continuous chord-only chart."""
-    _render_auto_scroll_controls("chords")
-    st.markdown(_chords_sheet_markup(song), unsafe_allow_html=True)
+    is_playing, speed_label = _render_auto_scroll_controls("chords", song.id)
+    _render_self_scroll_component(
+        content_html=_chords_sheet_markup(song),
+        is_playing=is_playing,
+        pixels_per_second=_speed_to_pixels_per_second(speed_label),
+        height=540,
+        scope_key=f"chords-{song.id}",
+    )
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
     """Render melody as a sheet-like package line with one editor per row."""
-    _render_auto_scroll_controls("melody")
     for section in song.lyric_sections:
         section_segments = [
             segment
@@ -828,17 +841,30 @@ def _package_label_for_id(
     return f"{package.text} | {_format_package_note_sequence(package)}"
 
 
-def _render_auto_scroll_controls(scope_key: str) -> None:
-    """Render a lightweight page autoscroll control with speed presets."""
-    enable_key = f"{scope_key}-autoscroll-enabled"
-    speed_key = f"{scope_key}-autoscroll-speed"
-    left, right = st.columns([1.4, 1])
+def _render_auto_scroll_controls(
+    scope_key: str,
+    song_id: str,
+) -> tuple[bool, str]:
+    """Render robust reader controls for the self-contained scroll iframe."""
+    playing_key = f"{scope_key}-autoscroll-playing-{song_id}"
+    speed_key = f"{scope_key}-autoscroll-speed-{song_id}"
+    left, right = st.columns([1.15, 1.4])
     with left:
-        enabled = st.toggle(
-            "Auto-scroll",
-            key=enable_key,
-            help="Automatically move the page downward while you read.",
+        label = (
+            "Stop"
+            if st.session_state.get(playing_key, False)
+            else "Auto-scroll"
         )
+        if st.button(
+            label,
+            key=f"{scope_key}-autoscroll-button-{song_id}",
+            use_container_width=True,
+        ):
+            st.session_state[playing_key] = not st.session_state.get(
+                playing_key,
+                False,
+            )
+            st.rerun()
     with right:
         speed_label = st.select_slider(
             "Speed",
@@ -850,11 +876,7 @@ def _render_auto_scroll_controls(scope_key: str) -> None:
         "Use auto-scroll while singing or reading through the chart. "
         "You can stop it any time."
     )
-    _render_autoscroll_script(
-        scope_key=scope_key,
-        enabled=enabled,
-        pixels_per_tick=_speed_to_pixels_per_tick(speed_label),
-    )
+    return bool(st.session_state.get(playing_key, False)), speed_label
 
 
 def _inject_favicon_head_links() -> None:
@@ -866,94 +888,183 @@ def _inject_favicon_head_links() -> None:
     )
 
 
-def _render_autoscroll_script(
-    *, scope_key: str, enabled: bool, pixels_per_tick: int
+def _render_self_scroll_component(
+    *,
+    content_html: str,
+    is_playing: bool,
+    pixels_per_second: int,
+    height: int,
+    scope_key: str,
 ) -> None:
-    """Inject an iframe script that scrolls the parent page."""
+    """Render a self-contained scrollable iframe for reliable auto-scroll."""
     components.html(
-        _autoscroll_script(
+        _self_scroll_component_html(
+            content_html=content_html,
+            is_playing=is_playing,
+            pixels_per_second=pixels_per_second,
+            height=height,
             scope_key=scope_key,
-            enabled=enabled,
-            pixels_per_tick=pixels_per_tick,
         ),
-        height=0,
-        width=0,
+        height=height + 12,
+        scrolling=False,
     )
 
 
-def _speed_to_pixels_per_tick(speed_label: str) -> int:
-    """Map the visible speed choice to a scroll step size."""
-    return {
-        "0.5x": 1,
-        "1x": 2,
-        "1.5x": 3,
-        "2x": 4,
-        "2.5x": 5,
-        "3x": 6,
-    }[speed_label]
+def _speed_to_pixels_per_second(speed_label: str) -> int:
+    """Map visible speed labels to reader scroll velocity."""
+    return SPEED_PPS[speed_label]
 
 
-def _autoscroll_script(
-    *, scope_key: str, enabled: bool, pixels_per_tick: int
+def _self_scroll_component_html(
+    *,
+    content_html: str,
+    is_playing: bool,
+    pixels_per_second: int,
+    height: int,
+    scope_key: str,
 ) -> str:
-    """Return the browser script used to auto-scroll the active page."""
-    active_flag = "true" if enabled else "false"
+    """Return the full HTML for the self-contained scroll reader."""
+    scroll_interval_ms = 16
+    px_per_tick = (pixels_per_second * scroll_interval_ms) / 1000.0
+    active_flag = "true" if is_playing else "false"
     return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+      * {{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }}
+      html, body {{
+        height: 100%;
+        background: transparent;
+        font-family: "IBM Plex Sans", sans-serif;
+      }}
+      #scroll-wrapper {{
+        position: relative;
+      }}
+      #scroll-container {{
+        height: {height}px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 0 4rem;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }}
+      #scroll-container::-webkit-scrollbar {{
+        display: none;
+      }}
+      #scroll-wrapper::after {{
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3.5rem;
+        background: linear-gradient(
+          transparent,
+          rgba(246, 240, 230, 0.98)
+        );
+        pointer-events: none;
+      }}
+      .sn-song-sheet {{
+        border: 1px solid rgba(46, 58, 78, 0.12);
+        border-radius: 28px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 251, 245, 0.98),
+            rgba(249, 241, 229, 0.94)
+          );
+        box-shadow: 0 16px 48px rgba(36, 33, 28, 0.10);
+        padding: 1.25rem 1rem 1.35rem;
+      }}
+      .sn-sheet-section + .sn-sheet-section {{
+        margin-top: 1.4rem;
+        padding-top: 1.25rem;
+        border-top: 1px dashed rgba(46, 58, 78, 0.12);
+      }}
+      .sn-sheet-section-title {{
+        display: inline-block;
+        margin-bottom: 0.85rem;
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(182, 100, 44, 0.12);
+        color: #2d5a4c;
+        font-size: 0.73rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }}
+      .sn-sheet-line + .sn-sheet-line {{
+        margin-top: 0.7rem;
+      }}
+      .sn-sheet-chords {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.62rem;
+        margin-bottom: 0;
+        color: #b6642c;
+        font-size: 0.86rem;
+        font-weight: 700;
+        line-height: 1.4;
+      }}
+      .sn-sheet-chord {{
+        white-space: nowrap;
+      }}
+      .sn-sheet-chord-empty {{
+        opacity: 0.35;
+      }}
+    </style>
+    </head>
+    <body>
+    <div id="scroll-wrapper" data-scope="{scope_key}">
+      <div id="scroll-container">
+        {content_html}
+      </div>
+    </div>
     <script>
-    const targetWindow = window.parent;
-    const stateKey = "snAutoscrollState_{scope_key}";
-    const activeFlag = {active_flag};
-    const step = {pixels_per_tick};
+      (function() {{
+        const container = document.getElementById("scroll-container");
+        const IS_PLAYING = {active_flag};
+        const PX_PER_TICK = {px_per_tick:.4f};
+        const INTERVAL_MS = {scroll_interval_ms};
+        let timer = null;
 
-    const findScrollContainer = () => {{
-      const doc = targetWindow.document;
-      const candidates = [
-        doc.querySelector('[data-testid="stAppViewContainer"]'),
-        doc.querySelector('section.main'),
-        doc.querySelector('.stApp'),
-        doc.scrollingElement,
-        doc.documentElement,
-        doc.body
-      ].filter(Boolean);
-
-      for (const candidate of candidates) {{
-        if (candidate.scrollHeight > candidate.clientHeight + 8) {{
-          return candidate;
+        function startScroll() {{
+          if (timer !== null) {{
+            return;
+          }}
+          timer = setInterval(function() {{
+            const maxScroll = container.scrollHeight - container.clientHeight;
+            if (container.scrollTop >= maxScroll) {{
+              stopScroll();
+              return;
+            }}
+            container.scrollTop += PX_PER_TICK;
+          }}, INTERVAL_MS);
         }}
-      }}
-      return doc.scrollingElement || doc.documentElement || doc.body;
-    }};
 
-    const cancelLoop = () => {{
-      const existing = targetWindow[stateKey];
-      if (existing && existing.frameId) {{
-        targetWindow.cancelAnimationFrame(existing.frameId);
-      }}
-      targetWindow[stateKey] = null;
-    }};
+        function stopScroll() {{
+          if (timer !== null) {{
+            clearInterval(timer);
+            timer = null;
+          }}
+        }}
 
-    cancelLoop();
-    if (!activeFlag) {{
-      return;
-    }}
+        if (IS_PLAYING) {{
+          setTimeout(startScroll, 120);
+        }}
 
-    const container = findScrollContainer();
-    const tick = () => {{
-      const maxScroll = container.scrollHeight - container.clientHeight;
-      if (container.scrollTop >= maxScroll - 2) {{
-        cancelLoop();
-        return;
-      }}
-      container.scrollTop = Math.min(container.scrollTop + step, maxScroll);
-      const state = targetWindow[stateKey];
-      if (state) {{
-        state.frameId = targetWindow.requestAnimationFrame(tick);
-      }}
-    }};
-
-    targetWindow[stateKey] = {{ frameId: null }};
-    targetWindow[stateKey].frameId = targetWindow.requestAnimationFrame(tick);
+        window._scrollAPI = {{ start: startScroll, stop: stopScroll }};
+      }})();
     </script>
+    </body>
+    </html>
     """
 
 
