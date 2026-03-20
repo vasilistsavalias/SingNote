@@ -281,7 +281,7 @@ def render_hero(song_count: int) -> None:
           </p>
           <div class="sn-badge-row">
             <span class="sn-badge">{song_count} song card(s)</span>
-            <span class="sn-badge">Live long-press melody edits</span>
+            <span class="sn-badge">Tap-to-edit melody notes</span>
             <span class="sn-badge">SQLite-backed local persistence</span>
           </div>
         </section>

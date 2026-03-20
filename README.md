@@ -4,7 +4,7 @@ SingNote is a mobile-first Streamlit app for teacher-student singing practice.
 It keeps songs as reusable lesson cards with three coordinated tabs:
 
 - lyrics plus chords
-- melody dictation with long-press note editing
+- melody dictation with tap-to-edit note controls
 - rhythm, tempo, and coaching notes
 
 The current MVP uses a shared username/password instead of full accounts and
@@ -15,7 +15,7 @@ stores songs in local SQLite.
 - shared login gate for one teacher/student account
 - manual song authoring with structured lyrics, chords, melody, rhythm, and notes
 - seeded `Wish You Were Here` lesson card with chord functions and rhythm cues
-- in-place melody note editing through a custom long-press component
+- in-place melody note editing through native mobile-friendly controls
 - mobile-first Streamlit styling with a responsive desktop layout
 
 ## Local Run
@@ -44,7 +44,7 @@ python -m streamlit run streamlit_app.py
 
 - songs are stored in `instance/singnote.db` by default
 - existing databases are migrated automatically when new song metadata fields are added
-- seeded phrase labels are intentionally short cues, so teachers can replace them
+- seeded lyric snippets are intentionally short, so teachers can replace them
   with licensed full lyrics inside the authoring panel
 
 ## Streamlit Community Cloud

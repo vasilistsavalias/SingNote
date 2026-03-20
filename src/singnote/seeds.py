@@ -48,7 +48,7 @@ def _build_wish_you_were_here() -> Song:
 
 
 def _wish_lyric_sections() -> list[LyricSection]:
-    """Return phrase cues for the seeded lesson card."""
+    """Return short lyric snippets for the seeded lesson card."""
     return [
         _build_section(
             "intro",
@@ -63,13 +63,13 @@ def _wish_lyric_sections() -> list[LyricSection]:
             "verse-1",
             "Verse 1",
             [
-                "Opening phrase",
-                "Heaven and hell phrase",
-                "Blue skies phrase",
-                "Green field phrase",
-                "Cold steel rail phrase",
-                "Smile from a veil phrase",
-                "Closing verse question",
+                "So so you think",
+                "Heaven from hell",
+                "Blue skies from pain",
+                "Can you tell",
+                "Cold steel rail",
+                "Smile from a veil",
+                "Do you think",
             ],
             1,
         ),
@@ -77,14 +77,14 @@ def _wish_lyric_sections() -> list[LyricSection]:
             "verse-2",
             "Verse 2",
             [
-                "Trade phrase",
-                "Heroes for ghosts phrase",
-                "Hot ashes phrase",
-                "Cool breeze phrase",
-                "Comfort for change phrase",
-                "Exchange phrase",
-                "Walk on part phrase",
-                "Lead role phrase",
+                "Did they get you",
+                "Heroes from ghosts",
+                "Hot ashes for trees",
+                "Cool breeze",
+                "Cold comfort",
+                "Did you exchange",
+                "Walk on part",
+                "Lead role in a cage",
             ],
             2,
         ),
@@ -92,13 +92,13 @@ def _wish_lyric_sections() -> list[LyricSection]:
             "chorus",
             "Chorus",
             [
-                "How I wish refrain",
-                "Two souls phrase",
-                "Year after year phrase",
-                "Same old ground phrase",
-                "What have we found phrase",
-                "Same old fears phrase",
-                "Wish you were here tag",
+                "How I wish",
+                "Two souls swimming",
+                "Year after year",
+                "Same old ground",
+                "What have we found",
+                "Same old fears",
+                "Wish you were here",
             ],
             3,
         ),
@@ -253,7 +253,7 @@ def _wish_rhythm_cues() -> list[RhythmCue]:
         ),
         RhythmCue(
             segment_id="verse-1-1",
-            pattern="2-bar pickup phrase",
+            pattern="2-bar pickup",
             emphasis="change chord mid-line",
         ),
         RhythmCue(
@@ -272,7 +272,7 @@ def _wish_rhythm_cues() -> list[RhythmCue]:
         RhythmCue(segment_id="verse-2-4", pattern="even 8ths"),
         RhythmCue(segment_id="verse-2-5", pattern="slightly lighter"),
         RhythmCue(segment_id="verse-2-6", pattern="cadential pickup"),
-        RhythmCue(segment_id="verse-2-7", pattern="build into refrain"),
+        RhythmCue(segment_id="verse-2-7", pattern="build into chorus"),
         RhythmCue(segment_id="verse-2-8", pattern="land the final bar"),
         RhythmCue(segment_id="chorus-1", pattern="open the sound"),
         RhythmCue(segment_id="chorus-2", pattern="keep the pulse floating"),
@@ -299,7 +299,7 @@ def _wish_annotations(song_id: str) -> list[TeacherAnnotation]:
             target_type="song",
             target_id=song_id,
             text=(
-                "Use the shared authoring panel to replace phrase cues with "
+                "Use the shared authoring panel to replace these short seed "
                 "your licensed full lyric text when teaching."
             ),
         ),
@@ -308,12 +308,12 @@ def _wish_annotations(song_id: str) -> list[TeacherAnnotation]:
             target_id=song_id,
             text=(
                 "Melody notes were entered from the provided dictation and can "
-                "be corrected in place by long-pressing a note chip."
+                "be corrected in place with the tap note editor."
             ),
         ),
         TeacherAnnotation(
             target_type="section",
             target_id="chorus",
-            text="Open the tone in the refrain and keep the groove relaxed.",
+            text="Open the tone in the chorus and keep the groove relaxed.",
         ),
     ]

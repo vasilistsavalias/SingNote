@@ -10,9 +10,9 @@ import streamlit as st
 
 from singnote.auth import resolve_app_access, validate_shared_login
 from singnote.bootstrap import Application
-from singnote.components.long_press_note_editor import long_press_note_editor
 from singnote.domain.models import (
     ChordEvent,
+    LyricSection,
     MelodyNote,
     RhythmCue,
     Song,
@@ -258,12 +258,12 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
 
 
 def _render_lyrics_tab(song: Song) -> None:
-    """Render lyric phrases with their chord guidance."""
+    """Render the lyrics tab as a continuous chord chart."""
     st.markdown(_lyrics_sheet_markup(song), unsafe_allow_html=True)
 
 
 def _render_melody_tab(app: Application, song: Song) -> None:
-    """Render melody dictation and in-place note editing."""
+    """Render melody dictation and native note editing."""
     melody_map = _melody_by_segment(song.melody_notes)
     for section in song.lyric_sections:
         st.markdown(f"### {section.title or section.id}")
@@ -276,20 +276,7 @@ def _render_melody_tab(app: Application, song: Song) -> None:
                     st.caption("No melody notes entered yet.")
                 st.write(segment.text)
 
-        update = long_press_note_editor(
-            notes=_melody_note_payload(song, section.id),
-            key=f"melody-editor-{song.id}-{section.id}",
-        )
-        if update is None:
-            continue
-        try:
-            _apply_melody_update(song, update)
-            app.repository.upsert_song(song)
-        except ValueError as error:
-            st.error(str(error))
-            return
-        st.success("Updated melody note.")
-        st.rerun()
+        _render_native_melody_editor(app, song, section)
 
 
 def _render_rhythm_tab(song: Song) -> None:
@@ -330,6 +317,96 @@ def _render_rhythm_tab(song: Song) -> None:
         st.markdown("### Guidance Notes")
         for note in song_notes:
             st.write(f"- {note.text}")
+
+
+def _render_native_melody_editor(
+    app: Application,
+    song: Song,
+    section: LyricSection,
+) -> None:
+    """Render a Cloud-safe native editor for melody notes."""
+    notes = _melody_note_payload(song, section.id)
+    if not notes:
+        return
+
+    selected_note_key = f"melody-selected-{song.id}-{section.id}"
+    note_lookup = {
+        _note_ref(note["segment_id"], note["order"]): note for note in notes
+    }
+
+    st.caption("Tap a note to edit it.")
+    columns = st.columns(2)
+    for index, note in enumerate(notes):
+        label = f'{note["note_label"]} | {note["lyric"]}'
+        with columns[index % 2]:
+            if st.button(
+                label,
+                key=(
+                    f'melody-select-{song.id}-{section.id}-'
+                    f'{note["segment_id"]}-{note["order"]}'
+                ),
+                use_container_width=True,
+            ):
+                st.session_state[selected_note_key] = _note_ref(
+                    note["segment_id"],
+                    note["order"],
+                )
+                st.rerun()
+
+    selected_note_ref = st.session_state.get(selected_note_key)
+    if selected_note_ref not in note_lookup:
+        return
+
+    selected_note = note_lookup[selected_note_ref]
+    with st.form(f"melody-edit-form-{song.id}-{section.id}"):
+        st.markdown(
+            f'**Editing:** {selected_note["lyric"]} '
+            f'({selected_note["note_label"]})'
+        )
+        note_label = st.text_input(
+            "Note",
+            value=str(selected_note["note_label"]),
+        )
+        duration_beats = st.number_input(
+            "Duration (beats)",
+            min_value=0.25,
+            step=0.25,
+            value=float(str(selected_note["duration_beats"])),
+        )
+        save_col, cancel_col = st.columns(2)
+        save_clicked = save_col.form_submit_button(
+            "Save note",
+            use_container_width=True,
+        )
+        cancel_clicked = cancel_col.form_submit_button(
+            "Cancel",
+            use_container_width=True,
+        )
+
+    if cancel_clicked:
+        st.session_state.pop(selected_note_key, None)
+        st.rerun()
+    if not save_clicked:
+        return
+
+    try:
+        _apply_melody_update(
+            song,
+            {
+                "segment_id": selected_note["segment_id"],
+                "order": selected_note["order"],
+                "note_label": note_label,
+                "duration_beats": duration_beats,
+            },
+        )
+        app.repository.upsert_song(song)
+    except ValueError as error:
+        st.error(str(error))
+        return
+
+    st.session_state.pop(selected_note_key, None)
+    st.success("Updated melody note.")
+    st.rerun()
 
 
 def _song_summary(song: Song) -> str:
@@ -406,6 +483,11 @@ def _lyrics_sheet_line_markup(
             "</div>",
         ]
     )
+
+
+def _note_ref(segment_id: object, order: object) -> str:
+    """Return a stable session key for one melody note."""
+    return f"{segment_id}:{order}"
 
 
 def _format_chord(event: ChordEvent) -> str:
