@@ -6,14 +6,19 @@ import pytest
 
 from singnote.ui.home import (
     _autoscroll_script,
+    _chords_sheet_markup,
     _delete_melody_package,
     _favicon_head_script,
     _format_package_note_sequence,
+    _format_segment_melody_text,
     _insert_melody_package,
     _is_instrumental_segment,
     _lyrics_sheet_markup,
+    _melody_sheet_line_markup,
+    _parse_melody_text_lines,
     _parse_note_sequence,
     _parse_note_token,
+    _replace_melody_line,
     _should_render_melody_segment,
     _speed_to_pixels_per_tick,
     _update_melody_package,
@@ -53,6 +58,13 @@ def test_parse_note_sequence_accepts_commas_and_spaces() -> None:
     assert notes == ["C", "B", "G", "A"]
 
 
+def test_parse_melody_text_lines_accepts_shorthand() -> None:
+    """Whole-line editor should parse shorthand melody package lines."""
+    parsed_lines = _parse_melody_text_lines("So = C,B,G\nthink => C")
+
+    assert parsed_lines == [("So", ["C", "B", "G"]), ("think", ["C"])]
+
+
 def test_update_melody_package_replaces_package_text_and_notes() -> None:
     """A package edit should update the matching melody package."""
     song = build_sample_song()
@@ -76,6 +88,30 @@ def test_update_melody_package_replaces_package_text_and_notes() -> None:
     assert updated_notes[0].duration_beats == 1.0
     assert updated_notes[1].note == "C"
     assert updated_notes[1].octave == 5
+
+
+def test_replace_melody_line_updates_lyrics_and_packages() -> None:
+    """Whole-line edit should replace segment text and packages together."""
+    song = build_sample_song()
+
+    _replace_melody_line(
+        song,
+        segment_id="seg-1",
+        lyric_text="So, so",
+        melody_text="So = C,B,G\nso = A",
+    )
+
+    segment = song.lyric_sections[0].segments[0]
+    assert segment.text == "So, so"
+    assert [package.text for package in segment.melody_packages] == [
+        "So",
+        "so",
+    ]
+    assert [note.note for note in segment.melody_packages[0].notes] == [
+        "C",
+        "B",
+        "G",
+    ]
 
 
 def test_update_melody_package_rejects_unknown_segment_ids() -> None:
@@ -132,6 +168,27 @@ def test_lyrics_sheet_markup_reads_like_one_chart() -> None:
     assert 'class="sn-sheet-section-title"' in markup
     assert 'class="sn-sheet-chords"' in markup
     assert 'class="sn-sheet-lyric"' in markup
+
+
+def test_chords_sheet_markup_hides_lyric_text() -> None:
+    """Chord-only tab should not duplicate lyric text."""
+    markup = _chords_sheet_markup(build_sample_song())
+
+    assert 'class="sn-song-sheet sn-song-sheet-chords"' in markup
+    assert 'class="sn-sheet-chords sn-sheet-chords-only"' in markup
+    assert "Hello there" not in markup
+
+
+def test_melody_sheet_line_markup_renders_inline_packages() -> None:
+    """Melody tab should render one line as inline note-over-word packages."""
+    segment = build_sample_song().lyric_sections[0].segments[0]
+
+    markup = _melody_sheet_line_markup(segment)
+
+    assert 'class="sn-melody-line-shell"' in markup
+    assert 'class="sn-melody-inline-package"' in markup
+    assert 'class="sn-melody-inline-notes"' in markup
+    assert 'class="sn-melody-inline-text"' in markup
 
 
 def test_lyrics_sheet_markup_skips_instrumental_placeholders() -> None:
@@ -197,3 +254,12 @@ def test_favicon_head_script_points_to_static_assets() -> None:
     assert "/app/static/favicon-32x32.png" in script
     assert "/app/static/favicon-16x16.png" in script
     assert "/app/static/site.webmanifest" in script
+
+
+def test_format_segment_melody_text_uses_editable_shorthand() -> None:
+    """Existing package data should serialize back into whole-line shorthand."""
+    segment = build_sample_song().lyric_sections[0].segments[0]
+
+    shorthand = _format_segment_melody_text(segment)
+
+    assert "So = E4" in shorthand

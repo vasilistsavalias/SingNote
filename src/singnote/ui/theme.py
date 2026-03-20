@@ -246,6 +246,10 @@ def inject_global_styles() -> None:
           padding: 1.25rem 1rem 1.35rem;
         }
 
+        .sn-song-sheet-chords .sn-sheet-line + .sn-sheet-line {
+          margin-top: 0.7rem;
+        }
+
         .sn-sheet-section + .sn-sheet-section {
           margin-top: 1.4rem;
           padding-top: 1.25rem;
@@ -290,6 +294,78 @@ def inject_global_styles() -> None:
           font-family: "Fraunces", serif;
           font-size: clamp(1.05rem, 2vw, 1.3rem);
           line-height: 1.4;
+        }
+
+        .sn-sheet-chords-only {
+          margin-bottom: 0;
+          gap: 0.62rem;
+          min-height: 1.5rem;
+        }
+
+        .sn-sheet-line-chords-only {
+          padding: 0.08rem 0;
+        }
+
+        .sn-sheet-chord-empty {
+          opacity: 0.35;
+        }
+
+        .sn-melody-line-shell {
+          border: 1px solid rgba(46, 58, 78, 0.10);
+          border-radius: 20px;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(255, 251, 245, 0.98),
+              rgba(249, 241, 229, 0.92)
+            );
+          box-shadow: 0 10px 28px rgba(36, 33, 28, 0.08);
+          padding: 0.95rem 1rem 1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .sn-melody-line-caption {
+          color: var(--sn-muted);
+          font-size: 0.88rem;
+          margin-bottom: 0.7rem;
+        }
+
+        .sn-melody-line-row {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: flex-end;
+          gap: 0.9rem 0.75rem;
+        }
+
+        .sn-melody-inline-package {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: flex-start;
+          min-width: fit-content;
+        }
+
+        .sn-melody-inline-notes {
+          color: var(--sn-accent);
+          font-family: "IBM Plex Sans", sans-serif;
+          font-size: 0.76rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          line-height: 1.2;
+          text-transform: uppercase;
+          margin-bottom: 0.22rem;
+          white-space: nowrap;
+        }
+
+        .sn-melody-inline-text {
+          color: var(--sn-ink);
+          font-family: "Fraunces", serif;
+          font-size: clamp(1rem, 1.65vw, 1.26rem);
+          line-height: 1.22;
+          white-space: nowrap;
+        }
+
+        div[data-testid="stPopover"] button[kind="secondary"] {
+          border-radius: 16px;
         }
 
         .sn-melody-package {
@@ -347,6 +423,29 @@ def inject_global_styles() -> None:
 
           .sn-melody-package-text {
             font-size: 0.98rem;
+          }
+
+          .sn-melody-line-shell {
+            padding: 0.8rem 0.85rem 0.85rem;
+            margin-bottom: 0.6rem;
+          }
+
+          .sn-melody-line-caption {
+            font-size: 0.82rem;
+            margin-bottom: 0.55rem;
+          }
+
+          .sn-melody-line-row {
+            gap: 0.7rem 0.55rem;
+          }
+
+          .sn-melody-inline-notes {
+            font-size: 0.68rem;
+            letter-spacing: 0.09em;
+          }
+
+          .sn-melody-inline-text {
+            font-size: 0.96rem;
           }
         }
         </style>
