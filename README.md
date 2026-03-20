@@ -1,86 +1,55 @@
 # SingNote
 
-SingNote is a mobile-first Streamlit app for teacher-student singing practice.
-It keeps songs as reusable lesson cards with three coordinated tabs:
+SingNote is a Streamlit app for shared singing lessons. It presents songs as
+practice cards with three coordinated views:
 
-- lyrics plus chords
-- melody dictation with grouped lyric-note packages
-- rhythm, tempo, and coaching notes
+- lyrics + chords
+- melody packages
+- rhythm notes
 
-The current MVP uses a shared username/password instead of full accounts and
-stores songs in local SQLite.
+The active runtime is a single Streamlit app backed by SQLite and YAML seed
+files. There is no separate API server, background worker, or cloud service in
+this repository.
 
-## Features
-
-- shared login gate for one teacher/student account
-- manual song authoring with structured lyrics, chords, melody, rhythm, and notes
-- seeded `Wish You Were Here` lesson card with chord functions and grouped melody packages
-- in-place melody package editing through native mobile-friendly controls
-- portable YAML song authoring for seed files and advanced editing
-- mobile-first Streamlit styling with a responsive desktop layout
-
-## Local Run
-
-1. Create and activate a Python 3.11+ environment.
-2. Install the project:
-
-```bash
-pip install -e .[dev]
-```
-
-3. Set the shared credentials:
+## Quickstart
 
 ```powershell
+pip install -e .[dev]
 $env:SINGNOTE_SHARED_USERNAME = "shared-teacher"
 $env:SINGNOTE_SHARED_PASSWORD = "change-me-before-deploy"
-```
-
-4. Start the app:
-
-```bash
 python -m streamlit run streamlit_app.py
 ```
 
-## Data And Editing
+## Docs
 
-- songs are stored in `instance/singnote.db` by default
-- existing databases are migrated automatically when new song metadata fields are added
-- seed songs now live under `seed_data/songs/`
-- preferred seed format is portable YAML, though legacy JSON still loads
-- add a new seed song by creating another `*.yaml` file in that directory
-- the preferred schema is:
-  `song` metadata, then `sections[].lines[]` with optional `chords`,
-  `roman_numerals`, `melody_text` or `melody_packages`, `rhythm`, and
-  `annotations`
-- for fast melody authoring, prefer `melody_text: |` with one package per line,
-  for example `So = C,B,G`
-- `melody_packages[]` still works when you want explicit structured control
-- Python loads and validates those files at startup, so you do not need a new
-  Python file per song
-- if a seed-managed song changes on disk, startup reseeding now refreshes that
-  row automatically
-- if you manually edit a seeded song inside the app, that row becomes
-  user-managed and will not be overwritten by later seed refreshes
-- use the sidebar `Settings` control to explicitly reset a song from its
-  seed file if you want to discard in-app edits and resync it
-- the authoring panel also exposes a portable YAML editor for advanced
-  song editing without touching Python code
+Start with [docs/index.md](docs/index.md).
 
-## Streamlit Community Cloud
+Key pages:
 
-For deployment, set these app secrets in Streamlit Community Cloud:
+- [Quickstart](docs/getting-started/quickstart.md)
+- [Codebase Tour](docs/getting-started/codebase-tour.md)
+- [Architecture Overview](docs/guides/architecture-overview.md)
+- [Song Authoring Workflow](docs/guides/key-workflow.md)
+- [Commands Reference](docs/reference/commands.md)
+- [Troubleshooting](docs/reference/troubleshooting.md)
 
-- `SINGNOTE_SHARED_USERNAME`
-- `SINGNOTE_SHARED_PASSWORD`
+## Repo Map
 
-The app also reads the same names from environment variables for local runs.
+- [`streamlit_app.py`](streamlit_app.py): Streamlit entrypoint
+- [`src/singnote/`](src/singnote): app code
+- [`seed_data/songs/`](seed_data/songs): YAML/JSON seed songs
+- [`tests/`](tests): pytest suite
+- [`instance/`](instance): local SQLite database by default
+- [`docs/`](docs): human-facing documentation
 
-## Quality Checks
+## Runtime Artifacts
 
-Run the local verification suite with:
+- local database: `instance/singnote.db` unless `SINGNOTE_DATA_DIR` overrides it
+- seed songs: `seed_data/songs/*.yaml` and legacy `*.json`
+- Streamlit config: `.streamlit/config.toml`
 
-```bash
-python -m pytest -q
-python -m ruff check .
-python -m mypy src
-```
+## Active vs Historical
+
+The active UI uses native Streamlit controls. Older custom long-press component
+files still exist in the repository, but they are not part of the active app
+path.
