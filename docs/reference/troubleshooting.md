@@ -25,9 +25,9 @@ Cause:
 
 Fix:
 1. reboot or redeploy the app if needed
-2. open the sidebar `Settings`
-3. select the song
-4. click `Reset from seed`
+2. if the song is still seed-managed, the new YAML should load on startup
+3. if the song was already edited in the app, recreate the local SQLite file or
+   remove the saved row so bootstrap can seed it again
 
 ## Instrumental Placeholder Rows Keep Showing
 
@@ -37,7 +37,7 @@ Cause:
 
 Fix:
 - remove them from the seed file
-- then reset the song from seed in the UI
+- then restart with a fresh seed-managed database row
 
 ## Melody YAML Fails To Parse
 
@@ -63,4 +63,5 @@ Fix:
 2. open `Manage app`
 3. click `Reboot app`
 
-If seed-backed content is still stale after reboot, use `Reset from seed`.
+If seed-backed content is still stale after reboot, confirm the live database
+is not serving a previously edited song row.

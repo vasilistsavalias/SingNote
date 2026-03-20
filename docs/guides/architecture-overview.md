@@ -57,7 +57,7 @@ layer distinguishes between:
 
 Seed-managed rows update automatically when the seed file changes. Once a song
 is edited in the app, it becomes user-managed and later seed refreshes do not
-overwrite it unless the user explicitly chooses `Reset from seed`.
+overwrite it automatically.
 
 ## UI Shape
 
@@ -69,9 +69,9 @@ The visible app surface is intentionally small:
 
 Inside a workspace, the active tabs are:
 
-- `Lyrics + Chords`
+- `Chords`
 - `Melody`
-- `Rhythm`
+- `General`
 
 The active editing model uses native Streamlit controls. The earlier custom
 component approach is historical only.

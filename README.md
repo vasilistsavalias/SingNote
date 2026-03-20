@@ -3,9 +3,9 @@
 SingNote is a Streamlit app for shared singing lessons. It presents songs as
 practice cards with three coordinated views:
 
-- lyrics + chords
-- melody packages
-- rhythm notes
+- chords with lyrics
+- melody reader and melody editing
+- general song guidance
 
 The active runtime is a single Streamlit app backed by SQLite and YAML seed
 files. There is no separate API server, background worker, or cloud service in
@@ -32,6 +32,18 @@ Key pages:
 - [Song Authoring Workflow](docs/guides/key-workflow.md)
 - [Commands Reference](docs/reference/commands.md)
 - [Troubleshooting](docs/reference/troubleshooting.md)
+
+## Current UX
+
+- login with one shared teacher/student account
+- open a song from the catalog
+- use `Chords` for lyric-following with auto-scroll
+- use `Melody` in `Reader` or `Edit` mode
+- use `General` for key, time, tempo, chord quality, and strumming guidance
+
+Seed songs are authored as YAML under [`seed_data/songs/`](seed_data/songs).
+The normal workflow is to edit those files directly rather than author songs in
+the live UI.
 
 ## Repo Map
 

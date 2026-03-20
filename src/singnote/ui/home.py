@@ -374,11 +374,11 @@ def _render_general_tab(song: Song) -> None:
     with right, st.container(border=True):
         st.markdown("### Strumming Pattern")
         if song.strumming_pattern:
-            st.code(song.strumming_pattern)
+            st.write(song.strumming_pattern)
         else:
             st.write("No strumming pattern saved yet.")
         if song.tempo_notes:
-            st.caption(song.tempo_notes)
+            st.write(song.tempo_notes)
 
 
 def _render_melody_segment_row(

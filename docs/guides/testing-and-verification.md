@@ -32,7 +32,8 @@ For changes that affect the visual app:
 2. log in with the shared credentials
 3. open the seeded song
 4. verify the relevant tab behavior
-5. if you changed seed YAML, use `Reset from seed`
+5. if you changed seed YAML for a seed-managed song, restart the app
+6. if the song was manually edited before, recreate the local database first
 
 ## Deployment Verification
 
@@ -42,4 +43,4 @@ For Streamlit Community Cloud:
 2. reboot or redeploy the app
 3. log in
 4. confirm the current seed data appears
-5. if needed, reset the song from seed inside the sidebar settings
+5. verify the `Chords`, `Melody`, and `General` tabs reflect the new build

@@ -17,7 +17,6 @@ A typical line can include:
 
 - `lyrics`
 - `chords`
-- `roman_numerals`
 - `melody_text` or `melody_packages`
 - `rhythm`
 
@@ -59,19 +58,18 @@ The catalog lists available songs. Selecting a song opens the workspace.
 
 The tabs use the same `Song` object in different projections:
 
-- lyrics chart view
-- melody package view
-- rhythm and theory view
+- chords-and-lyrics reader view
+- melody reader and melody editing view
+- general theory and strumming view
 
-## 5. Reset From Seed When Needed
+## 5. Refresh Seed Content
 
-If a seeded song was edited in the app and you want to resync it from disk:
+If a seed-managed song changes on disk, the repository refreshes it during the
+next bootstrap automatically.
 
-1. open the sidebar
-2. open `Settings`
-3. choose the song
-4. confirm reset
-5. click `Reset from seed`
+If a song has already been edited in the app, the saved database version wins.
+To pick up the YAML version again, recreate the local database or remove the
+saved row before the next startup.
 
 ## Current Contradictions Resolved
 
