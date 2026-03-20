@@ -38,7 +38,6 @@ def test_app_login_and_seeded_song_workspace(
     app.button[0].click()
     app.run()
 
-    assert "Song Catalog" in [subheader.value for subheader in app.subheader]
     assert "Wish You Were Here" in [
         subheader.value for subheader in app.subheader
     ]

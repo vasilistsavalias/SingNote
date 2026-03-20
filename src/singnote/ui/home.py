@@ -28,7 +28,7 @@ from singnote.ui.authoring import (
     editor_values_from_song,
     yaml_text_from_song,
 )
-from singnote.ui.theme import inject_global_styles, render_hero
+from singnote.ui.theme import inject_global_styles
 
 T = TypeVar("T")
 
@@ -47,10 +47,6 @@ def render_home_page(app: Application) -> None:
 
     songs = app.repository.list_songs()
     _render_sidebar_status(app, songs)
-    render_hero(len(songs))
-    _render_authoring_panel(app, songs)
-
-    st.subheader("Song Catalog")
     if not songs:
         st.info(
             "No songs are available yet. The authoring workflow will populate "
