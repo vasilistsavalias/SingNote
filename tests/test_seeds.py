@@ -13,15 +13,48 @@ from singnote.seeds import build_sample_songs, song_from_portable_text
 def test_sample_seed_song_is_complete_for_all_three_tabs() -> None:
     """The default seed should exercise harmony, melody, and rhythm."""
     songs = build_sample_songs()
+    song_lookup = {song.id: song for song in songs}
 
-    assert len(songs) == 1
-    song = songs[0]
+    assert "wish-you-were-here" in song_lookup
+    song = song_lookup["wish-you-were-here"]
     assert song.title == "Wish You Were Here"
     assert song.chord_events
     assert song.melody_notes
     assert song.lyric_sections[0].segments[0].melody_packages
     assert song.rhythm_cues
     assert song.teacher_annotations
+
+
+def test_kakes_synitheies_seed_uses_greekrocker_chord_skeleton() -> None:
+    """The Greek seed should load as a practice-ready chord chart."""
+    songs = build_sample_songs()
+    song = {song.id: song for song in songs}["kakes-synitheies"]
+
+    assert song.title == "Κακές Συνήθειες"
+    assert song.artist == "Μίλτος Πασχαλίδης"
+    assert song.key_signature == "G major"
+    assert [section.id for section in song.lyric_sections] == [
+        "intro",
+        "verse-1",
+        "chorus-1",
+        "interlude",
+        "verse-2",
+        "chorus-2",
+        "outro",
+    ]
+    assert song.lyric_sections[0].segments[0].text == "G Gsus4 G Gsus4"
+    first_line_chords = [
+        event.chord
+        for event in song.chord_events
+        if event.segment_id == "verse-1-1"
+    ]
+    assert first_line_chords == ["G", "Am", "C", "D", "G"]
+    refrain_turn = [
+        event.chord
+        for event in song.chord_events
+        if event.segment_id == "chorus-1-2"
+    ]
+    assert refrain_turn == ["Am", "D", "B7", "Em"]
 
 
 def test_sample_seed_songs_can_load_from_yaml_directory(

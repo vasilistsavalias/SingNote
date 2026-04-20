@@ -58,8 +58,10 @@ def test_bootstrap_application_creates_seeded_database(
 
     app = bootstrap_application()
     songs = app.repository.list_songs()
+    song_lookup = {song.id: song for song in songs}
 
     assert app.settings.data_dir.exists()
     assert app.settings.database_path.exists()
-    assert len(songs) == 1
-    assert songs[0].title == "Wish You Were Here"
+    assert "wish-you-were-here" in song_lookup
+    assert "kakes-synitheies" in song_lookup
+    assert song_lookup["wish-you-were-here"].title == "Wish You Were Here"
