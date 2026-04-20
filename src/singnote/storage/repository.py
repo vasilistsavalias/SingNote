@@ -5,13 +5,15 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import UTC, datetime
+from pathlib import Path
+from uuid import uuid4
 
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from singnote.domain.models import Song
-from singnote.storage.models import SongRecord
+from singnote.storage.models import RecordingRecord, SongRecord
 
 
 def create_engine_and_init(database_url: str) -> Engine:
@@ -26,8 +28,13 @@ def create_engine_and_init(database_url: str) -> Engine:
 class SQLiteSongRepository:
     """Repository for CRUD operations on songs."""
 
-    def __init__(self, engine: Engine):
+    def __init__(
+        self,
+        engine: Engine,
+        recordings_dir: Path | str | None = None,
+    ):
         self._engine = engine
+        self._recordings_dir = Path(recordings_dir or "instance/recordings")
 
     def upsert_song(self, song: Song) -> Song:
         """Create or replace a song record."""
@@ -106,6 +113,109 @@ class SQLiteSongRepository:
             session.add(record)
             session.commit()
         return song
+
+    def create_recording(
+        self,
+        *,
+        song_id: str,
+        title: str,
+        original_filename: str,
+        content_type: str | None,
+        file_bytes: bytes,
+        recorded_at: datetime | None = None,
+    ) -> RecordingRecord:
+        """Persist an uploaded recording file and its metadata."""
+        recording_id = uuid4().hex
+        safe_original_filename = Path(original_filename).name
+        extension = Path(safe_original_filename).suffix.lower()
+        stored_filename = f"{recording_id}{extension}"
+        song_recordings_dir = self._recordings_dir / song_id
+        file_path = song_recordings_dir / stored_filename
+        song_recordings_dir.mkdir(parents=True, exist_ok=True)
+        file_path.write_bytes(file_bytes)
+
+        record = RecordingRecord(
+            id=recording_id,
+            song_id=song_id,
+            title=title.strip() or Path(safe_original_filename).stem,
+            original_filename=safe_original_filename,
+            stored_filename=stored_filename,
+            content_type=content_type,
+            file_size_bytes=len(file_bytes),
+            recorded_at=recorded_at,
+        )
+        try:
+            with Session(self._engine) as session:
+                session.add(record)
+                session.commit()
+                session.refresh(record)
+        except Exception:
+            file_path.unlink(missing_ok=True)
+            raise
+        return record
+
+    def list_recordings_for_song(self, song_id: str) -> list[RecordingRecord]:
+        """Return recordings for a song, newest first."""
+        with Session(self._engine) as session:
+            statement = (
+                select(RecordingRecord)
+                .where(RecordingRecord.song_id == song_id)
+                .order_by(text("created_at DESC"))
+            )
+            return list(session.exec(statement).all())
+
+    def get_recording(self, recording_id: str) -> RecordingRecord | None:
+        """Return one recording by id."""
+        with Session(self._engine) as session:
+            return session.get(RecordingRecord, recording_id)
+
+    def update_recording_review(
+        self,
+        *,
+        recording_id: str,
+        title: str,
+        status: str,
+        teacher_notes: str,
+        student_notes: str,
+        next_steps: str,
+        pitch_notes: str,
+        rhythm_notes: str,
+        breath_notes: str,
+    ) -> RecordingRecord | None:
+        """Update human evaluation fields for one recording."""
+        with Session(self._engine) as session:
+            record = session.get(RecordingRecord, recording_id)
+            if record is None:
+                return None
+            record.title = title.strip() or record.title
+            record.status = status
+            record.teacher_notes = teacher_notes
+            record.student_notes = student_notes
+            record.next_steps = next_steps
+            record.pitch_notes = pitch_notes
+            record.rhythm_notes = rhythm_notes
+            record.breath_notes = breath_notes
+            record.updated_at = _utc_now()
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record
+
+    def delete_recording(self, recording_id: str) -> bool:
+        """Delete one recording row and best-effort delete its audio file."""
+        with Session(self._engine) as session:
+            record = session.get(RecordingRecord, recording_id)
+            if record is None:
+                return False
+            file_path = self.recording_file_path(record)
+            session.delete(record)
+            session.commit()
+        file_path.unlink(missing_ok=True)
+        return True
+
+    def recording_file_path(self, record: RecordingRecord) -> Path:
+        """Return the local audio path for a recording record."""
+        return self._recordings_dir / record.song_id / record.stored_filename
 
     @staticmethod
     def _to_record(

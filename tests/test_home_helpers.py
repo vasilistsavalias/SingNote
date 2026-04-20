@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from singnote.storage.models import RecordingRecord
 from singnote.ui.home import (
     _chord_quality_caption,
     _delete_melody_package,
@@ -21,11 +22,14 @@ from singnote.ui.home import (
     _parse_note_sequence,
     _parse_note_token,
     _positioned_chords,
+    _recording_metadata_label,
+    _recording_title_from_filename,
     _replace_melody_line,
     _self_scroll_component_html,
     _should_render_melody_segment,
     _speed_to_pixels_per_second,
     _update_melody_package,
+    _validate_recording_upload,
 )
 from tests.support import build_sample_song
 
@@ -224,6 +228,51 @@ def test_diatonic_chord_quality_rows_expand_major_key_cleanly() -> None:
 def test_chord_quality_caption_mentions_song_key() -> None:
     """General tab should label the theory box with the actual key."""
     assert _chord_quality_caption("G major") == "Diatonic harmony for G major"
+
+
+def test_validate_recording_upload_accepts_supported_audio() -> None:
+    """Recording uploads should accept known audio file extensions."""
+    assert _validate_recording_upload("lesson_take.m4a", 1024) is None
+
+
+def test_validate_recording_upload_rejects_bad_extension() -> None:
+    """Recording uploads should reject non-audio files."""
+    error = _validate_recording_upload("notes.pdf", 1024)
+
+    assert error is not None
+    assert "Unsupported audio type" in error
+
+
+def test_validate_recording_upload_rejects_large_files() -> None:
+    """Recording uploads should enforce the app's 50MB limit."""
+    error = _validate_recording_upload("take.wav", 51 * 1024 * 1024)
+
+    assert error == "Recording is too large. Maximum size is 50MB."
+
+
+def test_recording_title_from_filename_removes_extension() -> None:
+    """Upload forms should default titles from the original filename."""
+    assert _recording_title_from_filename("wish take 1.m4a") == "wish take 1"
+
+
+def test_recording_metadata_label_is_human_readable() -> None:
+    """Recording cards should summarize review state and file metadata."""
+    recording = RecordingRecord(
+        id="rec-1",
+        song_id="song-1",
+        title="Lesson take",
+        original_filename="take.mp3",
+        stored_filename="rec-1.mp3",
+        content_type="audio/mpeg",
+        file_size_bytes=1024 * 1024,
+        status="Reviewed",
+    )
+
+    label = _recording_metadata_label(recording)
+
+    assert "Reviewed" in label
+    assert "take.mp3" in label
+    assert "1.0MB" in label
 
 
 def test_melody_sheet_line_markup_renders_inline_packages() -> None:

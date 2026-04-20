@@ -39,6 +39,7 @@ Key pages:
 - open a song from the catalog
 - use `Chords` for lyric-following with auto-scroll
 - use `Melody` in `Reader` or `Edit` mode
+- use `Recordings` to upload takes and write teacher/student review notes
 - use `General` for key, time, tempo, chord quality, and strumming guidance
 
 Seed songs are authored as YAML under [`seed_data/songs/`](seed_data/songs).
@@ -57,6 +58,8 @@ the live UI.
 ## Runtime Artifacts
 
 - local database: `instance/singnote.db` unless `SINGNOTE_DATA_DIR` overrides it
+- local recordings: `instance/recordings/<song-id>/` unless
+  `SINGNOTE_DATA_DIR` overrides it
 - seed songs: `seed_data/songs/*.yaml` and legacy `*.json`
 - Streamlit config: `.streamlit/config.toml`
 

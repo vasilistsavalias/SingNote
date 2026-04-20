@@ -46,3 +46,8 @@ def test_app_login_and_seeded_song_workspace(
         for caption in app.caption
         if isinstance(caption.value, str)
     )
+    assert any(
+        "Upload Recording" in markdown.value
+        for markdown in app.markdown
+        if isinstance(markdown.value, str)
+    )

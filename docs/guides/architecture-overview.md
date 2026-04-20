@@ -59,6 +59,11 @@ Seed-managed rows update automatically when the seed file changes. Once a song
 is edited in the app, it becomes user-managed and later seed refreshes do not
 overwrite it automatically.
 
+Recordings are operational user data, not seed data. Their metadata is stored
+in SQLite and their audio files are stored under `SINGNOTE_DATA_DIR /
+recordings / <song-id>`. Streamlit Community Cloud local storage is not a
+durable archive, so important takes should also be kept outside the app.
+
 ## UI Shape
 
 The visible app surface is intentionally small:
@@ -71,6 +76,7 @@ Inside a workspace, the active tabs are:
 
 - `Chords`
 - `Melody`
+- `Recordings`
 - `General`
 
 The active editing model uses native Streamlit controls. The earlier custom

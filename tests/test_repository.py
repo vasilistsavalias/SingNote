@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from sqlalchemy import inspect
+
 from singnote.storage.repository import (
     SQLiteSongRepository,
     create_engine_and_init,
@@ -125,3 +127,141 @@ def test_repository_can_reset_manual_song_back_to_seed(
     assert loaded_song is not None
     assert loaded_song.title == "Wish You Were Here"
     assert loaded_song.description == "Reset from JSON seed."
+
+
+def test_repository_creates_recording_table_on_init(tmp_path: Path) -> None:
+    """Schema initialization should include the recordings table."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+
+    assert "recordingrecord" in inspect(engine).get_table_names()
+
+
+def test_repository_can_create_list_and_load_recordings(
+    tmp_path: Path,
+) -> None:
+    """Recordings should attach to one song and persist audio files."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    recordings_dir = tmp_path / "recordings"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(engine, recordings_dir=recordings_dir)
+    song = build_sample_song()
+    repository.upsert_song(song)
+
+    first = repository.create_recording(
+        song_id=song.id,
+        title="Lesson take 1",
+        original_filename="take-one.m4a",
+        content_type="audio/mp4",
+        file_bytes=b"fake-audio-one",
+    )
+    second = repository.create_recording(
+        song_id=song.id,
+        title="Lesson take 2",
+        original_filename="take-two.wav",
+        content_type="audio/wav",
+        file_bytes=b"fake-audio-two",
+    )
+
+    recordings = repository.list_recordings_for_song(song.id)
+    loaded = repository.get_recording(first.id)
+
+    assert [recording.id for recording in recordings] == [
+        second.id,
+        first.id,
+    ]
+    assert loaded is not None
+    assert loaded.title == "Lesson take 1"
+    assert repository.recording_file_path(first).read_bytes() == (
+        b"fake-audio-one"
+    )
+
+
+def test_repository_keeps_recordings_scoped_by_song(tmp_path: Path) -> None:
+    """Recordings for one song should not leak into another song card."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(
+        engine,
+        recordings_dir=tmp_path / "recordings",
+    )
+
+    repository.create_recording(
+        song_id="song-a",
+        title="Song A take",
+        original_filename="a.mp3",
+        content_type="audio/mpeg",
+        file_bytes=b"a",
+    )
+    repository.create_recording(
+        song_id="song-b",
+        title="Song B take",
+        original_filename="b.mp3",
+        content_type="audio/mpeg",
+        file_bytes=b"b",
+    )
+
+    assert len(repository.list_recordings_for_song("song-a")) == 1
+    assert repository.list_recordings_for_song("song-a")[0].title == (
+        "Song A take"
+    )
+
+
+def test_repository_updates_recording_review(tmp_path: Path) -> None:
+    """Structured evaluation fields should be editable."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(
+        engine,
+        recordings_dir=tmp_path / "recordings",
+    )
+    recording = repository.create_recording(
+        song_id="song-a",
+        title="Raw take",
+        original_filename="take.mp3",
+        content_type="audio/mpeg",
+        file_bytes=b"audio",
+    )
+
+    updated = repository.update_recording_review(
+        recording_id=recording.id,
+        title="Reviewed take",
+        status="Reviewed",
+        teacher_notes="Better vowels.",
+        student_notes="Felt easier.",
+        next_steps="Repeat chorus.",
+        pitch_notes="Watch the high note.",
+        rhythm_notes="Do not rush.",
+        breath_notes="Lower breath.",
+    )
+
+    assert updated is not None
+    assert updated.title == "Reviewed take"
+    assert updated.status == "Reviewed"
+    assert updated.teacher_notes == "Better vowels."
+    assert updated.next_steps == "Repeat chorus."
+
+
+def test_repository_deletes_recording_when_file_is_missing(
+    tmp_path: Path,
+) -> None:
+    """Metadata deletion should still work if the audio file disappeared."""
+    database_url = f"sqlite:///{(tmp_path / 'songs.db').as_posix()}"
+    engine = create_engine_and_init(database_url)
+    repository = SQLiteSongRepository(
+        engine,
+        recordings_dir=tmp_path / "recordings",
+    )
+    recording = repository.create_recording(
+        song_id="song-a",
+        title="Delete me",
+        original_filename="take.ogg",
+        content_type="audio/ogg",
+        file_bytes=b"audio",
+    )
+    repository.recording_file_path(recording).unlink()
+
+    deleted = repository.delete_recording(recording.id)
+
+    assert deleted is True
+    assert repository.get_recording(recording.id) is None

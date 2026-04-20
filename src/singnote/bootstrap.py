@@ -33,7 +33,10 @@ def bootstrap_application() -> Application:
     settings = load_settings()
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     engine = create_engine_and_init(settings.database_url)
-    repository = SQLiteSongRepository(engine)
+    repository = SQLiteSongRepository(
+        engine,
+        recordings_dir=settings.data_dir / "recordings",
+    )
     seed_songs = {song.id: song for song in build_sample_songs()}
     repository.seed_songs(list(seed_songs.values()))
     return Application(

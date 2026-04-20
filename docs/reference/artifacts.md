@@ -21,6 +21,8 @@ Canonical sources:
 
 - `instance/singnote.db`
   Default SQLite database
+- `instance/recordings/<song-id>/`
+  Default local audio recording storage
 - `.streamlit/config.toml`
   Streamlit config used by local/dev deployment
 
@@ -36,4 +38,5 @@ Canonical sources:
 The app does not currently generate reports, exports, or build artifacts beyond:
 
 - the local SQLite database
+- uploaded local audio recordings
 - cached Python/test tooling artifacts

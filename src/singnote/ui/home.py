@@ -20,6 +20,7 @@ from singnote.domain.models import (
     MelodyPackage,
     Song,
 )
+from singnote.storage.models import RecordingRecord
 from singnote.ui.authoring import (
     SongEditorValues,
     blank_editor_values,
@@ -37,6 +38,15 @@ SPEED_PPS = {
     f"{step / 10:g}x": step * 3
     for step in range(1, 31)
 }
+ALLOWED_RECORDING_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".webm"}
+MAX_RECORDING_BYTES = 50 * 1024 * 1024
+RECORDING_STATUSES = [
+    "New",
+    "Needs review",
+    "Reviewed",
+    "Practice again",
+    "Good take",
+]
 
 
 def render_home_page(app: Application) -> None:
@@ -285,14 +295,16 @@ def _render_workspace(app: Application, song_lookup: dict[str, Song]) -> None:
     if song.key_signature or song.time_signature or song.tempo_bpm:
         st.caption(_song_summary(song))
 
-    chords_tab, melody_tab, general_tab = st.tabs(
-        ["Chords", "Melody", "General"]
+    chords_tab, melody_tab, recordings_tab, general_tab = st.tabs(
+        ["Chords", "Melody", "Recordings", "General"]
     )
 
     with chords_tab:
         _render_chords_tab(song)
     with melody_tab:
         _render_melody_tab(app, song)
+    with recordings_tab:
+        _render_recordings_tab(app, song)
     with general_tab:
         _render_general_tab(song)
 
@@ -348,6 +360,158 @@ def _render_melody_tab(app: Application, song: Song) -> None:
                 section,
                 segment,
             )
+
+
+def _render_recordings_tab(app: Application, song: Song) -> None:
+    """Render upload, playback, and evaluation controls for song recordings."""
+    st.markdown("### Upload Recording")
+    with st.form(f"recording-upload-{song.id}", clear_on_submit=True):
+        uploaded_file = st.file_uploader(
+            "Audio file",
+            type=sorted(
+                extension.lstrip(".")
+                for extension in ALLOWED_RECORDING_EXTENSIONS
+            ),
+        )
+        default_title = (
+            _recording_title_from_filename(uploaded_file.name)
+            if uploaded_file is not None
+            else ""
+        )
+        title = st.text_input("Recording title", value=default_title)
+        submitted = st.form_submit_button("Save recording")
+
+    if submitted:
+        if uploaded_file is None:
+            st.error("Choose an audio file before saving.")
+        else:
+            error = _validate_recording_upload(
+                uploaded_file.name,
+                uploaded_file.size,
+            )
+            if error is not None:
+                st.error(error)
+            else:
+                try:
+                    app.repository.create_recording(
+                        song_id=song.id,
+                        title=title,
+                        original_filename=uploaded_file.name,
+                        content_type=uploaded_file.type,
+                        file_bytes=uploaded_file.getvalue(),
+                    )
+                except OSError as error:
+                    st.error(f"Could not save recording: {error}")
+                else:
+                    st.success("Recording saved.")
+                    st.rerun()
+
+    recordings = app.repository.list_recordings_for_song(song.id)
+    if not recordings:
+        st.info("No recordings saved for this song yet.")
+        return
+
+    st.markdown("### Saved Recordings")
+    for recording in recordings:
+        _render_recording_card(app, recording)
+
+
+def _render_recording_card(
+    app: Application,
+    recording: RecordingRecord,
+) -> None:
+    """Render playback and structured review controls for one recording."""
+    with st.container(border=True):
+        st.markdown(f"#### {recording.title}")
+        st.caption(_recording_metadata_label(recording))
+        audio_path = app.repository.recording_file_path(recording)
+        if audio_path.exists():
+            st.audio(str(audio_path))
+            st.download_button(
+                "Download",
+                data=audio_path.read_bytes(),
+                file_name=recording.original_filename,
+                mime=recording.content_type or "application/octet-stream",
+                key=f"recording-download-{recording.id}",
+            )
+        else:
+            st.warning("The audio file is missing, but the review remains.")
+
+        with st.form(f"recording-review-{recording.id}"):
+            title = st.text_input(
+                "Title",
+                value=recording.title,
+                key=f"recording-title-{recording.id}",
+            )
+            status_index = (
+                RECORDING_STATUSES.index(recording.status)
+                if recording.status in RECORDING_STATUSES
+                else 0
+            )
+            status = st.selectbox(
+                "Status",
+                options=RECORDING_STATUSES,
+                index=status_index,
+                key=f"recording-status-{recording.id}",
+            )
+            teacher_notes = st.text_area(
+                "Teacher notes",
+                value=recording.teacher_notes,
+                key=f"recording-teacher-{recording.id}",
+            )
+            student_notes = st.text_area(
+                "Student notes",
+                value=recording.student_notes,
+                key=f"recording-student-{recording.id}",
+            )
+            next_steps = st.text_area(
+                "Next steps",
+                value=recording.next_steps,
+                key=f"recording-next-{recording.id}",
+            )
+            pitch_notes = st.text_area(
+                "Pitch notes",
+                value=recording.pitch_notes,
+                key=f"recording-pitch-{recording.id}",
+            )
+            rhythm_notes = st.text_area(
+                "Rhythm notes",
+                value=recording.rhythm_notes,
+                key=f"recording-rhythm-{recording.id}",
+            )
+            breath_notes = st.text_area(
+                "Breath/support notes",
+                value=recording.breath_notes,
+                key=f"recording-breath-{recording.id}",
+            )
+            saved = st.form_submit_button("Save review")
+        if saved:
+            app.repository.update_recording_review(
+                recording_id=recording.id,
+                title=title,
+                status=status,
+                teacher_notes=teacher_notes,
+                student_notes=student_notes,
+                next_steps=next_steps,
+                pitch_notes=pitch_notes,
+                rhythm_notes=rhythm_notes,
+                breath_notes=breath_notes,
+            )
+            st.success("Review saved.")
+            st.rerun()
+
+        confirm_delete = st.checkbox(
+            "Confirm delete",
+            key=f"recording-delete-confirm-{recording.id}",
+        )
+        if st.button(
+            "Delete recording",
+            key=f"recording-delete-{recording.id}",
+            disabled=not confirm_delete,
+        ):
+            app.repository.delete_recording(recording.id)
+            st.success("Recording deleted.")
+            st.rerun()
 
 
 def _render_general_tab(song: Song) -> None:
@@ -506,6 +670,35 @@ def _song_summary(song: Song) -> str:
     if song.tempo_bpm:
         parts.append(f"{song.tempo_bpm} BPM")
     return " | ".join(parts)
+
+
+def _recording_title_from_filename(filename: str) -> str:
+    """Return a clean default recording title from an uploaded filename."""
+    return Path(filename).stem.strip() or "Untitled recording"
+
+
+def _validate_recording_upload(
+    filename: str,
+    file_size_bytes: int,
+) -> str | None:
+    """Return an upload validation error, or None when the file is valid."""
+    extension = Path(filename).suffix.lower()
+    if extension not in ALLOWED_RECORDING_EXTENSIONS:
+        allowed = ", ".join(sorted(ALLOWED_RECORDING_EXTENSIONS))
+        return f"Unsupported audio type. Allowed extensions: {allowed}."
+    if file_size_bytes > MAX_RECORDING_BYTES:
+        return "Recording is too large. Maximum size is 50MB."
+    return None
+
+
+def _recording_metadata_label(recording: RecordingRecord) -> str:
+    """Return a compact metadata label for one recording card."""
+    size_mb = recording.file_size_bytes / (1024 * 1024)
+    created_label = recording.created_at.strftime("%Y-%m-%d %H:%M")
+    return (
+        f"{recording.status} | {recording.original_filename} | "
+        f"{size_mb:.1f}MB | {created_label}"
+    )
 
 
 def _blank_song_yaml_text() -> str:

@@ -54,7 +54,7 @@ You should see:
 - a login screen
 - the seeded `Wish You Were Here` song card after login
 - three tabs in the workspace:
-  `Chords`, `Melody`, and `General`
+  `Chords`, `Melody`, `Recordings`, and `General`
 
 The first run also creates a local SQLite database at `instance/singnote.db`
 unless you changed `SINGNOTE_DATA_DIR`.

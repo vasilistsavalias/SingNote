@@ -52,3 +52,28 @@ class SongRecord(SQLModel, table=True):
     seed_signature: str | None = None
     created_at: datetime = Field(default_factory=utc_now, nullable=False)
     updated_at: datetime = Field(default_factory=utc_now, nullable=False)
+
+
+class RecordingRecord(SQLModel, table=True):
+    """User-uploaded song recording metadata."""
+
+    __table_args__ = {"extend_existing": True}
+
+    id: str = Field(primary_key=True)
+    song_id: str = Field(index=True)
+    title: str
+    original_filename: str
+    stored_filename: str
+    content_type: str | None = None
+    file_size_bytes: int = Field(ge=0)
+    duration_seconds: float | None = Field(default=None, ge=0)
+    recorded_at: datetime | None = None
+    status: str = Field(default="New", nullable=False)
+    teacher_notes: str = Field(default="", nullable=False)
+    student_notes: str = Field(default="", nullable=False)
+    next_steps: str = Field(default="", nullable=False)
+    pitch_notes: str = Field(default="", nullable=False)
+    rhythm_notes: str = Field(default="", nullable=False)
+    breath_notes: str = Field(default="", nullable=False)
+    created_at: datetime = Field(default_factory=utc_now, nullable=False)
+    updated_at: datetime = Field(default_factory=utc_now, nullable=False)
