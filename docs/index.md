@@ -6,6 +6,7 @@ Use the sections below by intent:
 
 - Getting Started: first run and orientation
 - Guides: how the current app works
+- Song Research: working notes before a song becomes a seed YAML file
 - Reference: commands, data contracts, troubleshooting, and guardrails
 - Archive: historical context that should not be treated as active truth
 
@@ -19,6 +20,12 @@ Use the sections below by intent:
 - [Architecture Overview](guides/architecture-overview.md)
 - [Song Workflow](guides/key-workflow.md)
 - [Testing And Verification](guides/testing-and-verification.md)
+
+## Song Research
+
+- [Kakes Synitheies - Version 1 Notes](song-research/kakes-synitheies-v1-nikolas.md)
+- [Kakes Synitheies - Version 2 Notes](song-research/kakes-synitheies-v2-greekrocker.md)
+- [Kakes Synitheies - Working Synthesis](song-research/kakes-synitheies-synthesis.md)
 
 ## Reference
 
