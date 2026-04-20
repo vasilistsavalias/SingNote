@@ -44,6 +44,9 @@ This version is more detailed than Version 1. It writes out the intro and repeat
 - `NicholasG9` suggests that the ending around the cafe/cigarette phrase may sound better with `D C G`.
 - One anonymous commenter says this version is the strongest and asks that other confusing versions be removed.
 - `ZAXAPIAS` says to use `D7` where it sounds right and agrees this is the best of the versions.
+- `N.` explicitly says this is finally the correct version, but suggests a small change in the refrain: instead of `Bm`, pass through the note `F#` and then go to `Em`. This supports treating `Bm` as a disputed/passing color rather than a locked chord.
+- `NikGR` gives a direct positive validation: "perfect rendering, thank you."
+- `greekrocker` credits a music-theory teacher for deriving the version, which is useful context but not proof by itself.
 - Several comments discuss `G4`, with one clarification that it means `Gsus4`.
 - Some comments focus on solo/tab details; useful later only if we decide to add an instrumental learning section.
 
@@ -58,7 +61,7 @@ This page does not solve strumming directly, but its chord layout implies more p
 
 ## Reliability Notes
 
-This version has fewer votes but a higher score and stronger internal detail. It is probably better for the final SingNote harmony skeleton than Version 1, especially for intro color, the `Am Em D G D` section, and the `B7` movement. Comments also treat it as a more correct version, but it still needs listening verification.
+This version has fewer votes but a higher score and stronger internal detail. It is probably better for the final SingNote harmony skeleton than Version 1, especially for intro color, the `Am Em D G D` section, and the `B7` movement. Comments also treat it as a more correct version. The main caution is that even supporters suggest local refinements around `Bm`, `Am7`, `D7`, and the final tag.
 
 ## Open Questions
 

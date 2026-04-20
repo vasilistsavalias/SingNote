@@ -40,9 +40,11 @@ This version is compact and guitar-friendly. It presents a simpler chart:
 - `George` proposes a practical beginner strumming pattern based on down/down/up/up-down/down/down-up, with section-specific chord-change handling.
 - `Tyler Durden` suggests an intro color around `G`, `Gsus4`, `G`, `Gsus4`, `G`.
 - `Antonidis Giorgos` also hears the intro starting from `G` into `Gsus4`, then moving toward `Am C D`, and gives a small lick idea.
+- `Haris Chtapodeis` writes a correction that lines up strongly with Version 2: the "old things" phrase moves through `Am G D`, the refrain uses `C D G B7 Em`, the inner refrain uses `Am D G B7 Em`, and the cafe/cigarette tag resolves to `Am D G`.
 - `CHARIS` argues that there is no `Bm`, but `B`, especially in the refrain. This is an important dispute for the final version.
 - `miltos7` argues that `Bb` is wrong, that `G` can be held until `Em`, and that one phrase may work better as `Em D`.
 - `pantelis florina` says a phrase ending on "old things" should use `Em` instead of `C`.
+- `k_t` gives an older correction that also points away from plain `C` on the "old things" phrase: use `Am Em D`. The same comment says the `Bm` around the refrain may be unnecessary and that `B7` is better for the inner refrain phrase.
 - Several users provide solo/lick fragments, but the comments disagree and should be treated as optional instrumental material, not the core lesson version.
 
 ## Rhythm Hypothesis
