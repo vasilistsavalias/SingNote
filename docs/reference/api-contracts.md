@@ -20,8 +20,11 @@ sections:
     title: Verse 1
     lines:
       - lyrics: So, so you think you can tell,
-        chords: [C, D/F#]
-        roman_numerals: [IV, V/3]
+        chords:
+          - symbol: C
+            anchor: So
+          - symbol: D/F#
+            anchor: tell
         melody_text: |
           So = C,B,G
           So = C
@@ -35,11 +38,36 @@ annotations: []
 ## Line-Level Fields
 
 - `lyrics`: required
-- `chords`: optional
+- `chords`: optional, either a simple symbol list or structured chord objects
 - `roman_numerals`: optional
 - `melody_text`: preferred shorthand authoring option
 - `melody_packages`: optional explicit structured alternative
 - `rhythm`: optional string or mapping
+
+## Chord Placement Rules
+
+For basic charts, use a simple list:
+
+```yaml
+chords: [C, G, Am]
+```
+
+For accurate chord-over-lyric placement, use objects:
+
+```yaml
+chords:
+  - symbol: C
+    anchor: So
+  - symbol: G
+    anchor: tell
+  - symbol: Am
+    offset: 12
+```
+
+- `symbol`: required chord label
+- `anchor`: optional lyric text where the chord should appear
+- `offset`: optional zero-based character column, used when an anchor is ambiguous
+- `position`: optional legacy display hint, defaults to `before`
 
 ## Melody Package Rules
 

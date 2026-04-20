@@ -617,16 +617,20 @@ def _lyrics_sheet_line_markup(
     lyric: str,
     chords: list[ChordEvent],
 ) -> str:
-    """Render one chart line with chords above the lyric text."""
+    """Render one chart line with chords aligned over lyric anchors."""
     chord_line = ""
     if chords:
+        chart_columns = max(len(lyric), 1)
         chord_line = "".join(
             [
-                '<div class="sn-sheet-chords">',
+                (
+                    '<div class="sn-sheet-chords" '
+                    'style="grid-template-columns: '
+                    f'repeat({chart_columns}, 1ch);">'
+                ),
                 "".join(
-                    f'<span class="sn-sheet-chord">'
-                    f"{escape(_format_chord(chord))}</span>"
-                    for chord in chords
+                    _positioned_chord_markup(chord, column)
+                    for chord, column in _positioned_chords(lyric, chords)
                 ),
                 "</div>",
             ]
@@ -644,6 +648,73 @@ def _lyrics_sheet_line_markup(
 def _format_chord(event: ChordEvent) -> str:
     """Format a clean chord label for the visible chart."""
     return event.chord
+
+
+def _positioned_chord_markup(chord: ChordEvent, column: int) -> str:
+    """Render one chord at its resolved chart column."""
+    chord_label = _format_chord(chord)
+    return "".join(
+        [
+            '<span class="sn-sheet-chord" ',
+            f'style="grid-column: {column + 1} / span ',
+            f'{max(len(chord_label), 1)};">',
+            escape(chord_label),
+            "</span>",
+        ]
+    )
+
+
+def _positioned_chords(
+    lyric: str,
+    chords: list[ChordEvent],
+) -> list[tuple[ChordEvent, int]]:
+    """Return chords with their display columns for one lyric line."""
+    positioned: list[tuple[ChordEvent, int]] = []
+    sorted_chords = sorted(chords, key=lambda chord: chord.order)
+    search_start = 0
+    for order, chord in enumerate(sorted_chords):
+        column = _chord_column(
+            lyric,
+            chord,
+            order=order,
+            chord_count=len(sorted_chords),
+            search_start=search_start,
+        )
+        if positioned:
+            previous_chord, previous_column = positioned[-1]
+            minimum_column = (
+                previous_column + len(_format_chord(previous_chord)) + 1
+            )
+            column = max(column, minimum_column)
+            column = min(column, max(len(lyric) - 1, 0))
+        positioned.append((chord, column))
+        search_start = max(search_start, column + 1)
+    return positioned
+
+
+def _chord_column(
+    lyric: str,
+    chord: ChordEvent,
+    *,
+    order: int,
+    chord_count: int,
+    search_start: int,
+) -> int:
+    """Resolve one chord's lyric column from offset, anchor, or fallback."""
+    if chord.lyric_offset is not None:
+        return min(chord.lyric_offset, max(len(lyric) - 1, 0))
+    if chord.lyric_anchor:
+        anchor_index = lyric.casefold().find(
+            chord.lyric_anchor.casefold(),
+            search_start,
+        )
+        if anchor_index == -1:
+            anchor_index = lyric.casefold().find(chord.lyric_anchor.casefold())
+        if anchor_index != -1:
+            return anchor_index
+    if chord_count <= 1:
+        return 0
+    return round((len(lyric) - 1) * (order / (chord_count - 1)))
 
 
 def _chords_by_segment(
@@ -911,7 +982,7 @@ def _self_scroll_component_html(
     <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
       * {{
         box-sizing: border-box;
         margin: 0;
@@ -982,14 +1053,16 @@ def _self_scroll_component_html(
         margin-top: 0.7rem;
       }}
       .sn-sheet-chords {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.62rem;
-        margin-bottom: 0;
+        display: grid;
+        margin-bottom: 0.05rem;
         color: #b6642c;
+        font-family: "IBM Plex Mono", "Courier New", monospace;
         font-size: 0.86rem;
         font-weight: 700;
-        line-height: 1.4;
+        line-height: 1.15;
+        min-height: 1.05rem;
+        overflow: visible;
+        white-space: pre;
       }}
       .sn-sheet-chord {{
         white-space: nowrap;
@@ -999,9 +1072,10 @@ def _self_scroll_component_html(
       }}
       .sn-sheet-lyric {{
         color: #1f2937;
-        font-family: "Fraunces", serif;
-        font-size: clamp(1.05rem, 2vw, 1.3rem);
-        line-height: 1.4;
+        font-family: "IBM Plex Mono", "Courier New", monospace;
+        font-size: 1.05rem;
+        line-height: 1.35;
+        white-space: pre-wrap;
       }}
       .sn-melody-line-shell {{
         border: 1px solid rgba(46, 58, 78, 0.10);

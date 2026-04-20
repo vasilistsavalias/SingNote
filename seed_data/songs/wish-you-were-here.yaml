@@ -15,7 +15,11 @@ sections:
     lines:
       - id: verse-1-1
         lyrics: So, so you think you can tell,
-        chords: [C, D/F#]
+        chords:
+          - symbol: C
+            anchor: So
+          - symbol: D/F#
+            anchor: tell
         roman_numerals: [IV, V/3]
         melody_packages:
           - id: verse-1-1-pkg-1
@@ -44,7 +48,11 @@ sections:
           emphasis: change chord mid-line
       - id: verse-1-2
         lyrics: Heaven from Hell, blue skies from pain.
-        chords: [Am/E, G]
+        chords:
+          - symbol: Am/E
+            anchor: Heaven
+          - symbol: G
+            anchor: pain
         roman_numerals: [ii/5, I]
         melody_packages:
           - id: verse-1-2-pkg-1
@@ -73,7 +81,13 @@ sections:
           emphasis: do not rush beat 4
       - id: verse-1-3
         lyrics: Can you tell a green field from a cold steel rail, a smile from a veil,
-        chords: [D/F#, C, Am]
+        chords:
+          - symbol: D/F#
+            anchor: Can
+          - symbol: C
+            anchor: rail
+          - symbol: Am
+            anchor: veil
         roman_numerals: [V/3, IV, ii]
         melody_packages:
           - id: verse-1-3-pkg-1
@@ -129,7 +143,9 @@ sections:
           emphasis: keep the phrases connected
       - id: verse-1-4
         lyrics: Do you think you can tell?
-        chords: [G]
+        chords:
+          - symbol: G
+            anchor: Do
         roman_numerals: [I]
         melody_packages:
           - id: verse-1-4-pkg-1
@@ -156,7 +172,11 @@ sections:
     lines:
       - id: verse-2-1
         lyrics: Did they get you to trade your heroes for ghosts,
-        chords: [C, D/F#]
+        chords:
+          - symbol: C
+            anchor: Did
+          - symbol: D/F#
+            anchor: ghosts
         roman_numerals: [IV, V/3]
         melody_packages:
           - id: verse-2-1-pkg-1
@@ -194,7 +214,13 @@ sections:
           emphasis: hold the line ending
       - id: verse-2-2
         lyrics: Hot ashes for trees, hot air for a cool breeze, cold comfort for change,
-        chords: [Am/E, G, D/F#]
+        chords:
+          - symbol: Am/E
+            anchor: Hot
+          - symbol: G
+            anchor: breeze
+          - symbol: D/F#
+            anchor: change
         roman_numerals: [ii/5, I, V/3]
         melody_packages:
           - id: verse-2-2-pkg-1
@@ -244,7 +270,13 @@ sections:
           emphasis: stay relaxed through the long sentence
       - id: verse-2-3
         lyrics: And did you exchange a walk on part in the war for a lead role in a cage?
-        chords: [C, Am, G]
+        chords:
+          - symbol: C
+            anchor: And
+          - symbol: Am
+            anchor: war
+          - symbol: G
+            anchor: cage
         roman_numerals: [IV, ii, I]
         melody_packages:
           - id: verse-2-3-pkg-1
@@ -306,7 +338,11 @@ sections:
     lines:
       - id: verse-3-1
         lyrics: How I wish, how I wish you were here.
-        chords: [C, D/F#]
+        chords:
+          - symbol: C
+            anchor: How
+          - symbol: D/F#
+            anchor: here
         roman_numerals: [IV, V/3]
         melody_packages:
           - id: verse-3-1-pkg-1
@@ -341,7 +377,13 @@ sections:
           emphasis: let the phrase breathe
       - id: verse-3-2
         lyrics: We're just two lost souls swimming in a fish bowl, year after year,
-        chords: [Am/E, G, D/F#]
+        chords:
+          - symbol: Am/E
+            anchor: We're
+          - symbol: G
+            anchor: bowl
+          - symbol: D/F#
+            anchor: year
         roman_numerals: [ii/5, I, V/3]
         melody_packages:
           - id: verse-3-2-pkg-1
@@ -391,7 +433,9 @@ sections:
           emphasis: keep the line legato
       - id: verse-3-3
         lyrics: Running over the same old ground. What have we found?
-        chords: [C]
+        chords:
+          - symbol: C
+            anchor: Running
         roman_numerals: [IV]
         melody_packages:
           - id: verse-3-3-pkg-1
@@ -429,7 +473,11 @@ sections:
           emphasis: slight lift at the question
       - id: verse-3-4
         lyrics: The same old fears. Wish you were here!
-        chords: [Am, G]
+        chords:
+          - symbol: Am
+            anchor: The
+          - symbol: G
+            anchor: here
         roman_numerals: [ii, I]
         melody_packages:
           - id: verse-3-4-pkg-1

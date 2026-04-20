@@ -20,6 +20,7 @@ from singnote.ui.home import (
     _parse_melody_text_lines,
     _parse_note_sequence,
     _parse_note_token,
+    _positioned_chords,
     _replace_melody_line,
     _self_scroll_component_html,
     _should_render_melody_segment,
@@ -187,6 +188,22 @@ def test_format_chord_ignores_roman_numerals_in_visible_chart() -> None:
     event.roman_numeral = "IV"
 
     assert _format_chord(event) == "C"
+
+
+def test_positioned_chords_use_lyric_anchors() -> None:
+    """Chord labels should align with their lyric anchor columns."""
+    song = build_sample_song()
+    first_chord = song.chord_events[0]
+    second_chord = song.chord_events[1]
+    first_chord.lyric_anchor = "So"
+    second_chord.lyric_anchor = "think"
+
+    positioned = _positioned_chords("So you think", [first_chord, second_chord])
+
+    assert [(event.chord, column) for event, column in positioned] == [
+        ("C", 0),
+        ("G", 7),
+    ]
 
 
 def test_diatonic_chord_quality_rows_expand_major_key_cleanly() -> None:

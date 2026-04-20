@@ -96,12 +96,18 @@ def song_to_portable_payload(song: Song) -> dict[str, Any]:
             }
             chord_events = chord_map.get(segment.id, [])
             if chord_events:
-                if any(event.position != "before" for event in chord_events):
+                needs_structured_chords = any(
+                    _chord_needs_structured_payload(event)
+                    for event in chord_events
+                )
+                if needs_structured_chords:
                     line_payload["chords"] = [
                         {
                             "symbol": event.chord,
                             "roman_numeral": event.roman_numeral,
                             "position": event.position,
+                            "anchor": event.lyric_anchor,
+                            "offset": event.lyric_offset,
                         }
                         for event in chord_events
                     ]
@@ -248,6 +254,8 @@ def _parse_chords(
     for order, raw_chord in enumerate(raw_chords):
         chord_symbol: str
         roman_numeral: str | None = None
+        lyric_anchor: str | None = None
+        lyric_offset: int | None = None
         position: Literal["before", "after", "inline"] = "before"
 
         if isinstance(raw_chord, str):
@@ -257,6 +265,11 @@ def _parse_chords(
             chord_data = _as_dict(raw_chord, f"chords[{order}]")
             chord_symbol = _required_str(chord_data, "symbol")
             roman_numeral = _optional_str(chord_data.get("roman_numeral"))
+            lyric_anchor = _optional_str(chord_data.get("anchor"))
+            lyric_offset = _optional_int(
+                chord_data.get("offset", chord_data.get("at")),
+                "offset",
+            )
             position_value = (
                 _optional_str(chord_data.get("position")) or "before"
             )
@@ -271,6 +284,8 @@ def _parse_chords(
                 roman_numeral=roman_numeral,
                 order=order,
                 position=position,
+                lyric_anchor=lyric_anchor,
+                lyric_offset=lyric_offset,
             )
         )
 
@@ -473,6 +488,15 @@ def _chords_by_segment(
     for segment_id in grouped:
         grouped[segment_id].sort(key=lambda event: event.order)
     return grouped
+
+
+def _chord_needs_structured_payload(event: ChordEvent) -> bool:
+    """Return whether a chord needs the object form in portable YAML."""
+    return (
+        event.position != "before"
+        or event.lyric_anchor is not None
+        or event.lyric_offset is not None
+    )
 
 
 def _rhythm_by_segment(

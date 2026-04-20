@@ -30,40 +30,122 @@ sections:
     lines:
       - id: verse-1-1
         lyrics: Από παιδί θυμάμαι προσπαθώ, να κλέψω το γλυκό μέσ' απ' το βάζο
-        chords: [G, Am, C, D, G]
+        chords:
+          - symbol: G
+            anchor: Από
+          - symbol: Am
+            anchor: προσπαθώ
+          - symbol: C
+            anchor: να κλέψω
+          - symbol: D
+            anchor: μέσ'
+          - symbol: G
+            anchor: βάζο
       - id: verse-1-2
         lyrics: με ξύλινα σπαθιά να πολεμώ και μια ζωή στα πόδια να το βάζω
-        chords: [G, Am, C, D, C, D]
+        chords:
+          - symbol: G
+            anchor: με
+          - symbol: Am
+            anchor: πολεμώ
+          - symbol: C
+            anchor: και
+          - symbol: D
+            anchor: ζωή
+          - symbol: C
+            anchor: βάζω
+          - symbol: D
+            anchor: βάζω
       - id: verse-1-3
         lyrics: Μα ό,τι μας δένει στα παλιά είν' οι κακές συνήθειες
-        chords: [Am, Em, D, G, D]
+        chords:
+          - symbol: Am
+            anchor: Μα
+          - symbol: Em
+            anchor: παλιά
+          - symbol: D
+            anchor: παλιά
+          - symbol: G
+            anchor: είν'
+          - symbol: D
+            anchor: συνήθειες
       - id: verse-1-riff-1
         lyrics: Riff
         chords: [D]
       - id: verse-1-4
         lyrics: το νιώθω τώρα καθαρά, πως είν' αργά γι' αλήθειες
-        chords: [Am, C, D, G, D]
+        chords:
+          - symbol: Am
+            anchor: το
+          - symbol: C
+            anchor: καθαρά
+          - symbol: D
+            anchor: καθαρά
+          - symbol: G
+            anchor: πως
+          - symbol: D
+            anchor: αλήθειες
       - id: verse-1-riff-2
         lyrics: Riff
         chords: [D]
       - id: verse-1-5
         lyrics: πως είν' αργά γι' αλήθειες
-        chords: [C, D, G]
+        chords:
+          - symbol: C
+            anchor: πως
+          - symbol: D
+            anchor: αργά
+          - symbol: G
+            anchor: αλήθειες
   - id: chorus-1
     title: Chorus 1
     lines:
       - id: chorus-1-1
         lyrics: Όλη μου η ζωή συνενοχή και πώς γουστάρω
-        chords: [C, D, G, Bm, Em]
+        chords:
+          - symbol: C
+            anchor: Όλη
+          - symbol: D
+            anchor: ζωή
+          - symbol: G
+            anchor: συνενοχή
+          - symbol: Bm
+            anchor: πώς
+          - symbol: Em
+            anchor: γουστάρω
       - id: chorus-1-2
         lyrics: τα πιο μεγάλα ψέματα, στα πιο αθώα βλέμματα
-        chords: [Am, D, B7, Em]
+        chords:
+          - symbol: Am
+            anchor: τα
+          - symbol: D
+            anchor: ψέματα
+          - symbol: B7
+            anchor: στα
+          - symbol: Em
+            anchor: βλέμματα
       - id: chorus-1-3
         lyrics: όλη μου η ζωή συνενοχή και πώς γουστάρω
-        chords: [C, D, G, Bm, Em]
+        chords:
+          - symbol: C
+            anchor: όλη
+          - symbol: D
+            anchor: ζωή
+          - symbol: G
+            anchor: συνενοχή
+          - symbol: Bm
+            anchor: πώς
+          - symbol: Em
+            anchor: γουστάρω
       - id: chorus-1-4
         lyrics: κάτι απογεύματα, με καφέ και τσιγάρο
-        chords: [Am, D, G]
+        chords:
+          - symbol: Am
+            anchor: κάτι
+          - symbol: D
+            anchor: καφέ
+          - symbol: G
+            anchor: τσιγάρο
   - id: interlude
     title: Interlude
     lines:
@@ -84,40 +166,122 @@ sections:
     lines:
       - id: verse-2-1
         lyrics: Από παιδί θυμάμαι προσπαθώ, στα λάθη μου φτηνά να τη γλιτώσω
-        chords: [G, Am, C, D, G]
+        chords:
+          - symbol: G
+            anchor: Από
+          - symbol: Am
+            anchor: προσπαθώ
+          - symbol: C
+            anchor: στα
+          - symbol: D
+            anchor: φτηνά
+          - symbol: G
+            anchor: γλιτώσω
       - id: verse-2-2
         lyrics: μου 'μαθαν να φοβάμαι ό,τι αγαπώ και μια ζωή να φεύγω πριν να δώσω
-        chords: [G, Am, C, D, C, D]
+        chords:
+          - symbol: G
+            anchor: μου
+          - symbol: Am
+            anchor: αγαπώ
+          - symbol: C
+            anchor: και
+          - symbol: D
+            anchor: ζωή
+          - symbol: C
+            anchor: δώσω
+          - symbol: D
+            anchor: δώσω
       - id: verse-2-3
         lyrics: Μα ό,τι μας δένει στα παλιά είν' οι κακές συνήθειες
-        chords: [Am, Em, D, G, D]
+        chords:
+          - symbol: Am
+            anchor: Μα
+          - symbol: Em
+            anchor: παλιά
+          - symbol: D
+            anchor: παλιά
+          - symbol: G
+            anchor: είν'
+          - symbol: D
+            anchor: συνήθειες
       - id: verse-2-riff-1
         lyrics: Riff
         chords: [D]
       - id: verse-2-4
         lyrics: το νιώθω τώρα καθαρά, πως είν' αργά γι' αλήθειες
-        chords: [Am, Em, D, G, D]
+        chords:
+          - symbol: Am
+            anchor: το
+          - symbol: Em
+            anchor: καθαρά
+          - symbol: D
+            anchor: καθαρά
+          - symbol: G
+            anchor: πως
+          - symbol: D
+            anchor: αλήθειες
       - id: verse-2-riff-2
         lyrics: Riff
         chords: [D]
       - id: verse-2-5
         lyrics: πως είν' αργά γι' αλήθειες
-        chords: [C, D, G]
+        chords:
+          - symbol: C
+            anchor: πως
+          - symbol: D
+            anchor: αργά
+          - symbol: G
+            anchor: αλήθειες
   - id: chorus-2
     title: Chorus 2
     lines:
       - id: chorus-2-1
         lyrics: Όλη μου η ζωή συνενοχή και πώς γουστάρω
-        chords: [C, D, G, Bm, Em]
+        chords:
+          - symbol: C
+            anchor: Όλη
+          - symbol: D
+            anchor: ζωή
+          - symbol: G
+            anchor: συνενοχή
+          - symbol: Bm
+            anchor: πώς
+          - symbol: Em
+            anchor: γουστάρω
       - id: chorus-2-2
         lyrics: τα πιο μεγάλα ψέματα, στα πιο αθώα βλέμματα
-        chords: [Am, D, B7, Em]
+        chords:
+          - symbol: Am
+            anchor: τα
+          - symbol: D
+            anchor: ψέματα
+          - symbol: B7
+            anchor: στα
+          - symbol: Em
+            anchor: βλέμματα
       - id: chorus-2-3
         lyrics: όλη μου η ζωή συνενοχή και πώς γουστάρω
-        chords: [C, D, G, Bm, Em]
+        chords:
+          - symbol: C
+            anchor: όλη
+          - symbol: D
+            anchor: ζωή
+          - symbol: G
+            anchor: συνενοχή
+          - symbol: Bm
+            anchor: πώς
+          - symbol: Em
+            anchor: γουστάρω
       - id: chorus-2-4
         lyrics: κάτι απογεύματα, με καφέ και τσιγάρο
-        chords: [Am, D, G]
+        chords:
+          - symbol: Am
+            anchor: κάτι
+          - symbol: D
+            anchor: καφέ
+          - symbol: G
+            anchor: τσιγάρο
   - id: outro
     title: Outro
     lines:

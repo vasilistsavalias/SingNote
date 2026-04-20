@@ -74,7 +74,12 @@ def test_sample_seed_songs_can_load_from_yaml_directory(
                 "    title: Verse 1",
                 "    lines:",
                 "      - lyrics: First line",
-                "        chords: [C, G]",
+                "        chords:",
+                "          - symbol: C",
+                "            anchor: First",
+                "          - symbol: G",
+                "            anchor: line",
+                "            offset: 6",
                 "        roman_numerals: [I, V]",
                 "        melody_packages:",
                 "          - text: First",
@@ -99,7 +104,9 @@ def test_sample_seed_songs_can_load_from_yaml_directory(
 
     assert len(songs) == 1
     assert songs[0].id == "lesson-song"
-    assert songs[0].chord_events[1].roman_numeral == "V"
+    assert songs[0].chord_events[0].lyric_anchor == "First"
+    assert songs[0].chord_events[1].lyric_anchor == "line"
+    assert songs[0].chord_events[1].lyric_offset == 6
     assert songs[0].lyric_sections[0].segments[0].melody_packages[1].notes[
         0
     ].duration_beats == 2.0

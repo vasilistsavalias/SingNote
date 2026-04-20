@@ -67,6 +67,8 @@ class ChordEvent(BaseModel):
     roman_numeral: str | None = None
     order: int = Field(default=0, ge=0)
     position: Literal["before", "after", "inline"] = "before"
+    lyric_anchor: str | None = None
+    lyric_offset: int | None = Field(default=None, ge=0)
 
 
 class RhythmCue(BaseModel):
