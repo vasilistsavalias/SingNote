@@ -7,6 +7,8 @@ import pytest
 from singnote.storage.models import RecordingRecord
 from singnote.ui.home import (
     _chord_quality_caption,
+    _cookie_clear_script,
+    _cookie_write_script,
     _delete_melody_package,
     _diatonic_chord_quality_rows,
     _favicon_head_script,
@@ -377,3 +379,23 @@ def test_format_segment_melody_text_uses_editable_shorthand() -> None:
     shorthand = _format_segment_melody_text(segment)
 
     assert "So = E4" in shorthand
+
+
+def test_cookie_write_script_formats_persistent_cookie() -> None:
+    """Cookie writer script should format cookie with 1-year max-age."""
+    script = _cookie_write_script("test-token-12345", 31536000)
+
+    assert "singnote_auth=test-token-12345;" in script
+    assert "max-age=31536000" in script
+    assert "SameSite=Lax" in script
+    assert "window.parent.document.cookie" in script
+
+
+def test_cookie_clear_script_sets_expired_cookie() -> None:
+    """Cookie clearer script should immediately expire the cookie."""
+    script = _cookie_clear_script()
+
+    assert "singnote_auth=;" in script
+    assert "max-age=0" in script
+    assert "expires=Thu, 01 Jan 1970 00:00:00 GMT" in script
+

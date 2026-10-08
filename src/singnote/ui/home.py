@@ -10,7 +10,13 @@ from typing import TypeVar
 import streamlit as st
 import streamlit.components.v1 as components
 
-from singnote.auth import resolve_app_access, validate_shared_login
+from singnote.auth import (
+    AUTH_COOKIE_MAX_AGE_SECONDS,
+    AUTH_COOKIE_NAME,
+    generate_session_token,
+    resolve_app_access,
+    validate_shared_login,
+)
 from singnote.bootstrap import Application
 from singnote.domain.models import (
     ChordEvent,
@@ -76,14 +82,87 @@ def render_home_page(app: Application) -> None:
     _render_workspace(app, song_lookup)
 
 
+def _get_cookie_token() -> str | None:
+    """Read the auth cookie from Streamlit context or query parameters."""
+    try:
+        if hasattr(st, "context") and hasattr(st.context, "cookies"):
+            token = st.context.cookies.get(AUTH_COOKIE_NAME)
+            if token:
+                return str(token)
+    except Exception:
+        pass
+
+    try:
+        if hasattr(st, "query_params") and AUTH_COOKIE_NAME in st.query_params:
+            return str(st.query_params[AUTH_COOKIE_NAME])
+    except Exception:
+        pass
+
+    return None
+
+
+def _cookie_write_script(
+    token: str,
+    max_age_seconds: int = AUTH_COOKIE_MAX_AGE_SECONDS,
+) -> str:
+    """Return the client-side JavaScript snippet to set the persistent auth cookie."""
+    return f"""
+    <script>
+    (function() {{
+      const cookieStr = "{AUTH_COOKIE_NAME}={token}; path=/; max-age={max_age_seconds}; SameSite=Lax";
+      try {{
+        window.parent.document.cookie = cookieStr;
+      }} catch (e) {{}}
+      try {{
+        document.cookie = cookieStr;
+      }} catch (e) {{}}
+    }})();
+    </script>
+    """
+
+
+def _cookie_clear_script() -> str:
+    """Return the client-side JavaScript snippet to clear the persistent auth cookie."""
+    return f"""
+    <script>
+    (function() {{
+      const expiredStr = "{AUTH_COOKIE_NAME}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      try {{
+        window.parent.document.cookie = expiredStr;
+      }} catch (e) {{}}
+      try {{
+        document.cookie = expiredStr;
+      }} catch (e) {{}}
+    }})();
+    </script>
+    """
+
+
 def _render_access_gate(app: Application) -> bool:
     """Render a shared username/password login screen when configured."""
+    if st.session_state.get("pending_cookie_token"):
+        token_to_write = str(st.session_state.pop("pending_cookie_token"))
+        components.html(
+            _cookie_write_script(token_to_write),
+            height=0,
+            width=0,
+        )
+
+    if st.session_state.get("pending_cookie_clear"):
+        st.session_state.pop("pending_cookie_clear")
+        components.html(_cookie_clear_script(), height=0, width=0)
+
+    is_logged_out = bool(st.session_state.get("app_logged_out", False))
+    cookie_token = None if is_logged_out else _get_cookie_token()
+
     access = resolve_app_access(
         app.settings.shared_username,
         app.settings.shared_password,
         bool(st.session_state.get("app_authenticated", False)),
+        cookie_token=cookie_token,
     )
     if access.app_access_enabled:
+        st.session_state["app_authenticated"] = True
         return True
 
     left, center, right = st.columns([1, 1.1, 1])
@@ -93,6 +172,11 @@ def _render_access_gate(app: Application) -> bool:
         with st.form("shared-login-form"):
             username = st.text_input("Username")
             password = st.text_input("Password", type="password")
+            remember_me = st.checkbox(
+                "Remember me on this device",
+                value=True,
+                help="Stores a 1-year secure cookie so you don't have to re-enter your password.",
+            )
             submitted = st.form_submit_button("Enter SingNote")
         if submitted:
             if validate_shared_login(
@@ -102,6 +186,14 @@ def _render_access_gate(app: Application) -> bool:
                 app.settings.shared_password,
             ):
                 st.session_state["app_authenticated"] = True
+                st.session_state["app_logged_out"] = False
+                if remember_me:
+                    st.session_state["pending_cookie_token"] = (
+                        generate_session_token(
+                            app.settings.shared_username,
+                            app.settings.shared_password,
+                        )
+                    )
                 st.rerun()
             st.error("Incorrect username or password.")
     return False
@@ -112,6 +204,8 @@ def _render_sidebar_status(app: Application, songs: list[Song]) -> None:
     st.sidebar.header("Session")
     if st.sidebar.button("Log out"):
         st.session_state["app_authenticated"] = False
+        st.session_state["app_logged_out"] = True
+        st.session_state["pending_cookie_clear"] = True
         st.rerun()
     st.sidebar.success("Logged in with the shared teaching account.")
 
