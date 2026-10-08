@@ -287,6 +287,7 @@ def test_melody_sheet_line_markup_renders_inline_packages() -> None:
     assert 'class="sn-melody-inline-package"' in markup
     assert 'class="sn-melody-inline-notes"' in markup
     assert 'class="sn-melody-inline-text"' in markup
+    assert 'class="sn-melody-line-caption"' not in markup
 
 
 def test_melody_reader_markup_wraps_sections_in_song_sheet() -> None:

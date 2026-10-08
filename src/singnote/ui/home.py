@@ -1127,7 +1127,6 @@ def _melody_sheet_line_markup(segment: LyricSegment) -> str:
     return "".join(
         [
             '<div class="sn-melody-line-shell">',
-            f'<div class="sn-melody-line-caption">{escape(segment.text)}</div>',
             f'<div class="sn-melody-line-row">{package_markup}</div>',
             "</div>",
         ]
