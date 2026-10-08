@@ -43,8 +43,38 @@ sections:
             anchor: βάζο
         melody_packages:
           - id: verse-1-1-pkg-1
-            text: Από παιδί θυμάμαι προσπαθώ
-            notes: [D, D, D, D, C, D, D, D, C, C]
+            text: Από
+            notes: [D, D]
+          - id: verse-1-1-pkg-2
+            text: παιδί
+            notes: [D, D]
+          - id: verse-1-1-pkg-3
+            text: θυμάμαι
+            notes: [C, D, D]
+          - id: verse-1-1-pkg-4
+            text: προσπαθώ
+            notes: [D, C, C]
+          - id: verse-1-1-pkg-5
+            text: να
+            notes: [D]
+          - id: verse-1-1-pkg-6
+            text: κλέψω
+            notes: [D, D]
+          - id: verse-1-1-pkg-7
+            text: το
+            notes: [D]
+          - id: verse-1-1-pkg-8
+            text: γλυκό
+            notes: [C, D, C]
+          - id: verse-1-1-pkg-9
+            text: μέσ'
+            notes: [C, B]
+          - id: verse-1-1-pkg-10
+            text: απ' το
+            notes: [A]
+          - id: verse-1-1-pkg-11
+            text: βάζο
+            notes: [B, C]
       - id: verse-1-2
         lyrics: με ξύλινα σπαθιά να πολεμώ και μια ζωή στα πόδια να το βάζω
         chords:
@@ -60,6 +90,46 @@ sections:
             anchor: βάζω
           - symbol: D
             anchor: βάζω
+        melody_packages:
+          - id: verse-1-2-pkg-1
+            text: με
+            notes: [D]
+          - id: verse-1-2-pkg-2
+            text: ξύλινα
+            notes: [D, D, D]
+          - id: verse-1-2-pkg-3
+            text: σπαθιά
+            notes: [D, D]
+          - id: verse-1-2-pkg-4
+            text: να
+            notes: [C]
+          - id: verse-1-2-pkg-5
+            text: πολεμώ
+            notes: [D, C, C]
+          - id: verse-1-2-pkg-6
+            text: και
+            notes: [D]
+          - id: verse-1-2-pkg-7
+            text: μια
+            notes: [D]
+          - id: verse-1-2-pkg-8
+            text: ζωή
+            notes: [C, D]
+          - id: verse-1-2-pkg-9
+            text: στα
+            notes: [D]
+          - id: verse-1-2-pkg-10
+            text: πόδια
+            notes: [D, C]
+          - id: verse-1-2-pkg-11
+            text: να
+            notes: [C]
+          - id: verse-1-2-pkg-12
+            text: το
+            notes: [B]
+          - id: verse-1-2-pkg-13
+            text: βάζω
+            notes: [A, G, A, B, C]
       - id: verse-1-3
         lyrics: Μα ό,τι μας δένει στα παλιά είν' οι κακές συνήθειες
         chords:
@@ -73,6 +143,37 @@ sections:
             anchor: είν'
           - symbol: D
             anchor: συνήθειες
+        melody_packages:
+          - id: verse-1-3-pkg-1
+            text: Μα
+            notes: [D]
+          - id: verse-1-3-pkg-2
+            text: ό,τι
+            notes: [D, D]
+          - id: verse-1-3-pkg-3
+            text: μας
+            notes: [D]
+          - id: verse-1-3-pkg-4
+            text: δένει
+            notes: [C, D, C]
+          - id: verse-1-3-pkg-5
+            text: στα
+            notes: [C]
+          - id: verse-1-3-pkg-6
+            text: παλιά
+            notes: [D, C, D, C, D]
+          - id: verse-1-3-pkg-7
+            text: είν'
+            notes: [D, D]
+          - id: verse-1-3-pkg-8
+            text: οι
+            notes: [D]
+          - id: verse-1-3-pkg-9
+            text: κακές
+            notes: [D, E]
+          - id: verse-1-3-pkg-10
+            text: συνήθειες
+            notes: [D, D, C]
       - id: verse-1-riff-1
         lyrics: Riff
         chords: [D]
@@ -89,6 +190,34 @@ sections:
             anchor: πως
           - symbol: D
             anchor: αλήθειες
+        melody_packages:
+          - id: verse-1-4-pkg-1
+            text: το
+            notes: [D]
+          - id: verse-1-4-pkg-2
+            text: νιώθω
+            notes: [D, D]
+          - id: verse-1-4-pkg-3
+            text: τώρα
+            notes: [D, C]
+          - id: verse-1-4-pkg-4
+            text: καθαρά
+            notes: [C, C, B, C, D, C]
+          - id: verse-1-4-pkg-5
+            text: πως
+            notes: [D]
+          - id: verse-1-4-pkg-6
+            text: είν'
+            notes: [D, D]
+          - id: verse-1-4-pkg-7
+            text: αργά
+            notes: [C, D]
+          - id: verse-1-4-pkg-8
+            text: γι'
+            notes: [C]
+          - id: verse-1-4-pkg-9
+            text: αλήθειες
+            notes: [D, C, C]
       - id: verse-1-riff-2
         lyrics: Riff
         chords: [D]
@@ -101,6 +230,22 @@ sections:
             anchor: αργά
           - symbol: G
             anchor: αλήθειες
+        melody_packages:
+          - id: verse-1-5-pkg-1
+            text: πως
+            notes: [D]
+          - id: verse-1-5-pkg-2
+            text: είν'
+            notes: [D, D]
+          - id: verse-1-5-pkg-3
+            text: αργά
+            notes: [C, D]
+          - id: verse-1-5-pkg-4
+            text: γι'
+            notes: [C]
+          - id: verse-1-5-pkg-5
+            text: αλήθειες
+            notes: [D, C, C]
   - id: chorus-1
     title: Chorus 1
     lines:
@@ -117,6 +262,31 @@ sections:
             anchor: πώς
           - symbol: Em
             anchor: γουστάρω
+        melody_packages:
+          - id: chorus-1-1-pkg-1
+            text: Όλη
+            notes: [E]
+          - id: chorus-1-1-pkg-2
+            text: μου
+            notes: [E]
+          - id: chorus-1-1-pkg-3
+            text: η
+            notes: [E]
+          - id: chorus-1-1-pkg-4
+            text: ζωή
+            notes: [E, E, D]
+          - id: chorus-1-1-pkg-5
+            text: συνενοχή
+            notes: [C, C, D, E]
+          - id: chorus-1-1-pkg-6
+            text: και
+            notes: [D]
+          - id: chorus-1-1-pkg-7
+            text: πώς
+            notes: [E]
+          - id: chorus-1-1-pkg-8
+            text: γουστάρω
+            notes: [D, D, C]
       - id: chorus-1-2
         lyrics: τα πιο μεγάλα ψέματα, στα πιο αθώα βλέμματα
         chords:
@@ -128,6 +298,31 @@ sections:
             anchor: στα
           - symbol: Em
             anchor: βλέμματα
+        melody_packages:
+          - id: chorus-1-2-pkg-1
+            text: τα
+            notes: [E]
+          - id: chorus-1-2-pkg-2
+            text: πιο
+            notes: [E]
+          - id: chorus-1-2-pkg-3
+            text: μεγάλα
+            notes: [D, E, D]
+          - id: chorus-1-2-pkg-4
+            text: ψέματα
+            notes: [E, D, D]
+          - id: chorus-1-2-pkg-5
+            text: στα
+            notes: [E]
+          - id: chorus-1-2-pkg-6
+            text: πιο
+            notes: [E]
+          - id: chorus-1-2-pkg-7
+            text: αθώα
+            notes: [D, E, D]
+          - id: chorus-1-2-pkg-8
+            text: βλέμματα
+            notes: [E, D, D]
       - id: chorus-1-3
         lyrics: όλη μου η ζωή συνενοχή και πώς γουστάρω
         chords:
@@ -141,6 +336,31 @@ sections:
             anchor: πώς
           - symbol: Em
             anchor: γουστάρω
+        melody_packages:
+          - id: chorus-1-3-pkg-1
+            text: όλη
+            notes: [E]
+          - id: chorus-1-3-pkg-2
+            text: μου
+            notes: [E]
+          - id: chorus-1-3-pkg-3
+            text: η
+            notes: [E]
+          - id: chorus-1-3-pkg-4
+            text: ζωή
+            notes: [E, E, D]
+          - id: chorus-1-3-pkg-5
+            text: συνενοχή
+            notes: [C, C, D, E]
+          - id: chorus-1-3-pkg-6
+            text: και
+            notes: [D]
+          - id: chorus-1-3-pkg-7
+            text: πώς
+            notes: [E]
+          - id: chorus-1-3-pkg-8
+            text: γουστάρω
+            notes: [D, D, C]
       - id: chorus-1-4
         lyrics: κάτι απογεύματα, με καφέ και τσιγάρο
         chords:
@@ -150,6 +370,25 @@ sections:
             anchor: καφέ
           - symbol: G
             anchor: τσιγάρο
+        melody_packages:
+          - id: chorus-1-4-pkg-1
+            text: κάτι
+            notes: [E, E]
+          - id: chorus-1-4-pkg-2
+            text: απογεύματα
+            notes: [E, D, E, D, D]
+          - id: chorus-1-4-pkg-3
+            text: με
+            notes: [C]
+          - id: chorus-1-4-pkg-4
+            text: καφέ
+            notes: [D, E]
+          - id: chorus-1-4-pkg-5
+            text: και
+            notes: [D]
+          - id: chorus-1-4-pkg-6
+            text: τσιγάρο
+            notes: [C, D, C]
   - id: interlude
     title: Interlude
     lines:
