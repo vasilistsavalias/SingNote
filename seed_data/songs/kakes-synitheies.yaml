@@ -41,6 +41,10 @@ sections:
             anchor: μέσ'
           - symbol: G
             anchor: βάζο
+        melody_packages:
+          - id: verse-1-1-pkg-1
+            text: Από παιδί θυμάμαι προσπαθώ
+            notes: [D, D, D, D, C, D, D, D, C, C]
       - id: verse-1-2
         lyrics: με ξύλινα σπαθιά να πολεμώ και μια ζωή στα πόδια να το βάζω
         chords:
