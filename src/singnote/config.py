@@ -46,16 +46,31 @@ def _setting_value(name: str) -> str | None:
 
 def _secret_value(name: str) -> str | None:
     """Read a secret without requiring local secret files in development."""
+    short_name = name.removeprefix("SINGNOTE_SHARED_").lower()
     try:
         import streamlit as st
-    except Exception:
-        return None
 
-    try:
         value: Any = st.secrets.get(name)
+        if value is None:
+            value = st.secrets.get(short_name)
+        if value is not None:
+            return str(value)
     except Exception:
-        return None
+        pass
 
-    if value is None:
-        return None
-    return str(value)
+    secrets_path = Path(".streamlit") / "secrets.toml"
+    if secrets_path.exists():
+        try:
+            import tomllib
+
+            with secrets_path.open("rb") as f:
+                data = tomllib.load(f)
+                val = data.get(name)
+                if val is None:
+                    val = data.get(short_name)
+                if val is not None:
+                    return str(val)
+        except Exception:
+            pass
+
+    return None

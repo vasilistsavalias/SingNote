@@ -92,3 +92,15 @@ def test_app_access_denied_with_invalid_cookie() -> None:
     assert access.is_authenticated is False
     assert access.app_access_enabled is False
 
+
+def test_shared_login_with_bill_credentials() -> None:
+    """The configured bill/bill credentials should gate access and validate."""
+    access = resolve_app_access("bill", "bill", is_authenticated=False)
+    assert access.requires_login is True
+    assert access.app_access_enabled is False
+
+    assert validate_shared_login("bill", "bill", "bill", "bill") is True
+    assert validate_shared_login("bill", "wrong", "bill", "bill") is False
+    assert validate_shared_login("wrong", "bill", "bill", "bill") is False
+
+
