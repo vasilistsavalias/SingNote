@@ -1,0 +1,205 @@
+schema_version: 2
+song:
+  id: diodia
+  title: Διόδια
+  artist: Σταύρος Σιόλας & Φωτεινή Βελεσιώτου
+  description: "Σύγχρονο έντεχνο τραγούδι σε μουσική Σταύρου Σιόλα και στίχους Πόλυ Κυριάκου. Καταγραφή βασισμένη στην εκτέλεση του Kithara.to σε τόνο F#m με διάλογο των δύο φωνών και κορύφωση στο φινάλε."
+  key_signature: F# minor
+  time_signature: 4/4
+  tempo_bpm: 94
+  tempo_notes: "Πρωτότυπη τονικότητα F# minor στα 94 BPM (ή 188 BPM σε διπλό χρόνο). Για αρχάριους στην κιθάρα μπορεί να παιχτεί με Capo στο 2ο τάστο σε κλίμακα Em (Em, D, C)."
+  strumming_pattern: "Ρυθμική έντεχνη μπαλάντα σε 4/4 (~94 BPM). Βασικό μοτίβο D - D U - U D U. Στην εισαγωγή και στις πρώτες στροφές παίζεται πιο διακριτικά (αρπίσματα ή απαλά downstrokes), ενώ ανοίγει σε γεμάτο ρυθμικό παίξιμο από το σόλο και μετά."
+sections:
+  - id: intro
+    title: Εισαγωγή
+    lines:
+      - id: intro-1
+        lyrics: F#m E E F#m
+        chords: [F#m, E, E, F#m]
+      - id: intro-2
+        lyrics: F#m E E D F#m
+        chords: [F#m, E, E, D, F#m]
+  - id: verse-1
+    title: Verse 1 (Σταύρος Σιόλας)
+    lines:
+      - id: verse-1-1
+        lyrics: Τώρα θα δεις τα χρώματα ν' αλλάζουνε
+        chords:
+          - symbol: F#m
+            anchor: Τώρα
+          - symbol: E
+            anchor: αλλάζουνε
+      - id: verse-1-2
+        lyrics: και τα βουνά να σμίγουν ένα-ένα
+        chords:
+          - symbol: E
+            anchor: και
+          - symbol: F#m
+            anchor: ένα-ένα
+      - id: verse-1-3
+        lyrics: Άγγελοι σα θνητοί θα σ' αγκαλιάζουνε
+        chords:
+          - symbol: F#m
+            anchor: Άγγελοι
+          - symbol: E
+            anchor: αγκαλιάζουνε
+      - id: verse-1-4
+        lyrics: εχθροί θα σου μιλούν αγαπημένα
+        chords:
+          - symbol: E
+            anchor: εχθροί
+          - symbol: D
+            anchor: σου
+          - symbol: F#m
+            anchor: αγαπημένα
+  - id: verse-2
+    title: Verse 2 (Σταύρος Σιόλας)
+    lines:
+      - id: verse-2-1
+        lyrics: Τώρα θα πιω νερό απ' το ποτήρι σου
+        chords:
+          - symbol: F#m
+            anchor: Τώρα
+          - symbol: E
+            anchor: ποτήρι
+      - id: verse-2-2
+        lyrics: δικά σου θα 'ναι πια όσα δεν έχω
+        chords:
+          - symbol: E
+            anchor: δικά
+          - symbol: F#m
+            anchor: έχω
+      - id: verse-2-3
+        lyrics: Θα σπρώξω ουρανό στο παραθύρι σου
+        chords:
+          - symbol: F#m
+            anchor: Θα
+          - symbol: E
+            anchor: παραθύρι
+      - id: verse-2-4
+        lyrics: κι ό,τι δεν άντεχα θα το αντέχω
+        chords:
+          - symbol: E
+            anchor: κι ό,τι
+          - symbol: D
+            anchor: θα
+          - symbol: F#m
+            anchor: αντέχω
+  - id: interlude
+    title: Οργανικό (Σόλο)
+    lines:
+      - id: interlude-1
+        lyrics: F#m E E F#m
+        chords: [F#m, E, E, F#m]
+      - id: interlude-2
+        lyrics: F#m E E D F#m
+        chords: [F#m, E, E, D, F#m]
+  - id: verse-3
+    title: Verse 3 (Φωτεινή Βελεσιώτου)
+    lines:
+      - id: verse-3-1
+        lyrics: Τώρα θα πιάσω σπίτι στον παράδεισο
+        chords:
+          - symbol: F#m
+            anchor: Τώρα
+          - symbol: E
+            anchor: παράδεισο
+      - id: verse-3-2
+        lyrics: τσάμπα οικόπεδο σε παραλία
+        chords:
+          - symbol: E
+            anchor: τσάμπα
+          - symbol: F#m
+            anchor: παραλία
+      - id: verse-3-3
+        lyrics: Του έρωτα θα βάλω το πουκάμισο
+        chords:
+          - symbol: F#m
+            anchor: Του
+          - symbol: E
+            anchor: πουκάμισο
+      - id: verse-3-4
+        lyrics: και θα νικήσω δίχως πανοπλία
+        chords:
+          - symbol: E
+            anchor: και
+          - symbol: D
+            anchor: δίχως
+          - symbol: F#m
+            anchor: πανοπλία
+  - id: verse-4
+    title: Verse 4 (Μαζί)
+    lines:
+      - id: verse-4-1
+        lyrics: Τώρα θα δεις μες στης ψυχής τα υπόγεια
+        chords:
+          - symbol: F#m
+            anchor: Τώρα
+          - symbol: E
+            anchor: υπόγεια
+      - id: verse-4-2
+        lyrics: τραπέζι με ψωμί, νερό κι αλάτι
+        chords:
+          - symbol: E
+            anchor: τραπέζι
+          - symbol: F#m
+            anchor: αλάτι
+      - id: verse-4-3
+        lyrics: τώρα που δεν υπάρχουνε διόδια
+        chords:
+          - symbol: F#m
+            anchor: τώρα
+          - symbol: E
+            anchor: διόδια
+      - id: verse-4-4
+        lyrics: που πέφτει σαν ζεστή βροχή η αγάπη
+        chords:
+          - symbol: E
+            anchor: που
+          - symbol: D
+            anchor: σαν
+          - symbol: F#m
+            anchor: αγάπη
+  - id: verse-5
+    title: Verse 5 (Κορύφωση)
+    lines:
+      - id: verse-5-1
+        lyrics: Τώρα θα δεις μες στης ψυχής τα υπόγεια
+        chords:
+          - symbol: F#m
+            anchor: Τώρα
+          - symbol: E
+            anchor: υπόγεια
+      - id: verse-5-2
+        lyrics: τραπέζι με ψωμί, νερό κι αλάτι
+        chords:
+          - symbol: E
+            anchor: τραπέζι
+          - symbol: F#m
+            anchor: αλάτι
+      - id: verse-5-3
+        lyrics: τώρα που δεν υπάρχουνε διόδια
+        chords:
+          - symbol: F#m
+            anchor: τώρα
+          - symbol: E
+            anchor: διόδια
+      - id: verse-5-4
+        lyrics: που πέφτει σαν ζεστή βροχή η αγάπη
+        chords:
+          - symbol: E
+            anchor: που
+          - symbol: D
+            anchor: σαν
+          - symbol: F#m
+            anchor: αγάπη
+  - id: outro
+    title: Outro
+    lines:
+      - id: outro-1
+        lyrics: F#m E E D F#m
+        chords: [F#m, E, E, D, F#m]
+annotations:
+  - target_type: song
+    target_id: diodia
+    text: "Πρωτότυπη εκτέλεση σε τόνο F# minor (F#m - E - D). Για εκτέλεση στην κιθάρα χωρίς μπαρέ, τοποθετήστε Capo στο 2ο τάστο και παίξτε σε Em (Em - D - C). Ο ρυθμός είναι 4/4 έντεχνη μπαλάντα με διακριτικό ξεκίνημα που κλιμακώνεται δυναμικά μετά το σόλο της λύρας."

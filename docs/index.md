@@ -26,6 +26,7 @@ Use the sections below by intent:
 - [Kakes Synitheies - Version 1 Notes](song-research/kakes-synitheies-v1-nikolas.md)
 - [Kakes Synitheies - Version 2 Notes](song-research/kakes-synitheies-v2-greekrocker.md)
 - [Kakes Synitheies - Working Synthesis](song-research/kakes-synitheies-synthesis.md)
+- [Diodia - Research & Chart Notes](song-research/diodia.md)
 
 ## Reference
 

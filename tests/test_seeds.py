@@ -57,6 +57,39 @@ def test_kakes_synitheies_seed_uses_greekrocker_chord_skeleton() -> None:
     assert refrain_turn == ["Am", "D", "B7", "Em"]
 
 
+def test_diodia_seed_loads_properly() -> None:
+    """The Diodia seed should load with valid structure and chords."""
+    songs = build_sample_songs()
+    song = {song.id: song for song in songs}["diodia"]
+
+    assert song.title == "Διόδια"
+    assert song.artist == "Σταύρος Σιόλας & Φωτεινή Βελεσιώτου"
+    assert song.key_signature == "F# minor"
+    assert song.tempo_bpm == 94
+    assert [section.id for section in song.lyric_sections] == [
+        "intro",
+        "verse-1",
+        "verse-2",
+        "interlude",
+        "verse-3",
+        "verse-4",
+        "verse-5",
+        "outro",
+    ]
+    verse_1_1_chords = [
+        event.chord
+        for event in song.chord_events
+        if event.segment_id == "verse-1-1"
+    ]
+    assert verse_1_1_chords == ["F#m", "E"]
+    verse_1_4_chords = [
+        event.chord
+        for event in song.chord_events
+        if event.segment_id == "verse-1-4"
+    ]
+    assert verse_1_4_chords == ["E", "D", "F#m"]
+
+
 def test_sample_seed_songs_can_load_from_yaml_directory(
     tmp_path: Path,
 ) -> None:
