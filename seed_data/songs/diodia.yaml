@@ -29,6 +29,25 @@ sections:
             anchor: Τώρα
           - symbol: E
             anchor: αλλάζουνε
+        melody_packages:
+          - id: verse-1-1-pkg-1
+            text: Τώρα
+            notes: [G, G]
+          - id: verse-1-1-pkg-2
+            text: θα
+            notes: [G]
+          - id: verse-1-1-pkg-3
+            text: δεις
+            notes: [D]
+          - id: verse-1-1-pkg-4
+            text: τα
+            notes: [C]
+          - id: verse-1-1-pkg-5
+            text: χρώματα
+            notes: [D, C, D]
+          - id: verse-1-1-pkg-6
+            text: ν' αλλάζουνε
+            notes: [D#, D, C, C]
       - id: verse-1-2
         lyrics: και τα βουνά να σμίγουν ένα-ένα
         chords:

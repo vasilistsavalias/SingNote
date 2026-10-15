@@ -88,6 +88,23 @@ def test_diodia_seed_loads_properly() -> None:
         if event.segment_id == "verse-1-4"
     ]
     assert verse_1_4_chords == ["E", "D", "F#m"]
+    verse_1_1_packages = song.lyric_sections[1].segments[0].melody_packages
+    assert len(verse_1_1_packages) == 6
+    assert [p.text for p in verse_1_1_packages] == [
+        "Τώρα",
+        "θα",
+        "δεις",
+        "τα",
+        "χρώματα",
+        "ν' αλλάζουνε",
+    ]
+    assert [n.note for n in verse_1_1_packages[0].notes] == ["G", "G"]
+    assert [n.note for n in verse_1_1_packages[5].notes] == [
+        "D#",
+        "D",
+        "C",
+        "C",
+    ]
 
 
 def test_sample_seed_songs_can_load_from_yaml_directory(
