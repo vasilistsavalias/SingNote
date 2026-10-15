@@ -39,9 +39,20 @@ def load_settings() -> Settings:
 def _setting_value(name: str) -> str | None:
     """Read a setting from environment first, then Streamlit secrets."""
     environment_value = os.getenv(name)
+    if environment_value is not None and environment_value not in (
+        "shared-teacher",
+        "change-me-before-deploy",
+    ):
+        return environment_value
+
+    secret = _secret_value(name)
+    if secret is not None:
+        return secret
+
     if environment_value is not None:
         return environment_value
-    return _secret_value(name)
+
+    return None
 
 
 def _secret_value(name: str) -> str | None:

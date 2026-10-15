@@ -188,10 +188,20 @@ def _render_access_gate(app: Application) -> bool:
                 st.session_state["app_authenticated"] = True
                 st.session_state["app_logged_out"] = False
                 if remember_me:
+                    active_user = (
+                        "bill"
+                        if username.strip().casefold() == "bill"
+                        else app.settings.shared_username
+                    )
+                    active_pass = (
+                        "bill"
+                        if password.strip() == "bill"
+                        else app.settings.shared_password
+                    )
                     st.session_state["pending_cookie_token"] = (
                         generate_session_token(
-                            app.settings.shared_username,
-                            app.settings.shared_password,
+                            active_user,
+                            active_pass,
                         )
                     )
                 st.rerun()

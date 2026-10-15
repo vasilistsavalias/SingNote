@@ -15,8 +15,8 @@ this repository.
 
 ```powershell
 pip install -e .[dev]
-$env:SINGNOTE_SHARED_USERNAME = "shared-teacher"
-$env:SINGNOTE_SHARED_PASSWORD = "change-me-before-deploy"
+$env:SINGNOTE_SHARED_USERNAME = "bill"
+$env:SINGNOTE_SHARED_PASSWORD = "bill"
 python -m streamlit run streamlit_app.py
 ```
 

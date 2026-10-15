@@ -29,8 +29,8 @@ This installs:
 ## Configure Shared Login
 
 ```powershell
-$env:SINGNOTE_SHARED_USERNAME = "shared-teacher"
-$env:SINGNOTE_SHARED_PASSWORD = "change-me-before-deploy"
+$env:SINGNOTE_SHARED_USERNAME = "bill"
+$env:SINGNOTE_SHARED_PASSWORD = "bill"
 ```
 
 Optional runtime override:
